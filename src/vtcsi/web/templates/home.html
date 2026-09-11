@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block title %}vtcsi — tổng quan{% endblock %}
+{% block body %}
+{% set POL = {0:'H', 1:'V', 2:'L', 3:'R'} %}
+
+<h1>{{ cfg.network.name }}</h1>
+<p class="sub">
+  network_id <span class="m">0x{{ '%04x' % cfg.network.network_id }}</span>
+  ({{ cfg.network.network_id }}) ·
+  {{ cfg.sdts|length }} transport stream ·
+  {{ counts.services }} dịch vụ ·
+  {{ cfg.bouquets|length }} bouquet ·
+  {{ counts.lcn }} mục LCN
+</p>
+
+<h2>Transport stream</h2>
+<div class="tw"><table>
+<tr>
+  <th class="n">TSID</th><th class="n">ONID</th><th>Truyền dẫn</th>
+  <th class="n">Dịch vụ</th><th class="n">SDT ver</th><th>Bảng</th><th></th>
+</tr>
+{% for s in cfg.sdts %}
+{% set loop_ts = cfg.network.ts_loops|selectattr('ts_id','equalto',s.ts_id)|first %}
+<tr>
+  <td class="n">{{ s.ts_id }}</td>
+  <td class="n">{{ s.original_network_id }}</td>
+  <td class="m">
+    {% if loop_ts and loop_ts.delivery %}
+      {{ '%.3f'|format(loop_ts.delivery.frequency_hz / 1e9) }} GHz
+      {{ POL[loop_ts.delivery.polarization.value] }}
+      {{ (loop_ts.delivery.symbol_rate_sps / 1000)|round|int }} ks/s
+    {% else %}<span class="dim">—</span>{% endif %}
+  </td>
+  <td class="n">{{ s.services|length }}</td>
+  <td class="n">{{ s.version }}</td>
+  <td>{% if s.actual %}<span class="pill ok">actual</span>
+      {% else %}<span class="pill mute">other</span>{% endif %}</td>
+  <td><a href="/ts/{{ s.ts_id }}">xem →</a></td>
+</tr>
+{% endfor %}
+</table></div>
+
+<h2>Bouquet</h2>
+<div class="tw"><table>
+<tr><th class="n">ID</th><th>Tên</th><th class="n">TS</th>
+    <th class="n">Dịch vụ</th><th class="n">LCN</th><th class="n">Ver</th></tr>
+{% for b in cfg.bouquets %}
+{% set nsvc = b.ts_loops|map(attribute='services')|map('length')|sum %}
+{% set nlcn = b.ts_loops|map(attribute='lcn')|map('length')|sum %}
+<tr>
+  <td class="n">0x{{ '%04x' % b.bouquet_id }}</td>
+  <td>{{ b.name }}</td>
+  <td class="n">{{ b.ts_loops|length }}</td>
+  <td class="n">{% if nsvc == 0 %}<span class="pill crit">rỗng</span>{% else %}{{ nsvc }}{% endif %}</td>
+  <td class="n">{{ nlcn }}</td>
+  <td class="n">{{ b.version }}</td>
+</tr>
+{% endfor %}
+</table></div>
+<p class="sub">Bouquet rỗng vẫn phát ra sóng — xem RO-15. Sửa bằng cách nhập YAML
+trực tiếp; màn hình bouquet chưa dựng.</p>
+
+<h2>Tăng version — thao tác nguy hiểm</h2>
+<div class="card">
+  <p style="margin-top:0">Version là thứ đầu thu dùng để biết có phải đọc lại bảng
+  hay không. Tăng nhầm thì cả mạng dò lại kênh; <b>không tăng</b> khi đã đổi nội
+  dung thì đầu thu giữ dữ liệu cũ mãi — đó là ca <span class="m">đổi ngầm</span>
+  mà <span class="m">vtcsi preflight</span> chặn.</p>
+  <p>Sửa dữ liệu ở đây <b>không</b> tự tăng version. Sửa xong thì chạy
+  <span class="m">vtcsi preflight</span> để biết bảng nào cần tăng, rồi quay lại đây.</p>
+
+  <form method="post" action="/version/bump">
+    <div class="grid two">
+      <div>
+        <label for="table">Bảng</label>
+        <select name="table" id="table">
+          <option value="nit">NIT — {{ cfg.network.name }} (đang ở {{ cfg.network.version }})</option>
+          {% for s in cfg.sdts %}
+          <option value="sdt:{{ s.ts_id }}">SDT ts{{ s.ts_id }} (đang ở {{ s.version }})</option>
+          {% endfor %}
+          {% for b in cfg.bouquets %}
+          <option value="bat:{{ '%04x' % b.bouquet_id }}">BAT {{ b.name }} (đang ở {{ b.version }})</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label for="confirm">Gõ <span class="m">TANG</span> để xác nhận</label>
+        <input type="text" name="confirm" id="confirm" autocomplete="off" placeholder="TANG">
+      </div>
+    </div>
+    <div class="row"><button type="submit">Tăng version</button>
+      <span class="dim">version là 5 bit: 31 → 0, và đó là hợp lệ.</span></div>
+  </form>
+</div>
+
+{% endblock %}

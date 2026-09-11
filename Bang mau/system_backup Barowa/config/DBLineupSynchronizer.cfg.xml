@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+  <session-factory>
+    <property name="hibernate.dialect">org.hibernate.dialect.OracleDialect</property>
+    <property name="hibernate.connection.driver_class">oracle.jdbc.OracleDriver</property>
+    <property name="hibernate.show_sql">false</property>
+    <property name="hibernate.connection.url">jdbc:oracle:thin:xxx:yyy:zzz</property>
+    <property name="hibernate.connection.username">xxx</property>
+    <!--property name="hibernate.connection.username">xxx</property-->
+    <property name="hibernate.connection.password">xxx</property>
+    <!--property name="hibernate.default_schema">xxx</property-->
+    <!--property name="hibernate.default_schema">xxx</property--> 
+    <mapping resource="db/lineup/NetworkDescriptor.hbm.xml"/>
+    <mapping resource="db/lineup/Networks.hbm.xml"/>
+    <mapping resource="db/lineup/NetworkStreams.hbm.xml"/>
+    <mapping resource="db/lineup/NetworkStreamsDescriptor.hbm.xml"/>
+    <mapping resource="db/lineup/NetworkStreamsServices.hbm.xml"/>
+    <mapping resource="db/lineup/SdtVersion.hbm.xml"/>
+    <mapping resource="db/lineup/Service.hbm.xml"/>
+    <mapping resource="db/lineup/SiParameters.hbm.xml"/>
+    <mapping resource="db/lineup/Sites.hbm.xml"/>
+    <mapping resource="db/lineup/Ts.hbm.xml"/>
+    <mapping resource="db/lineup/UdpStream.hbm.xml"/>
+  </session-factory>
+</hibernate-configuration>

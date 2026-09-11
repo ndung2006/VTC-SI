@@ -1,0 +1,11 @@
+build/
+epg/
+__pycache__/
+*.pyc
+.venv/
+
+# Ban thu song tho — 183 MB va 7,6 MB. Git khong nen delta duoc file nhi phan
+# nhu the, dua vao la kho phinh vinh vien. Chung la NGUYEN LIEU, khong phai cau
+# hinh: thu lai duoc bang `tsp -O file`. Ban dump XML moi la chuan vang, va
+# chung o lai trong git.
+Bang mau/*.ts

@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Dịch vụ mới' if new else svc.name }} — vtcsi{% endblock %}
+{% block body %}
+
+<p class="sub"><a href="/ts/{{ sdt.ts_id }}">← TS {{ sdt.ts_id }}</a></p>
+<h1>{% if new %}Dịch vụ mới{% else %}{{ svc.name }}{% endif %}</h1>
+<p class="sub">
+  {% if new %}Thêm vào TS {{ sdt.ts_id }}. Số dịch vụ phải chưa có trong TS này.
+  {% else %}service_id <span class="m">{{ svc.service_id }}</span> · TS {{ sdt.ts_id }}{% endif %}
+</p>
+
+<div class="card">
+<form method="post" action="/ts/{{ sdt.ts_id }}/service/save">
+  <input type="hidden" name="creating" value="{{ 'true' if new else 'false' }}">
+
+  <div class="grid two">
+    <div>
+      <label for="service_id">Số dịch vụ (service_id)</label>
+      <input type="number" name="service_id" id="service_id" min="1" max="65535"
+             value="{{ svc.service_id if not new else '' }}"
+             {% if not new %}readonly{% else %}required autofocus{% endif %}>
+      {% if not new %}<span class="dim" style="font-size:12.5px">
+        Không đổi được. Đổi số dịch vụ với đầu thu nghĩa là xoá kênh cũ và thêm
+        kênh mới — làm bằng hai thao tác riêng để thấy rõ hệ quả.</span>{% endif %}
+    </div>
+    <div>
+      <label for="service_type">Loại dịch vụ</label>
+      <select name="service_type" id="service_type">
+        <option value="1" {{ 'selected' if svc.service_type.value == 1 }}>0x01 — truyền hình số</option>
+        <option value="2" {{ 'selected' if svc.service_type.value == 2 }}>0x02 — phát thanh số</option>
+      </select>
+    </div>
+  </div>
+
+  <label for="name">Tên kênh</label>
+  <input type="text" name="name" id="name" maxlength="60" required
+         value="{{ svc.name }}" {% if not new %}autofocus{% endif %}>
+  <span class="dim" style="font-size:12.5px">Mã hoá UTF-8 (bảng ký tự
+  <span class="m">0x15</span>). Dấu tiếng Việt để được, nhưng <b>phải xem trên
+  đầu thu thật</b> mới chắc — bậc 2 của kế hoạch kiểm thử.</span>
+
+  <label for="provider">Nhà cung cấp</label>
+  <input type="text" name="provider" id="provider" maxlength="60" value="{{ svc.provider }}">
+
+  <div class="check">
+    <input type="checkbox" name="free_ca_mode" id="free_ca_mode" value="true"
+           {{ 'checked' if svc.free_ca_mode }}>
+    <label for="free_ca_mode">Có khoá mã (<span class="m">free_CA_mode</span>) —
+      bỏ trống nghĩa là kênh xem tự do</label>
+  </div>
+  <div class="check">
+    <input type="checkbox" name="eit_pf" id="eit_pf" value="true"
+           {{ 'checked' if svc.eit_pf }}>
+    <label for="eit_pf">Khai có EIT hiện tại/kế tiếp</label>
+  </div>
+  <div class="check">
+    <input type="checkbox" name="eit_schedule" id="eit_schedule" value="true"
+           {{ 'checked' if svc.eit_schedule }}>
+    <label for="eit_schedule">Khai có EIT lịch dài</label>
+  </div>
+  <span class="dim" style="font-size:12.5px">Hai ô EIT chỉ là <i>lời khai</i>
+  trong SDT; có sự kiện thật hay không là do file lịch quyết định. Sóng hiện tại
+  khai <span class="m">true</span> cho cả 20 kênh phát thanh vốn không bao giờ
+  có lịch — nên đừng coi hai ô này là chỉ báo.</span>
+
+  <div class="row">
+    <button type="submit">{{ 'Thêm dịch vụ' if new else 'Lưu' }}</button>
+    <a class="btn alt" href="/ts/{{ sdt.ts_id }}">Huỷ</a>
+    <span class="dim">Lưu <b>không</b> tăng version. Chạy
+      <span class="m">vtcsi preflight</span> rồi tăng ở trang tổng quan.</span>
+  </div>
+</form>
+</div>
+
+{% if not new %}
+<h2>Xoá dịch vụ</h2>
+<div class="card">
+  <p style="margin-top:0">Xoá <b>{{ svc.name }}</b> khỏi SDT của TS {{ sdt.ts_id }},
+  khỏi <span class="m">service_list</span> trong NIT, và khỏi mọi bouquet đang
+  chứa nó. Sau lần dò kế tiếp, kênh này biến mất khỏi đầu thu của khách hàng.</p>
+  <form method="post" action="/ts/{{ sdt.ts_id }}/service/{{ svc.service_id }}/delete">
+    <label for="confirm_name">Gõ lại đúng tên kênh để xác nhận</label>
+    <input type="text" name="confirm_name" id="confirm_name" autocomplete="off"
+           placeholder="{{ svc.name }}">
+    <div class="row"><button type="submit" class="danger">Xoá dịch vụ {{ svc.service_id }}</button></div>
+  </form>
+</div>
+{% endif %}
+
+{% endblock %}

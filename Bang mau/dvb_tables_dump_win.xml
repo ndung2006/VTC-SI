@@ -1,0 +1,903 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tsduck>
+  <EIT type="pf" version="29" current="true" actual="true" service_id="0x0323" transport_stream_id="0x0008" original_network_id="0x3265" last_table_id="0x4E">
+    <metadata PID="18"/>
+    <event event_id="0x0C58" start_time="2026-09-10 15:00:00" duration="01:59:00" running_status="running" CA_mode="false">
+      <short_event_descriptor language_code="vie">
+        <event_name>Bóng đá: Giải bóng đá vô địch Quốc gia Hàn Quốc K.League 1: Gangwon - Jeonbuk</event_name>
+        <text></text>
+      </short_event_descriptor>
+    </event>
+  </EIT>
+  <EIT type="pf" version="10" current="true" actual="true" service_id="0x0334" transport_stream_id="0x0008" original_network_id="0x3265" last_table_id="0x4E">
+    <metadata PID="18"/>
+    <event event_id="0x0B1C" start_time="2026-09-10 16:40:00" duration="00:19:00" running_status="running" CA_mode="false">
+      <short_event_descriptor language_code="vie">
+        <event_name>Thế giới giải trí</event_name>
+        <text></text>
+      </short_event_descriptor>
+    </event>
+  </EIT>
+  <EIT type="pf" version="4" current="true" actual="true" service_id="0x0335" transport_stream_id="0x0008" original_network_id="0x3265" last_table_id="0x4E">
+    <metadata PID="18"/>
+    <event event_id="0x08CE" start_time="2026-09-10 16:45:00" duration="00:14:00" running_status="running" CA_mode="false">
+      <short_event_descriptor language_code="vie">
+        <event_name>Phim truyện Việt Nam: Vua bánh mì - Tập 21</event_name>
+        <text></text>
+      </short_event_descriptor>
+    </event>
+  </EIT>
+  <EIT type="pf" version="31" current="true" actual="true" service_id="0x0338" transport_stream_id="0x0008" original_network_id="0x3265" last_table_id="0x4E">
+    <metadata PID="18"/>
+    <event event_id="0x0DE7" start_time="2026-09-10 16:30:00" duration="00:29:00" running_status="running" CA_mode="false">
+      <short_event_descriptor language_code="vie">
+        <event_name>Ca nhạc: Bức thư tình đầu tiên</event_name>
+        <text></text>
+      </short_event_descriptor>
+    </event>
+  </EIT>
+  <EIT type="pf" version="9" current="true" actual="true" service_id="0x0339" transport_stream_id="0x0008" original_network_id="0x3265" last_table_id="0x4E">
+    <metadata PID="18"/>
+    <event event_id="0x1AC4" start_time="2026-09-10 15:10:00" duration="01:49:00" running_status="running" CA_mode="false">
+      <short_event_descriptor language_code="vie">
+        <event_name>Phim truyện: Huế mùa mai đỏ - Tập 19</event_name>
+        <text></text>
+      </short_event_descriptor>
+    </event>
+  </EIT>
+  <EIT type="pf" version="8" current="true" actual="true" service_id="0x033A" transport_stream_id="0x0008" original_network_id="0x3265" last_table_id="0x4E">
+    <metadata PID="18"/>
+    <event event_id="0x11C5" start_time="2026-09-10 16:50:00" duration="00:09:00" running_status="running" CA_mode="false">
+      <short_event_descriptor language_code="vie">
+        <event_name>Báo chí trong ngày</event_name>
+        <text></text>
+      </short_event_descriptor>
+    </event>
+  </EIT>
+  <EIT type="pf" version="14" current="true" actual="true" service_id="0x033B" transport_stream_id="0x0008" original_network_id="0x3265" last_table_id="0x4E">
+    <metadata PID="18"/>
+    <event event_id="0x1E24" start_time="2026-09-10 16:45:00" duration="00:14:00" running_status="running" CA_mode="false">
+      <short_event_descriptor language_code="vie">
+        <event_name>Chuyện trong làng ngoài bản: Tiếng Mông</event_name>
+        <text></text>
+      </short_event_descriptor>
+    </event>
+  </EIT>
+  <EIT type="pf" version="11" current="true" actual="true" service_id="0x033C" transport_stream_id="0x0008" original_network_id="0x3265" last_table_id="0x4E">
+    <metadata PID="18"/>
+    <event event_id="0x0DBF" start_time="2026-09-09 16:30:00" duration="00:29:00" running_status="running" CA_mode="false">
+      <short_event_descriptor language_code="vie">
+        <event_name>Phim tài liệu: Mỗi ngày tôi chọn một niềm vui - Tập 2</event_name>
+        <text></text>
+      </short_event_descriptor>
+    </event>
+  </EIT>
+  <EIT type="pf" version="2" current="true" actual="true" service_id="0x033D" transport_stream_id="0x0008" original_network_id="0x3265" last_table_id="0x4E">
+    <metadata PID="18"/>
+    <event event_id="0x1D37" start_time="2026-09-10 16:50:00" duration="00:09:00" running_status="running" CA_mode="false">
+      <short_event_descriptor language_code="vie">
+        <event_name>Gương mặt nghệ nhân: Người bắc nhịp cầu đưa tranh dân gian đến với bạn bè quốc tế</event_name>
+        <text></text>
+      </short_event_descriptor>
+    </event>
+  </EIT>
+  <EIT type="pf" version="6" current="true" actual="true" service_id="0x033E" transport_stream_id="0x0008" original_network_id="0x3265" last_table_id="0x4E">
+    <metadata PID="18"/>
+    <event event_id="0x1C38" start_time="2026-09-10 16:36:00" duration="00:23:00" running_status="running" CA_mode="false">
+      <short_event_descriptor language_code="vie">
+        <event_name>Giới thiệu chương trình ngày mai</event_name>
+        <text></text>
+      </short_event_descriptor>
+    </event>
+  </EIT>
+  <EIT type="pf" version="18" current="true" actual="true" service_id="0x033F" transport_stream_id="0x0008" original_network_id="0x3265" last_table_id="0x4E">
+    <metadata PID="18"/>
+    <event event_id="0x6EF4" start_time="2026-09-10 15:30:00" duration="01:29:00" running_status="running" CA_mode="false">
+      <short_event_descriptor language_code="vie">
+        <event_name>Giới thiệu chương trình ngày mai</event_name>
+        <text></text>
+      </short_event_descriptor>
+    </event>
+  </EIT>
+  <SDT version="9" current="true" transport_stream_id="0x0008" original_network_id="0x3265" actual="true">
+    <metadata PID="17"/>
+    <service service_id="0x0321" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="" service_name="HA NOI 1"/>
+    </service>
+    <service service_id="0x0322" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="" service_name="ANTV"/>
+    </service>
+    <service service_id="0x0323" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="" service_name="QPVN"/>
+    </service>
+    <service service_id="0x0324" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="" service_name="HTV2"/>
+    </service>
+    <service service_id="0x0325" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="" service_name="QUANG NINH 1"/>
+    </service>
+    <service service_id="0x0326" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="" service_name="QUANG NINH 3"/>
+    </service>
+    <service service_id="0x0327" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="" service_name="DONG NAI 1"/>
+    </service>
+    <service service_id="0x0328" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="" service_name="DONG NAI 2"/>
+    </service>
+    <service service_id="0x0329" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="" service_name="VTV1"/>
+    </service>
+    <service service_id="0x032A" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="" service_name="VTV2"/>
+    </service>
+    <service service_id="0x032B" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="" service_name="VTV3"/>
+    </service>
+    <service service_id="0x032C" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="VTC" service_name="VTV5"/>
+    </service>
+    <service service_id="0x032D" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="" service_name="VTV9"/>
+    </service>
+    <service service_id="0x032E" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="" service_name="ON BIBI"/>
+    </service>
+    <service service_id="0x032F" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="" service_name="ON SPORTS NEWS"/>
+    </service>
+    <service service_id="0x0330" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="VTC" service_name="ON FOOTBALL"/>
+    </service>
+    <service service_id="0x0331" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="VTC" service_name="ON SPORTS"/>
+    </service>
+    <service service_id="0x0332" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="VTC" service_name="SCTV9"/>
+    </service>
+    <service service_id="0x0333" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="VTC" service_name="SCTV14"/>
+    </service>
+    <service service_id="0x0334" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="VTC" service_name="VINH LONG 1"/>
+    </service>
+    <service service_id="0x0335" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="VTC" service_name="VINH LONG 2"/>
+    </service>
+    <service service_id="0x0336" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="VTC" service_name="HAI PHONG 1"/>
+    </service>
+    <service service_id="0x0337" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="VTC" service_name="HAI PHONG 3"/>
+    </service>
+    <service service_id="0x0338" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="VTC" service_name="THANH HOA"/>
+    </service>
+    <service service_id="0x0339" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="VTC" service_name="QUANG TRI"/>
+    </service>
+    <service service_id="0x033A" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="VTC" service_name="PHU THO"/>
+    </service>
+    <service service_id="0x033B" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="VTC" service_name="LAO CAI"/>
+    </service>
+    <service service_id="0x033C" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="VTC" service_name="HA NOI 2"/>
+    </service>
+    <service service_id="0x033D" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="VTC" service_name="SON LA"/>
+    </service>
+    <service service_id="0x033E" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="VTC" service_name="TUYEN QUANG"/>
+    </service>
+    <service service_id="0x033F" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="VTC" service_name="CAO BANG"/>
+    </service>
+    <service service_id="0x0340" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="VTC" service_name="DAKLAK"/>
+    </service>
+    <service service_id="0x0341" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="VTC" service_name="LAM DONG"/>
+    </service>
+    <service service_id="0x0342" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="VTC" service_name="LAM DONG 2"/>
+    </service>
+    <service service_id="0x0343" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="VTC" service_name="NINH BINH"/>
+    </service>
+    <service service_id="0x0344" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="VTC" service_name="BAC NINH"/>
+    </service>
+    <service service_id="0x0345" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="VTC" service_name="NGHE AN"/>
+    </service>
+    <service service_id="0x0346" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="VTC" service_name="THAI NGUYEN"/>
+    </service>
+    <service service_id="0x0347" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="VTC" service_name="LAI CHAU"/>
+    </service>
+    <service service_id="0x0348" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="VTC" service_name="AN GIANG 1"/>
+    </service>
+    <service service_id="0x0349" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="VTC" service_name="AN GIANG 3"/>
+    </service>
+    <service service_id="0x034A" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="VTC" service_name="VTV10 HD"/>
+    </service>
+    <service service_id="0x034B" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="VTC" service_name="VTV6 HD"/>
+    </service>
+    <service service_id="0x034C" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="VTC" service_name="VIETNAM TODAY"/>
+    </service>
+    <service service_id="0x0357" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x02" service_provider_name="VTC" service_name="VOV1"/>
+    </service>
+    <service service_id="0x0358" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x02" service_provider_name="VTC" service_name="VOV2"/>
+    </service>
+    <service service_id="0x0359" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x02" service_provider_name="VTC" service_name="VOV3"/>
+    </service>
+    <service service_id="0x035D" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x02" service_provider_name="VTC" service_name="PHU THO RADIO"/>
+    </service>
+    <service service_id="0x035E" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x02" service_provider_name="VTC" service_name="QUANG NINH RADIO"/>
+    </service>
+    <service service_id="0x035F" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x02" service_provider_name="VTC" service_name="QRN2 RADIO"/>
+    </service>
+    <service service_id="0x0360" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x02" service_provider_name="VTC" service_name="BAC NINH RADIO"/>
+    </service>
+    <service service_id="0x0361" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x02" service_provider_name="VTC" service_name="THAI NGUYEN RADIO"/>
+    </service>
+    <service service_id="0x0362" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x02" service_provider_name="VTC" service_name="LAO CAI RADIO"/>
+    </service>
+    <service service_id="0x0363" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x02" service_provider_name="VTC" service_name="LAO CAI DAN TOC RADIO"/>
+    </service>
+    <service service_id="0x0364" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x02" service_provider_name="VTC" service_name="TUYEN QUANG RADIO"/>
+    </service>
+    <service service_id="0x0365" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x02" service_provider_name="VTC" service_name="DAKLAK RADIO"/>
+    </service>
+    <service service_id="0x0366" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x02" service_provider_name="VTC" service_name="LAM DONG RADIO"/>
+    </service>
+    <service service_id="0x0367" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x02" service_provider_name="VTC" service_name="LAM DONG FM"/>
+    </service>
+    <service service_id="0x0368" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x02" service_provider_name="VTC" service_name="SON LA RADIO"/>
+    </service>
+    <service service_id="0x0369" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x02" service_provider_name="V" service_name="THANH HOA"/>
+    </service>
+    <service service_id="0x036A" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x02" service_provider_name="VTC" service_name="NGHE AN RADIO"/>
+    </service>
+    <service service_id="0x036B" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x02" service_provider_name="VTC" service_name="QUANG NGAI 2 RADIO"/>
+    </service>
+    <service service_id="0x036C" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x02" service_provider_name="VTC" service_name="LAI CHAU RADIO"/>
+    </service>
+    <service service_id="0x036D" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x02" service_provider_name="VTC" service_name="CAO BANG RADIO"/>
+    </service>
+  </SDT>
+  <EIT type="pf" version="7" current="true" actual="true" service_id="0x0340" transport_stream_id="0x0008" original_network_id="0x3265" last_table_id="0x4E">
+    <metadata PID="18"/>
+    <event event_id="0x07A3" start_time="2026-09-10 16:15:00" duration="00:44:00" running_status="running" CA_mode="false">
+      <short_event_descriptor language_code="vie">
+        <event_name>Phim truyện Hàn Quốc: Ngôi nhà bí mật - Tập 23/80</event_name>
+        <text></text>
+      </short_event_descriptor>
+    </event>
+  </EIT>
+  <EIT type="pf" version="13" current="true" actual="true" service_id="0x0341" transport_stream_id="0x0008" original_network_id="0x3265" last_table_id="0x4E">
+    <metadata PID="18"/>
+    <event event_id="0x11A3" start_time="2026-09-10 16:15:00" duration="00:44:00" running_status="running" CA_mode="false">
+      <short_event_descriptor language_code="vie">
+        <event_name>Chương Trình Tiếng Churu</event_name>
+        <text></text>
+      </short_event_descriptor>
+    </event>
+  </EIT>
+  <EIT type="pf" version="21" current="true" actual="true" service_id="0x0345" transport_stream_id="0x0008" original_network_id="0x3265" last_table_id="0x4E">
+    <metadata PID="18"/>
+    <event event_id="0x0B96" start_time="2026-09-10 16:30:00" duration="00:29:00" running_status="running" CA_mode="false">
+      <short_event_descriptor language_code="vie">
+        <event_name>Ca nhạc</event_name>
+        <text></text>
+      </short_event_descriptor>
+    </event>
+  </EIT>
+  <EIT type="pf" version="16" current="true" actual="true" service_id="0x0346" transport_stream_id="0x0008" original_network_id="0x3265" last_table_id="0x4E">
+    <metadata PID="18"/>
+    <event event_id="0x23FA" start_time="2026-09-10 16:59:59" duration="48:00:01" running_status="running" CA_mode="false">
+      <short_event_descriptor language_code="eng">
+        <event_name>No Information</event_name>
+        <text></text>
+      </short_event_descriptor>
+      <extended_event_descriptor descriptor_number="0" last_descriptor_number="0" language_code="eng">
+        <text>No Information</text>
+      </extended_event_descriptor>
+    </event>
+  </EIT>
+  <EIT type="pf" version="10" current="true" actual="true" service_id="0x0347" transport_stream_id="0x0008" original_network_id="0x3265" last_table_id="0x4E">
+    <metadata PID="18"/>
+    <event event_id="0x1C75" start_time="2026-09-10 15:55:00" duration="01:04:00" running_status="running" CA_mode="false">
+      <short_event_descriptor language_code="vie">
+        <event_name>Giới Thiệu CT</event_name>
+        <text></text>
+      </short_event_descriptor>
+    </event>
+  </EIT>
+  <EIT type="pf" version="23" current="true" actual="true" service_id="0x0321" transport_stream_id="0x0008" original_network_id="0x3265" last_table_id="0x4E">
+    <metadata PID="18"/>
+    <event event_id="0x0CB2" start_time="2026-09-04 16:35:00" duration="00:24:00" running_status="running" CA_mode="false">
+      <short_event_descriptor language_code="vie">
+        <event_name>Con đường doanh nhân: Dấu ấn doanh nhân trẻ trong hệ sinh thái du lịch</event_name>
+        <text></text>
+      </short_event_descriptor>
+    </event>
+  </EIT>
+  <BAT version="26" current="true" bouquet_id="0x6510">
+    <metadata PID="17"/>
+    <bouquet_name_descriptor bouquet_name="VTC_FULLHD"/>
+    <linkage_descriptor transport_stream_id="0x0010" original_network_id="0x3265" service_id="0x0667" linkage_type="0x05"/>
+    <transport_stream transport_stream_id="0x0003" original_network_id="0x0001" preferred_section="0">
+      <service_list_descriptor>
+        <service service_id="0x000E" service_type="0x01"/>
+        <service service_id="0x000F" service_type="0x01"/>
+        <service service_id="0x000C" service_type="0x01"/>
+        <service service_id="0x0004" service_type="0x01"/>
+        <service service_id="0x0019" service_type="0x01"/>
+        <service service_id="0x0001" service_type="0x01"/>
+        <service service_id="0x0018" service_type="0x01"/>
+        <service service_id="0x000A" service_type="0x01"/>
+        <service service_id="0x001B" service_type="0x01"/>
+        <service service_id="0x001C" service_type="0x01"/>
+        <service service_id="0x0009" service_type="0x01"/>
+        <service service_id="0x000D" service_type="0x01"/>
+        <service service_id="0x0010" service_type="0x01"/>
+        <service service_id="0x0002" service_type="0x01"/>
+      </service_list_descriptor>
+      <private_data_specifier_descriptor private_data_specifier="NorDig"/>
+      <nordig_logical_channel_descriptor_v1>
+        <service service_id="0x0001" logical_channel_number="48" visible_service="true"/>
+        <service service_id="0x0002" logical_channel_number="49" visible_service="true"/>
+        <service service_id="0x0004" logical_channel_number="50" visible_service="true"/>
+        <service service_id="0x0009" logical_channel_number="51" visible_service="true"/>
+        <service service_id="0x000A" logical_channel_number="52" visible_service="true"/>
+        <service service_id="0x000C" logical_channel_number="53" visible_service="true"/>
+        <service service_id="0x000D" logical_channel_number="54" visible_service="true"/>
+        <service service_id="0x000E" logical_channel_number="55" visible_service="true"/>
+        <service service_id="0x000F" logical_channel_number="56" visible_service="true"/>
+        <service service_id="0x0010" logical_channel_number="57" visible_service="true"/>
+        <service service_id="0x0018" logical_channel_number="58" visible_service="true"/>
+        <service service_id="0x0019" logical_channel_number="59" visible_service="true"/>
+        <service service_id="0x001B" logical_channel_number="60" visible_service="true"/>
+        <service service_id="0x001C" logical_channel_number="61" visible_service="true"/>
+      </nordig_logical_channel_descriptor_v1>
+    </transport_stream>
+    <transport_stream transport_stream_id="0x03E8" original_network_id="0x0001" preferred_section="0">
+      <service_list_descriptor>
+        <service service_id="0x03ED" service_type="0x01"/>
+      </service_list_descriptor>
+      <private_data_specifier_descriptor private_data_specifier="NorDig"/>
+      <nordig_logical_channel_descriptor_v1>
+        <service service_id="0x03ED" logical_channel_number="100" visible_service="true"/>
+      </nordig_logical_channel_descriptor_v1>
+    </transport_stream>
+    <transport_stream transport_stream_id="0x0008" original_network_id="0x3265" preferred_section="0">
+      <service_list_descriptor>
+        <service service_id="0x032F" service_type="0x01"/>
+        <service service_id="0x0358" service_type="0x02"/>
+        <service service_id="0x033A" service_type="0x01"/>
+        <service service_id="0x033D" service_type="0x01"/>
+        <service service_id="0x033C" service_type="0x01"/>
+        <service service_id="0x035F" service_type="0x02"/>
+        <service service_id="0x032D" service_type="0x01"/>
+        <service service_id="0x0333" service_type="0x01"/>
+        <service service_id="0x0337" service_type="0x01"/>
+        <service service_id="0x036B" service_type="0x02"/>
+        <service service_id="0x0334" service_type="0x01"/>
+        <service service_id="0x0331" service_type="0x01"/>
+        <service service_id="0x0361" service_type="0x02"/>
+        <service service_id="0x0327" service_type="0x01"/>
+        <service service_id="0x0364" service_type="0x02"/>
+        <service service_id="0x0363" service_type="0x02"/>
+        <service service_id="0x032E" service_type="0x01"/>
+        <service service_id="0x035E" service_type="0x02"/>
+        <service service_id="0x036D" service_type="0x02"/>
+        <service service_id="0x0365" service_type="0x02"/>
+        <service service_id="0x034B" service_type="0x01"/>
+        <service service_id="0x0335" service_type="0x01"/>
+        <service service_id="0x0340" service_type="0x01"/>
+        <service service_id="0x0362" service_type="0x02"/>
+        <service service_id="0x036C" service_type="0x02"/>
+        <service service_id="0x0367" service_type="0x02"/>
+        <service service_id="0x0342" service_type="0x01"/>
+        <service service_id="0x0357" service_type="0x02"/>
+        <service service_id="0x0368" service_type="0x02"/>
+        <service service_id="0x0330" service_type="0x01"/>
+        <service service_id="0x0341" service_type="0x01"/>
+        <service service_id="0x0326" service_type="0x01"/>
+        <service service_id="0x035D" service_type="0x02"/>
+        <service service_id="0x033B" service_type="0x01"/>
+        <service service_id="0x032B" service_type="0x01"/>
+        <service service_id="0x0369" service_type="0x02"/>
+        <service service_id="0x0360" service_type="0x02"/>
+        <service service_id="0x0346" service_type="0x01"/>
+        <service service_id="0x034C" service_type="0x01"/>
+        <service service_id="0x0347" service_type="0x01"/>
+        <service service_id="0x0344" service_type="0x01"/>
+        <service service_id="0x036A" service_type="0x02"/>
+        <service service_id="0x0325" service_type="0x01"/>
+        <service service_id="0x0338" service_type="0x01"/>
+        <service service_id="0x0321" service_type="0x01"/>
+        <service service_id="0x0366" service_type="0x02"/>
+        <service service_id="0x0339" service_type="0x01"/>
+        <service service_id="0x032A" service_type="0x01"/>
+        <service service_id="0x0349" service_type="0x01"/>
+        <service service_id="0x0324" service_type="0x01"/>
+        <service service_id="0x0343" service_type="0x01"/>
+        <service service_id="0x033E" service_type="0x01"/>
+        <service service_id="0x0332" service_type="0x01"/>
+        <service service_id="0x0359" service_type="0x02"/>
+        <service service_id="0x0322" service_type="0x01"/>
+        <service service_id="0x0328" service_type="0x01"/>
+        <service service_id="0x0348" service_type="0x01"/>
+        <service service_id="0x034A" service_type="0x01"/>
+        <service service_id="0x033F" service_type="0x01"/>
+        <service service_id="0x0345" service_type="0x01"/>
+        <service service_id="0x0323" service_type="0x01"/>
+        <service service_id="0x0329" service_type="0x01"/>
+        <service service_id="0x0336" service_type="0x01"/>
+        <service service_id="0x032C" service_type="0x01"/>
+      </service_list_descriptor>
+      <private_data_specifier_descriptor private_data_specifier="NorDig"/>
+      <nordig_logical_channel_descriptor_v1>
+        <service service_id="0x0321" logical_channel_number="1" visible_service="true"/>
+        <service service_id="0x0322" logical_channel_number="2" visible_service="true"/>
+        <service service_id="0x0323" logical_channel_number="3" visible_service="true"/>
+        <service service_id="0x0324" logical_channel_number="4" visible_service="true"/>
+        <service service_id="0x0325" logical_channel_number="5" visible_service="true"/>
+        <service service_id="0x0326" logical_channel_number="6" visible_service="true"/>
+        <service service_id="0x0327" logical_channel_number="7" visible_service="true"/>
+        <service service_id="0x0328" logical_channel_number="8" visible_service="true"/>
+        <service service_id="0x0329" logical_channel_number="9" visible_service="true"/>
+        <service service_id="0x032A" logical_channel_number="10" visible_service="true"/>
+        <service service_id="0x032B" logical_channel_number="11" visible_service="true"/>
+        <service service_id="0x032C" logical_channel_number="12" visible_service="true"/>
+        <service service_id="0x032D" logical_channel_number="13" visible_service="true"/>
+        <service service_id="0x032E" logical_channel_number="14" visible_service="true"/>
+        <service service_id="0x032F" logical_channel_number="15" visible_service="true"/>
+        <service service_id="0x0330" logical_channel_number="16" visible_service="true"/>
+        <service service_id="0x0331" logical_channel_number="17" visible_service="true"/>
+        <service service_id="0x0332" logical_channel_number="18" visible_service="true"/>
+        <service service_id="0x0333" logical_channel_number="19" visible_service="true"/>
+        <service service_id="0x0334" logical_channel_number="20" visible_service="true"/>
+        <service service_id="0x0335" logical_channel_number="21" visible_service="true"/>
+        <service service_id="0x0336" logical_channel_number="22" visible_service="true"/>
+        <service service_id="0x0337" logical_channel_number="23" visible_service="true"/>
+        <service service_id="0x0338" logical_channel_number="24" visible_service="true"/>
+        <service service_id="0x0339" logical_channel_number="25" visible_service="true"/>
+        <service service_id="0x033A" logical_channel_number="26" visible_service="true"/>
+        <service service_id="0x033B" logical_channel_number="27" visible_service="true"/>
+        <service service_id="0x033C" logical_channel_number="28" visible_service="true"/>
+        <service service_id="0x033D" logical_channel_number="29" visible_service="true"/>
+        <service service_id="0x033E" logical_channel_number="30" visible_service="true"/>
+        <service service_id="0x033F" logical_channel_number="31" visible_service="true"/>
+        <service service_id="0x0340" logical_channel_number="32" visible_service="true"/>
+        <service service_id="0x0341" logical_channel_number="33" visible_service="true"/>
+        <service service_id="0x0342" logical_channel_number="34" visible_service="true"/>
+        <service service_id="0x0343" logical_channel_number="35" visible_service="true"/>
+        <service service_id="0x0344" logical_channel_number="36" visible_service="true"/>
+        <service service_id="0x0345" logical_channel_number="37" visible_service="true"/>
+        <service service_id="0x0346" logical_channel_number="38" visible_service="true"/>
+        <service service_id="0x0347" logical_channel_number="39" visible_service="true"/>
+        <service service_id="0x0348" logical_channel_number="40" visible_service="true"/>
+        <service service_id="0x0349" logical_channel_number="41" visible_service="true"/>
+        <service service_id="0x034A" logical_channel_number="42" visible_service="true"/>
+        <service service_id="0x034B" logical_channel_number="43" visible_service="true"/>
+        <service service_id="0x034C" logical_channel_number="44" visible_service="true"/>
+        <service service_id="0x0357" logical_channel_number="397" visible_service="true"/>
+        <service service_id="0x0358" logical_channel_number="398" visible_service="true"/>
+        <service service_id="0x0359" logical_channel_number="399" visible_service="true"/>
+        <service service_id="0x035D" logical_channel_number="400" visible_service="true"/>
+        <service service_id="0x035E" logical_channel_number="401" visible_service="true"/>
+        <service service_id="0x035F" logical_channel_number="402" visible_service="true"/>
+        <service service_id="0x0360" logical_channel_number="403" visible_service="true"/>
+        <service service_id="0x0361" logical_channel_number="404" visible_service="true"/>
+        <service service_id="0x0362" logical_channel_number="405" visible_service="true"/>
+        <service service_id="0x0363" logical_channel_number="406" visible_service="true"/>
+        <service service_id="0x0364" logical_channel_number="407" visible_service="true"/>
+        <service service_id="0x0365" logical_channel_number="408" visible_service="true"/>
+        <service service_id="0x0366" logical_channel_number="409" visible_service="true"/>
+        <service service_id="0x0367" logical_channel_number="410" visible_service="true"/>
+        <service service_id="0x0368" logical_channel_number="411" visible_service="true"/>
+        <service service_id="0x0369" logical_channel_number="412" visible_service="true"/>
+        <service service_id="0x036A" logical_channel_number="413" visible_service="true"/>
+        <service service_id="0x036B" logical_channel_number="414" visible_service="true"/>
+        <service service_id="0x036C" logical_channel_number="415" visible_service="true"/>
+      </nordig_logical_channel_descriptor_v1>
+    </transport_stream>
+  </BAT>
+  <EIT type="pf" version="30" current="true" actual="true" service_id="0x0322" transport_stream_id="0x0008" original_network_id="0x3265" last_table_id="0x4E">
+    <metadata PID="18"/>
+    <event event_id="0x0BBD" start_time="2026-09-10 16:30:00" duration="00:29:00" running_status="running" CA_mode="false">
+      <short_event_descriptor language_code="vie">
+        <event_name>Câu Chuyện Cuối Tuần: Ngày Hội Đến Trường</event_name>
+        <text></text>
+      </short_event_descriptor>
+    </event>
+  </EIT>
+  <SDT version="19" current="true" transport_stream_id="0x03E8" original_network_id="0x0001" actual="false">
+    <metadata PID="17"/>
+    <service service_id="0x03E8" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="VTV" service_name="VTV1"/>
+    </service>
+    <service service_id="0x03E9" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="VTC" service_name="VTV2"/>
+    </service>
+    <service service_id="0x03EA" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="VTV" service_name="VTV3"/>
+    </service>
+    <service service_id="0x03EB" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="VTV" service_name="VTV4"/>
+    </service>
+    <service service_id="0x03EC" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="VTV" service_name="VTV5"/>
+    </service>
+    <service service_id="0x03ED" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="VTV" service_name="VTV CAN THO"/>
+    </service>
+    <service service_id="0x03EE" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="VTV" service_name="VTV7"/>
+    </service>
+    <service service_id="0x03EF" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="VTV" service_name="VTV8"/>
+    </service>
+    <service service_id="0x03F0" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="VTV" service_name="VTV9"/>
+    </service>
+    <service service_id="0x03F1" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="VTV" service_name="VIETNAM TODAY"/>
+    </service>
+  </SDT>
+  <BAT version="27" current="true" bouquet_id="0x6520">
+    <metadata PID="17"/>
+    <bouquet_name_descriptor bouquet_name="VTCHD_Basic"/>
+  </BAT>
+  <BAT version="2" current="true" bouquet_id="0x6550">
+    <metadata PID="17"/>
+    <bouquet_name_descriptor bouquet_name="VTC_BLOCKEDFTA"/>
+    <transport_stream transport_stream_id="0x0003" original_network_id="0x0001" preferred_section="0">
+      <service_list_descriptor>
+        <service service_id="0x0001" service_type="0x01"/>
+        <service service_id="0x000E" service_type="0x01"/>
+        <service service_id="0x0002" service_type="0x01"/>
+        <service service_id="0x0019" service_type="0x01"/>
+        <service service_id="0x0004" service_type="0x01"/>
+        <service service_id="0x000C" service_type="0x01"/>
+        <service service_id="0x0018" service_type="0x01"/>
+        <service service_id="0x0010" service_type="0x01"/>
+        <service service_id="0x001B" service_type="0x01"/>
+        <service service_id="0x0009" service_type="0x01"/>
+        <service service_id="0x001C" service_type="0x01"/>
+        <service service_id="0x000D" service_type="0x01"/>
+        <service service_id="0x000F" service_type="0x01"/>
+        <service service_id="0x000A" service_type="0x01"/>
+      </service_list_descriptor>
+    </transport_stream>
+    <transport_stream transport_stream_id="0x03E8" original_network_id="0x0001" preferred_section="0">
+      <service_list_descriptor>
+        <service service_id="0x03ED" service_type="0x01"/>
+        <service service_id="0x03EE" service_type="0x01"/>
+        <service service_id="0x03EB" service_type="0x01"/>
+        <service service_id="0x03F1" service_type="0x01"/>
+        <service service_id="0x03EF" service_type="0x01"/>
+      </service_list_descriptor>
+    </transport_stream>
+    <transport_stream transport_stream_id="0x0008" original_network_id="0x3265" preferred_section="0">
+      <service_list_descriptor>
+        <service service_id="0x033E" service_type="0x01"/>
+        <service service_id="0x0346" service_type="0x01"/>
+        <service service_id="0x0335" service_type="0x01"/>
+        <service service_id="0x034C" service_type="0x01"/>
+        <service service_id="0x0338" service_type="0x01"/>
+        <service service_id="0x033F" service_type="0x01"/>
+        <service service_id="0x033B" service_type="0x01"/>
+        <service service_id="0x0343" service_type="0x01"/>
+        <service service_id="0x0344" service_type="0x01"/>
+        <service service_id="0x033A" service_type="0x01"/>
+        <service service_id="0x0326" service_type="0x01"/>
+        <service service_id="0x0327" service_type="0x01"/>
+        <service service_id="0x0342" service_type="0x01"/>
+        <service service_id="0x0340" service_type="0x01"/>
+        <service service_id="0x0339" service_type="0x01"/>
+        <service service_id="0x0324" service_type="0x01"/>
+        <service service_id="0x0334" service_type="0x01"/>
+        <service service_id="0x0323" service_type="0x01"/>
+        <service service_id="0x0322" service_type="0x01"/>
+        <service service_id="0x0349" service_type="0x01"/>
+        <service service_id="0x0336" service_type="0x01"/>
+        <service service_id="0x033D" service_type="0x01"/>
+        <service service_id="0x0328" service_type="0x01"/>
+        <service service_id="0x0347" service_type="0x01"/>
+        <service service_id="0x0348" service_type="0x01"/>
+        <service service_id="0x0325" service_type="0x01"/>
+        <service service_id="0x0341" service_type="0x01"/>
+        <service service_id="0x0337" service_type="0x01"/>
+        <service service_id="0x0345" service_type="0x01"/>
+      </service_list_descriptor>
+    </transport_stream>
+  </BAT>
+  <NIT version="4" current="true" network_id="0x3265" actual="true">
+    <metadata PID="16"/>
+    <network_name_descriptor network_name="VTC"/>
+    <linkage_descriptor transport_stream_id="0x0008" original_network_id="0x3265" service_id="0x0353" linkage_type="0x92">
+      <private_data>
+        FF 04 FF 04 FF 00 FF 01 FF 30 32 35 32 FF 02
+      </private_data>
+    </linkage_descriptor>
+    <linkage_descriptor transport_stream_id="0x0000" original_network_id="0x0000" service_id="0x0000" linkage_type="0x82"/>
+    <transport_stream transport_stream_id="0x0003" original_network_id="0x0001" preferred_section="0">
+      <satellite_delivery_system_descriptor frequency="11,088,000,000" orbital_position="132.0" west_east_flag="east" polarization="vertical" roll_off="0.25" modulation_system="DVB-S2" modulation_type="8PSK" symbol_rate="18,750,000" FEC_inner="5/6"/>
+      <service_list_descriptor>
+        <service service_id="0x0001" service_type="0x01"/>
+        <service service_id="0x0002" service_type="0x01"/>
+        <service service_id="0x0004" service_type="0x01"/>
+        <service service_id="0x0009" service_type="0x01"/>
+        <service service_id="0x000A" service_type="0x01"/>
+        <service service_id="0x000C" service_type="0x01"/>
+        <service service_id="0x000D" service_type="0x01"/>
+        <service service_id="0x000E" service_type="0x01"/>
+        <service service_id="0x000F" service_type="0x01"/>
+        <service service_id="0x0010" service_type="0x01"/>
+        <service service_id="0x0018" service_type="0x01"/>
+        <service service_id="0x0019" service_type="0x01"/>
+        <service service_id="0x001B" service_type="0x01"/>
+        <service service_id="0x001C" service_type="0x01"/>
+      </service_list_descriptor>
+    </transport_stream>
+    <transport_stream transport_stream_id="0x03E8" original_network_id="0x0001" preferred_section="0">
+      <satellite_delivery_system_descriptor frequency="11,589,000,000" orbital_position="132.0" west_east_flag="east" polarization="horizontal" roll_off="0.25" modulation_system="DVB-S2" modulation_type="8PSK" symbol_rate="15,000,000" FEC_inner="3/4"/>
+      <service_list_descriptor>
+        <service service_id="0x03E8" service_type="0x01"/>
+        <service service_id="0x03E9" service_type="0x01"/>
+        <service service_id="0x03EA" service_type="0x01"/>
+        <service service_id="0x03EB" service_type="0x01"/>
+        <service service_id="0x03EC" service_type="0x01"/>
+        <service service_id="0x03ED" service_type="0x01"/>
+        <service service_id="0x03EE" service_type="0x01"/>
+        <service service_id="0x03EF" service_type="0x01"/>
+        <service service_id="0x03F0" service_type="0x01"/>
+        <service service_id="0x03F1" service_type="0x01"/>
+      </service_list_descriptor>
+    </transport_stream>
+    <transport_stream transport_stream_id="0x0008" original_network_id="0x3265" preferred_section="0">
+      <satellite_delivery_system_descriptor frequency="10,968,000,000" orbital_position="132.0" west_east_flag="east" polarization="horizontal" roll_off="0.25" modulation_system="DVB-S2" modulation_type="8PSK" symbol_rate="28,800,000" FEC_inner="3/4"/>
+      <service_list_descriptor>
+        <service service_id="0x0321" service_type="0x01"/>
+        <service service_id="0x0322" service_type="0x01"/>
+        <service service_id="0x0323" service_type="0x01"/>
+        <service service_id="0x0324" service_type="0x01"/>
+        <service service_id="0x0325" service_type="0x01"/>
+        <service service_id="0x0326" service_type="0x01"/>
+        <service service_id="0x0327" service_type="0x01"/>
+        <service service_id="0x0328" service_type="0x01"/>
+        <service service_id="0x0329" service_type="0x01"/>
+        <service service_id="0x032A" service_type="0x01"/>
+        <service service_id="0x032B" service_type="0x01"/>
+        <service service_id="0x032C" service_type="0x01"/>
+        <service service_id="0x032D" service_type="0x01"/>
+        <service service_id="0x032E" service_type="0x01"/>
+        <service service_id="0x032F" service_type="0x01"/>
+        <service service_id="0x0330" service_type="0x01"/>
+        <service service_id="0x0331" service_type="0x01"/>
+        <service service_id="0x0332" service_type="0x01"/>
+        <service service_id="0x0333" service_type="0x01"/>
+        <service service_id="0x0334" service_type="0x01"/>
+        <service service_id="0x0335" service_type="0x01"/>
+        <service service_id="0x0336" service_type="0x01"/>
+        <service service_id="0x0337" service_type="0x01"/>
+        <service service_id="0x0338" service_type="0x01"/>
+        <service service_id="0x0339" service_type="0x01"/>
+        <service service_id="0x033A" service_type="0x01"/>
+        <service service_id="0x033B" service_type="0x01"/>
+        <service service_id="0x033C" service_type="0x01"/>
+        <service service_id="0x033D" service_type="0x01"/>
+        <service service_id="0x033E" service_type="0x01"/>
+        <service service_id="0x033F" service_type="0x01"/>
+        <service service_id="0x0340" service_type="0x01"/>
+        <service service_id="0x0341" service_type="0x01"/>
+        <service service_id="0x0342" service_type="0x01"/>
+        <service service_id="0x0343" service_type="0x01"/>
+        <service service_id="0x0344" service_type="0x01"/>
+        <service service_id="0x0345" service_type="0x01"/>
+        <service service_id="0x0346" service_type="0x01"/>
+        <service service_id="0x0347" service_type="0x01"/>
+        <service service_id="0x0348" service_type="0x01"/>
+        <service service_id="0x0349" service_type="0x01"/>
+        <service service_id="0x034A" service_type="0x01"/>
+        <service service_id="0x034B" service_type="0x01"/>
+        <service service_id="0x034C" service_type="0x01"/>
+        <service service_id="0x0357" service_type="0x02"/>
+        <service service_id="0x0358" service_type="0x02"/>
+        <service service_id="0x0359" service_type="0x02"/>
+        <service service_id="0x035D" service_type="0x02"/>
+        <service service_id="0x035E" service_type="0x02"/>
+        <service service_id="0x035F" service_type="0x02"/>
+        <service service_id="0x0360" service_type="0x02"/>
+        <service service_id="0x0361" service_type="0x02"/>
+        <service service_id="0x0362" service_type="0x02"/>
+        <service service_id="0x0363" service_type="0x02"/>
+        <service service_id="0x0364" service_type="0x02"/>
+        <service service_id="0x0365" service_type="0x02"/>
+        <service service_id="0x0366" service_type="0x02"/>
+        <service service_id="0x0367" service_type="0x02"/>
+        <service service_id="0x0368" service_type="0x02"/>
+        <service service_id="0x0369" service_type="0x02"/>
+        <service service_id="0x036A" service_type="0x02"/>
+        <service service_id="0x036B" service_type="0x02"/>
+        <service service_id="0x036C" service_type="0x02"/>
+        <service service_id="0x036D" service_type="0x02"/>
+      </service_list_descriptor>
+      <private_data_specifier_descriptor private_data_specifier="0x00362275"/>
+    </transport_stream>
+  </NIT>
+  <BAT version="13" current="true" bouquet_id="0x6604">
+    <metadata PID="17"/>
+    <bouquet_name_descriptor bouquet_name="Quang Ninh"/>
+    <transport_stream transport_stream_id="0x0008" original_network_id="0x3265" preferred_section="0">
+      <service_list_descriptor>
+        <service service_id="0x033A" service_type="0x01"/>
+        <service service_id="0x0333" service_type="0x01"/>
+        <service service_id="0x0334" service_type="0x01"/>
+        <service service_id="0x032D" service_type="0x01"/>
+        <service service_id="0x0326" service_type="0x01"/>
+        <service service_id="0x0321" service_type="0x01"/>
+        <service service_id="0x0337" service_type="0x01"/>
+        <service service_id="0x0323" service_type="0x01"/>
+        <service service_id="0x0325" service_type="0x01"/>
+      </service_list_descriptor>
+      <private_data_specifier_descriptor private_data_specifier="NorDig"/>
+      <nordig_logical_channel_descriptor_v1>
+        <service service_id="0x0321" logical_channel_number="5" visible_service="true"/>
+        <service service_id="0x0323" logical_channel_number="6" visible_service="true"/>
+        <service service_id="0x0325" logical_channel_number="1" visible_service="true"/>
+        <service service_id="0x0326" logical_channel_number="2" visible_service="true"/>
+        <service service_id="0x032D" logical_channel_number="3" visible_service="true"/>
+        <service service_id="0x0333" logical_channel_number="53" visible_service="true"/>
+        <service service_id="0x0334" logical_channel_number="51" visible_service="true"/>
+        <service service_id="0x0337" logical_channel_number="17" visible_service="true"/>
+        <service service_id="0x033A" logical_channel_number="54" visible_service="true"/>
+      </nordig_logical_channel_descriptor_v1>
+    </transport_stream>
+  </BAT>
+  <SDT version="12" current="true" transport_stream_id="0x0003" original_network_id="0x0001" actual="false">
+    <metadata PID="17"/>
+    <service service_id="0x0001" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="HTV" service_name="HTV7"/>
+    </service>
+    <service service_id="0x0002" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="HTV" service_name="HTV9"/>
+    </service>
+    <service service_id="0x0004" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="HTV" service_name="CA MAU"/>
+    </service>
+    <service service_id="0x0009" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="HTV" service_name="DAK LAK"/>
+    </service>
+    <service service_id="0x000A" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="HTV" service_name="DAK NONG"/>
+    </service>
+    <service service_id="0x000C" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="HTV" service_name="KHANH HOA"/>
+    </service>
+    <service service_id="0x000D" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="HTV" service_name="LANG SON"/>
+    </service>
+    <service service_id="0x000E" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="HTV" service_name="TAY NINH"/>
+    </service>
+    <service service_id="0x000F" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="HTV" service_name="DA NANG 1"/>
+    </service>
+    <service service_id="0x0010" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="HTV" service_name="DA NANG 2"/>
+    </service>
+    <service service_id="0x0018" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="HTV" service_name="HTV THE THAO"/>
+    </service>
+    <service service_id="0x0019" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="HTV" service_name="HA TINH"/>
+    </service>
+    <service service_id="0x001B" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="HTV" service_name="HTV1"/>
+    </service>
+    <service service_id="0x001C" EIT_schedule="true" EIT_present_following="true" CA_mode="false" running_status="running">
+      <service_descriptor service_type="0x01" service_provider_name="HTV" service_name="HTV4"/>
+    </service>
+  </SDT>
+  <BAT version="10" current="true" bouquet_id="0x0044">
+    <metadata PID="17"/>
+    <bouquet_name_descriptor bouquet_name="MA QR"/>
+    <linkage_descriptor transport_stream_id="0x3265" original_network_id="0x3265" service_id="0x0000" linkage_type="0x90">
+      <private_data>
+        30 FF 31 FF 48 44 FF 30 34 FF 31 38 30 30 30 30
+        FF 31 FF 48 44 FF 30 36 FF 32 37 30 30 30 30 FF
+        31 FF 48 44 FF 31 32 FF 35 34 30 30 30 30 FF 30
+        FF 48 44 FF 32 34 FF 36 30 30 30 30 30
+      </private_data>
+    </linkage_descriptor>
+  </BAT>
+  <BAT version="18" current="true" bouquet_id="0x3622">
+    <metadata PID="17"/>
+    <bouquet_name_descriptor bouquet_name="Master"/>
+    <private_data_specifier_descriptor private_data_specifier="0x00362275"/>
+    <linkage_descriptor transport_stream_id="0x0008" original_network_id="0x3265" service_id="0x0354" linkage_type="0x80">
+      <private_data>
+        35 02
+      </private_data>
+    </linkage_descriptor>
+    <linkage_descriptor transport_stream_id="0x0009" original_network_id="0x3265" service_id="0x0033" linkage_type="0x82">
+      <private_data>
+        FF 35 FF 24 FF 00 FF 9D FF 0A FF 02
+      </private_data>
+    </linkage_descriptor>
+    <linkage_descriptor transport_stream_id="0x0008" original_network_id="0x3265" service_id="0x0354" linkage_type="0x80">
+      <private_data>
+        35 02
+      </private_data>
+    </linkage_descriptor>
+    <linkage_descriptor transport_stream_id="0x0008" original_network_id="0x3265" service_id="0x0354" linkage_type="0x09">
+      <private_data>
+        12 00 01 19 0E 00 AF 00 04 00 00 00 9D 00 00 00
+        0C 03 00
+      </private_data>
+    </linkage_descriptor>
+    <linkage_descriptor transport_stream_id="0x0008" original_network_id="0x3265" service_id="0x0355" linkage_type="0x80">
+      <private_data>
+        35 02
+      </private_data>
+    </linkage_descriptor>
+    <linkage_descriptor transport_stream_id="0x0008" original_network_id="0x3265" service_id="0x0355" linkage_type="0x82">
+      <private_data>
+        FF 35 FF 1D FF 00 FF 9D FF 06 FF 02
+      </private_data>
+    </linkage_descriptor>
+    <linkage_descriptor transport_stream_id="0x0008" original_network_id="0x3265" service_id="0x0356" linkage_type="0x80">
+      <private_data>
+        35 02
+      </private_data>
+    </linkage_descriptor>
+    <linkage_descriptor transport_stream_id="0x0008" original_network_id="0x3265" service_id="0x0356" linkage_type="0x82">
+      <private_data>
+        FF 35 FF 39 FF 00 FF 9D FF 0E FF 02
+      </private_data>
+    </linkage_descriptor>
+    <linkage_descriptor transport_stream_id="0x0010" original_network_id="0x3265" service_id="0x0675" linkage_type="0x80">
+      <private_data>
+        35 02
+      </private_data>
+    </linkage_descriptor>
+    <linkage_descriptor transport_stream_id="0x0010" original_network_id="0x3265" service_id="0x0675" linkage_type="0x82">
+      <private_data>
+        FF 35 FF 24 FF 00 FF 9D FF 0A FF 02
+      </private_data>
+    </linkage_descriptor>
+  </BAT>
+</tsduck>

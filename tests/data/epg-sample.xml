@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PSI lang="vie">
+ <NETWORK id="12901">
+  <TRANSPORT_STREAM id="8" on_id="12901">
+      <SERVICE id="801" start_time="2026-09-08T00:00:00+07:00" end_time="2026-09-09T23:59:00+07:00" period_overlapping_mode="removeEvent">
+    <EVENT id="64000" time="2026-09-08T00:00:00+07:00" duration="PT00H10M00S" ca="true" type="schedule" running_status="running">
+     <AUDIO lang="vie" audio_encoding="HE-AAC" audio_type="stereo"/>
+     <VIDEO video_encoding="H264/AVC" aspect_ratio="16:9" frame_rate="25Hz" high_definition="true"/>
+     <NAME lang="vie" encoding="15">Tiếp tục chương trình</NAME>
+     <SHORT_DESCRIPTION lang="vie" encoding="15"></SHORT_DESCRIPTION>
+    </EVENT>
+    <EVENT id="64001" time="2026-09-08T00:10:00+07:00" duration="PT00H10M00S" ca="true" type="schedule" running_status="running">
+     <AUDIO lang="vie" audio_encoding="HE-AAC" audio_type="stereo"/>
+     <VIDEO video_encoding="H264/AVC" aspect_ratio="16:9" frame_rate="25Hz" high_definition="true"/>
+     <NAME lang="vie" encoding="15">Bản tin thể thao</NAME>
+     <SHORT_DESCRIPTION lang="vie" encoding="15"></SHORT_DESCRIPTION>
+    </EVENT>
+    <EVENT id="64002" time="2026-09-08T00:20:00+07:00" duration="PT00H10M00S" ca="true" type="schedule" running_status="running">
+     <AUDIO lang="vie" audio_encoding="HE-AAC" audio_type="stereo"/>
+     <VIDEO video_encoding="H264/AVC" aspect_ratio="16:9" frame_rate="25Hz" high_definition="true"/>
+     <NAME lang="vie" encoding="15">Hà nội đẹp và chưa đẹp</NAME>
+     <SHORT_DESCRIPTION lang="vie" encoding="15"></SHORT_DESCRIPTION>
+    </EVENT>
+    <EVENT id="64003" time="2026-09-08T00:30:00+07:00" duration="PT00H40M00S" ca="true" type="schedule" running_status="running">
+     <AUDIO lang="vie" audio_encoding="HE-AAC" audio_type="stereo"/>
+     <VIDEO video_encoding="H264/AVC" aspect_ratio="16:9" frame_rate="25Hz" high_definition="true"/>
+     <NAME lang="vie" encoding="15">Phim truyền hình : Phù sa ngọt phim Việt Nam – tập 54</NAME>
+     <SHORT_DESCRIPTION lang="vie" encoding="15"></SHORT_DESCRIPTION>
+    </EVENT>
+   </SERVICE>
+   <SERVICE id="802" start_time="2026-09-08T00:00:00+07:00" end_time="2026-09-09T23:59:00+07:00" period_overlapping_mode="removeEvent">
+    <EVENT id="64000" time="2026-09-08T00:00:00+07:00" duration="PT00H55M00S" ca="true" type="schedule" running_status="running">
+     <AUDIO lang="vie" audio_encoding="HE-AAC" audio_type="stereo"/>
+     <VIDEO video_encoding="H264/AVC" aspect_ratio="16:9" frame_rate="25Hz" high_definition="true"/>
+     <NAME lang="vie" encoding="15">Phim truyện 17h05 - Lương duyên ngang trái - Tập 23/26</NAME>
+     <SHORT_DESCRIPTION lang="vie" encoding="15"></SHORT_DESCRIPTION>
+    </EVENT>
+    <EVENT id="64001" time="2026-09-08T00:55:00+07:00" duration="PT00H05M00S" ca="true" type="schedule" running_status="running">
+     <AUDIO lang="vie" audio_encoding="HE-AAC" audio_type="stereo"/>
+     <VIDEO video_encoding="H264/AVC" aspect_ratio="16:9" frame_rate="25Hz" high_definition="true"/>
+     <NAME lang="vie" encoding="15">Lệnh truy nã</NAME>
+     <SHORT_DESCRIPTION lang="vie" encoding="15"></SHORT_DESCRIPTION>
+    </EVENT>
+    <EVENT id="64002" time="2026-09-08T01:00:00+07:00" duration="PT00H20M00S" ca="true" type="schedule" running_status="running">
+     <AUDIO lang="vie" audio_encoding="HE-AAC" audio_type="stereo"/>
+     <VIDEO video_encoding="H264/AVC" aspect_ratio="16:9" frame_rate="25Hz" high_definition="true"/>
+     <NAME lang="vie" encoding="15">Nghị quyết 12 20 - Nơi sự thật bắt đầu</NAME>
+     <SHORT_DESCRIPTION lang="vie" encoding="15"></SHORT_DESCRIPTION>
+    </EVENT>
+    <EVENT id="64003" time="2026-09-08T01:20:00+07:00" duration="PT00H10M00S" ca="true" type="schedule" running_status="running">
+     <AUDIO lang="vie" audio_encoding="HE-AAC" audio_type="stereo"/>
+     <VIDEO video_encoding="H264/AVC" aspect_ratio="16:9" frame_rate="25Hz" high_definition="true"/>
+     <NAME lang="vie" encoding="15">An ninh với cuộc sống 10 - 03/09/26: Kết nối, chia sẻ dữ liệu camera an ninh với cơ sở dữ liệu về dân cư</NAME>
+     <SHORT_DESCRIPTION lang="vie" encoding="15"></SHORT_DESCRIPTION>
+    </EVENT>
+   </SERVICE>
+  </TRANSPORT_STREAM>
+ </NETWORK>
+</PSI>

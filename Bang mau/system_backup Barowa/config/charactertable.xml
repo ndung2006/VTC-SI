@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+  <comment>Application Configuration</comment>
+  <entry key="dan">05</entry>
+  <entry key="fin">05</entry>
+  <entry key="swe">05</entry>
+  <entry key="nor">05</entry>
+  <entry key="gre">03</entry>
+  <entry key="eng">00</entry>
+  <entry key="ita">00</entry>
+  <entry key="tur">05</entry>
+  <entry key="ira">15</entry>
+  <entry key="ukr">01</entry>
+  <entry key="ces">00</entry>
+  <entry key="pol">100002</entry>
+  <entry key="npl">05</entry>
+  <entry key="rus">01</entry>
+  <entry key="kor">15</entry>
+  <entry key="vie">15</entry>
+  <entry key="hin">15</entry>
+  <entry key="tha">07</entry>
+  <entry key="chi">15</entry>
+  <entry key="ara">15</entry> <!-- Use <entry key="ara">02</entry> for encoding Arabic using a single byte per character according to ISO/IEC 8859 Part 6: Latin/Arabic alphabet. Note that ISO/IEC 8859-6 does not support all Arabic characters. -->
+  <entry key="est">100004</entry>
+  <entry key="srp">100002</entry>
+  <entry key="slv">100002</entry>
+  <entry key="hrv">100002</entry>
+  <entry key="default">00</entry>
+</properties>

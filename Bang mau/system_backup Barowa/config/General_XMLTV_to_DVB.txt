@@ -1,0 +1,12 @@
+# The language to be specified as dvb_default_language needs to respect the ISO 639-2 standard.
+dvb_default_language=eng
+
+# The country must be specified by its ISO 3166-1 3-letter code. 
+# The code must be in upper case letters. 
+dvb_parental_rating_country=GBR
+ 
+# A value of 0 for the parental rating means undefined in the DVB standard.
+dvb_parental_rating_default_value=0
+
+
+

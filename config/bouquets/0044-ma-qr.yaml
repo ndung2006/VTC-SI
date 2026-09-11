@@ -1,0 +1,13 @@
+# Sinh bởi vtcsi. Sửa tay thoải mái — đây là nguồn sự thật.
+bouquet_id: '0x0044'
+name: MA QR
+version: 10
+private_data_specifier: null
+linkages:
+- linkage_type: '0x90'
+  ts_id: 12901
+  original_network_id: 12901
+  service_id: 0
+  private_data: 30 FF 31 FF 48 44 FF 30 34 FF 31 38 30 30 30 30 FF 31 FF 48 44 FF 30 36 FF 32 37 30 30
+    30 30 FF 31 FF 48 44 FF 31 32 FF 35 34 30 30 30 30 FF 30 FF 48 44 FF 32 34 FF 36 30 30 30 30 30
+transport_streams: []

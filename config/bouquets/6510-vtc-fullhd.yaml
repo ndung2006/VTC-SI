@@ -1,0 +1,339 @@
+# Sinh bởi vtcsi. Sửa tay thoải mái — đây là nguồn sự thật.
+bouquet_id: '0x6510'
+name: VTC_FULLHD
+version: 26
+private_data_specifier: null
+linkages:
+- linkage_type: '0x05'
+  ts_id: 16
+  original_network_id: 12901
+  service_id: 1639
+transport_streams:
+- ts_id: 3
+  original_network_id: 1
+  private_data_specifier: NorDig
+  services:
+  - 14
+  - 15
+  - 12
+  - 4
+  - 25
+  - 1
+  - 24
+  - 10
+  - 27
+  - 28
+  - 9
+  - 13
+  - 16
+  - 2
+  lcn:
+  - service_id: 1
+    lcn: 48
+    visible: true
+  - service_id: 2
+    lcn: 49
+    visible: true
+  - service_id: 4
+    lcn: 50
+    visible: true
+  - service_id: 9
+    lcn: 51
+    visible: true
+  - service_id: 10
+    lcn: 52
+    visible: true
+  - service_id: 12
+    lcn: 53
+    visible: true
+  - service_id: 13
+    lcn: 54
+    visible: true
+  - service_id: 14
+    lcn: 55
+    visible: true
+  - service_id: 15
+    lcn: 56
+    visible: true
+  - service_id: 16
+    lcn: 57
+    visible: true
+  - service_id: 24
+    lcn: 58
+    visible: true
+  - service_id: 25
+    lcn: 59
+    visible: true
+  - service_id: 27
+    lcn: 60
+    visible: true
+  - service_id: 28
+    lcn: 61
+    visible: true
+- ts_id: 1000
+  original_network_id: 1
+  private_data_specifier: NorDig
+  services:
+  - 1005
+  lcn:
+  - service_id: 1005
+    lcn: 100
+    visible: true
+- ts_id: 8
+  original_network_id: 12901
+  private_data_specifier: NorDig
+  services:
+  - 815
+  - 856
+  - 826
+  - 829
+  - 828
+  - 863
+  - 813
+  - 819
+  - 823
+  - 875
+  - 820
+  - 817
+  - 865
+  - 807
+  - 868
+  - 867
+  - 814
+  - 862
+  - 877
+  - 869
+  - 843
+  - 821
+  - 832
+  - 866
+  - 876
+  - 871
+  - 834
+  - 855
+  - 872
+  - 816
+  - 833
+  - 806
+  - 861
+  - 827
+  - 811
+  - 873
+  - 864
+  - 838
+  - 844
+  - 839
+  - 836
+  - 874
+  - 805
+  - 824
+  - 801
+  - 870
+  - 825
+  - 810
+  - 841
+  - 804
+  - 835
+  - 830
+  - 818
+  - 857
+  - 802
+  - 808
+  - 840
+  - 842
+  - 831
+  - 837
+  - 803
+  - 809
+  - 822
+  - 812
+  lcn:
+  - service_id: 801
+    lcn: 1
+    visible: true
+  - service_id: 802
+    lcn: 2
+    visible: true
+  - service_id: 803
+    lcn: 3
+    visible: true
+  - service_id: 804
+    lcn: 4
+    visible: true
+  - service_id: 805
+    lcn: 5
+    visible: true
+  - service_id: 806
+    lcn: 6
+    visible: true
+  - service_id: 807
+    lcn: 7
+    visible: true
+  - service_id: 808
+    lcn: 8
+    visible: true
+  - service_id: 809
+    lcn: 9
+    visible: true
+  - service_id: 810
+    lcn: 10
+    visible: true
+  - service_id: 811
+    lcn: 11
+    visible: true
+  - service_id: 812
+    lcn: 12
+    visible: true
+  - service_id: 813
+    lcn: 13
+    visible: true
+  - service_id: 814
+    lcn: 14
+    visible: true
+  - service_id: 815
+    lcn: 15
+    visible: true
+  - service_id: 816
+    lcn: 16
+    visible: true
+  - service_id: 817
+    lcn: 17
+    visible: true
+  - service_id: 818
+    lcn: 18
+    visible: true
+  - service_id: 819
+    lcn: 19
+    visible: true
+  - service_id: 820
+    lcn: 20
+    visible: true
+  - service_id: 821
+    lcn: 21
+    visible: true
+  - service_id: 822
+    lcn: 22
+    visible: true
+  - service_id: 823
+    lcn: 23
+    visible: true
+  - service_id: 824
+    lcn: 24
+    visible: true
+  - service_id: 825
+    lcn: 25
+    visible: true
+  - service_id: 826
+    lcn: 26
+    visible: true
+  - service_id: 827
+    lcn: 27
+    visible: true
+  - service_id: 828
+    lcn: 28
+    visible: true
+  - service_id: 829
+    lcn: 29
+    visible: true
+  - service_id: 830
+    lcn: 30
+    visible: true
+  - service_id: 831
+    lcn: 31
+    visible: true
+  - service_id: 832
+    lcn: 32
+    visible: true
+  - service_id: 833
+    lcn: 33
+    visible: true
+  - service_id: 834
+    lcn: 34
+    visible: true
+  - service_id: 835
+    lcn: 35
+    visible: true
+  - service_id: 836
+    lcn: 36
+    visible: true
+  - service_id: 837
+    lcn: 37
+    visible: true
+  - service_id: 838
+    lcn: 38
+    visible: true
+  - service_id: 839
+    lcn: 39
+    visible: true
+  - service_id: 840
+    lcn: 40
+    visible: true
+  - service_id: 841
+    lcn: 41
+    visible: true
+  - service_id: 842
+    lcn: 42
+    visible: true
+  - service_id: 843
+    lcn: 43
+    visible: true
+  - service_id: 844
+    lcn: 44
+    visible: true
+  - service_id: 855
+    lcn: 397
+    visible: true
+  - service_id: 856
+    lcn: 398
+    visible: true
+  - service_id: 857
+    lcn: 399
+    visible: true
+  - service_id: 861
+    lcn: 400
+    visible: true
+  - service_id: 862
+    lcn: 401
+    visible: true
+  - service_id: 863
+    lcn: 402
+    visible: true
+  - service_id: 864
+    lcn: 403
+    visible: true
+  - service_id: 865
+    lcn: 404
+    visible: true
+  - service_id: 866
+    lcn: 405
+    visible: true
+  - service_id: 867
+    lcn: 406
+    visible: true
+  - service_id: 868
+    lcn: 407
+    visible: true
+  - service_id: 869
+    lcn: 408
+    visible: true
+  - service_id: 870
+    lcn: 409
+    visible: true
+  - service_id: 871
+    lcn: 410
+    visible: true
+  - service_id: 872
+    lcn: 411
+    visible: true
+  - service_id: 873
+    lcn: 412
+    visible: true
+  - service_id: 874
+    lcn: 413
+    visible: true
+  - service_id: 875
+    lcn: 414
+    visible: true
+  - service_id: 876
+    lcn: 415
+    visible: true

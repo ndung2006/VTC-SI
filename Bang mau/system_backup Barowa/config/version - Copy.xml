@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<versions>
+   <setup onid="12901" subid="2" sysid="1" tsid="10">
+      <nitversion nid="12901" tableid="65535" version="0"/>
+   </setup>
+   <setup onid="1" subid="2" sysid="1" tsid="1400">
+      <nitversion nid="12901" tableid="65535" version="0"/>
+   </setup>
+   <setup onid="12901" subid="2" sysid="1" tsid="8">
+      <nitversion nid="12901" tableid="65535" version="0"/>
+   </setup>
+   <setup onid="12901" subid="2" sysid="1" tsid="8">
+      <nitversion nid="12901" tableid="65535" version="0"/>
+   </setup>
+   <setup onid="1" subid="2" sysid="1" tsid="12">
+      <nitversion nid="12901" tableid="65535" version="0"/>
+   </setup>
+   <setup onid="1" subid="2" sysid="1" tsid="1000">
+      <nitversion nid="12901" tableid="65535" version="0"/>
+   </setup>
+   <setup onid="12901" subid="2" sysid="1" tsid="16">
+      <nitversion nid="12901" tableid="65535" version="0"/>
+   </setup>
+</versions>

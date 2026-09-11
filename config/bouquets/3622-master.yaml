@@ -1,0 +1,57 @@
+# Sinh bởi vtcsi. Sửa tay thoải mái — đây là nguồn sự thật.
+bouquet_id: '0x3622'
+name: Master
+version: 18
+private_data_specifier: '0x00362275'
+linkages:
+- linkage_type: '0x80'
+  ts_id: 8
+  original_network_id: 12901
+  service_id: 852
+  private_data: 35 02
+- linkage_type: '0x82'
+  ts_id: 9
+  original_network_id: 12901
+  service_id: 51
+  private_data: FF 35 FF 24 FF 00 FF 9D FF 0A FF 02
+- linkage_type: '0x80'
+  ts_id: 8
+  original_network_id: 12901
+  service_id: 852
+  private_data: 35 02
+- linkage_type: '0x09'
+  ts_id: 8
+  original_network_id: 12901
+  service_id: 852
+  private_data: 12 00 01 19 0E 00 AF 00 04 00 00 00 9D 00 00 00 0C 03 00
+- linkage_type: '0x80'
+  ts_id: 8
+  original_network_id: 12901
+  service_id: 853
+  private_data: 35 02
+- linkage_type: '0x82'
+  ts_id: 8
+  original_network_id: 12901
+  service_id: 853
+  private_data: FF 35 FF 1D FF 00 FF 9D FF 06 FF 02
+- linkage_type: '0x80'
+  ts_id: 8
+  original_network_id: 12901
+  service_id: 854
+  private_data: 35 02
+- linkage_type: '0x82'
+  ts_id: 8
+  original_network_id: 12901
+  service_id: 854
+  private_data: FF 35 FF 39 FF 00 FF 9D FF 0E FF 02
+- linkage_type: '0x80'
+  ts_id: 16
+  original_network_id: 12901
+  service_id: 1653
+  private_data: 35 02
+- linkage_type: '0x82'
+  ts_id: 16
+  original_network_id: 12901
+  service_id: 1653
+  private_data: FF 35 FF 24 FF 00 FF 9D FF 0A FF 02
+transport_streams: []

@@ -1,0 +1,62 @@
+# Sinh bởi vtcsi. Sửa tay thoải mái — đây là nguồn sự thật.
+network:
+  network_id: 12901
+  name: VTC
+  version: 4
+  actual: true
+  linkages:
+  - linkage_type: '0x92'
+    ts_id: 8
+    original_network_id: 12901
+    service_id: 851
+    private_data: FF 04 FF 04 FF 00 FF 01 FF 30 32 35 32 FF 02
+  - linkage_type: '0x82'
+    ts_id: 0
+    original_network_id: 0
+    service_id: 0
+  transport_streams:
+  - ts_id: 3
+    original_network_id: 1
+    actual: false
+    sdt_version: 12
+    delivery:
+      system: DVB-S2
+      modulation: 8PSK
+      frequency_hz: 11088000000
+      polarization: vertical
+      symbol_rate_sps: 18750000
+      fec_inner: 5/6
+      roll_off: '0.25'
+      orbital_position: 132.0
+      east: true
+    private_data_specifier: null
+  - ts_id: 1000
+    original_network_id: 1
+    actual: false
+    sdt_version: 19
+    delivery:
+      system: DVB-S2
+      modulation: 8PSK
+      frequency_hz: 11589000000
+      polarization: horizontal
+      symbol_rate_sps: 15000000
+      fec_inner: 3/4
+      roll_off: '0.25'
+      orbital_position: 132.0
+      east: true
+    private_data_specifier: null
+  - ts_id: 8
+    original_network_id: 12901
+    actual: true
+    sdt_version: 9
+    delivery:
+      system: DVB-S2
+      modulation: 8PSK
+      frequency_hz: 10968000000
+      polarization: horizontal
+      symbol_rate_sps: 28800000
+      fec_inner: 3/4
+      roll_off: '0.25'
+      orbital_position: 132.0
+      east: true
+    private_data_specifier: '0x00362275'

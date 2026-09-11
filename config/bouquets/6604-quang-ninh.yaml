@@ -1,0 +1,48 @@
+# Sinh bởi vtcsi. Sửa tay thoải mái — đây là nguồn sự thật.
+bouquet_id: '0x6604'
+name: Quang Ninh
+version: 13
+private_data_specifier: null
+linkages: []
+transport_streams:
+- ts_id: 8
+  original_network_id: 12901
+  private_data_specifier: NorDig
+  services:
+  - 826
+  - 819
+  - 820
+  - 813
+  - 806
+  - 801
+  - 823
+  - 803
+  - 805
+  lcn:
+  - service_id: 801
+    lcn: 5
+    visible: true
+  - service_id: 803
+    lcn: 6
+    visible: true
+  - service_id: 805
+    lcn: 1
+    visible: true
+  - service_id: 806
+    lcn: 2
+    visible: true
+  - service_id: 813
+    lcn: 3
+    visible: true
+  - service_id: 819
+    lcn: 53
+    visible: true
+  - service_id: 820
+    lcn: 51
+    visible: true
+  - service_id: 823
+    lcn: 17
+    visible: true
+  - service_id: 826
+    lcn: 54
+    visible: true

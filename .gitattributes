@@ -1,0 +1,16 @@
+# Ket thuc dong LF o ca hai phia — khong phai chuyen tham my.
+#
+# Co che dong bo cua hai he la "cung commit thi cung byte" (§3.3 spec.md). Mot
+# ben chay Windows, mot ben chay Linux trong Docker; de git tu doi CRLF thi
+# cung mot commit cho ra hai chuoi byte khac nhau tren hai may, va ca lap luan
+# do sup. Ghim LF, khong de core.autocrlf quyet dinh.
+* text=auto eol=lf
+
+# Chuan vang: khong duoc dong vao mot byte nao. Dau ngoac kep la bat buoc —
+# ten thu muc co dau cach.
+"Bang mau/*.xml" -text
+
+*.ts   binary
+*.docx binary
+*.pdf  binary
+*.bin  binary

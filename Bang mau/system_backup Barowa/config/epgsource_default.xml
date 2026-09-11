@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sisystem>
+   <system persisted_by="" system_id="1" version="2">
+      <subsystem subsystem_id="1">
+         <service_key service_key="77" subid="1" sysid="1">
+            <epgsource id="BBC News-Test" sourceid="XMLOffset"/>
+         </service_key>
+         <service_key service_key="80" subid="1" sysid="1">
+            <epgsource id="Channel 4-Test" sourceid="XMLOffset"/>
+         </service_key>
+         <service_key service_key="88" subid="1" sysid="1">
+            <epgsource id="BBC One-Test" sourceid="XMLOffset"/>
+         </service_key>
+      </subsystem>
+   </system>
+</sisystem>

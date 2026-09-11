@@ -1,0 +1,115 @@
+# Sinh bởi vtcsi. Sửa tay thoải mái — đây là nguồn sự thật.
+ts_id: 3
+services:
+- service_id: 1
+  name: HTV7
+  provider: HTV
+  type: 1
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 2
+  name: HTV9
+  provider: HTV
+  type: 1
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 4
+  name: CA MAU
+  provider: HTV
+  type: 1
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 9
+  name: DAK LAK
+  provider: HTV
+  type: 1
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 10
+  name: DAK NONG
+  provider: HTV
+  type: 1
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 12
+  name: KHANH HOA
+  provider: HTV
+  type: 1
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 13
+  name: LANG SON
+  provider: HTV
+  type: 1
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 14
+  name: TAY NINH
+  provider: HTV
+  type: 1
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 15
+  name: DA NANG 1
+  provider: HTV
+  type: 1
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 16
+  name: DA NANG 2
+  provider: HTV
+  type: 1
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 24
+  name: HTV THE THAO
+  provider: HTV
+  type: 1
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 25
+  name: HA TINH
+  provider: HTV
+  type: 1
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 27
+  name: HTV1
+  provider: HTV
+  type: 1
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 28
+  name: HTV4
+  provider: HTV
+  type: 1
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<barrowa_properties version="1">
+	<appl name="manager">
+	    <property key="ipaddress" value="127.0.0.1" type="TYPE_STRING"/>
+	    <property key="order_of_services_in_nit" value="SERVICE_ID" type="TYPE_STRING"/>
+            <property key="order_of_services_in_sdt" value="SERVICE_ID" type="TYPE_STRING"/>
+            <property key="order_of_ts_in_nit" value="TS_ID" type="TYPE_STRING"/>
+            <property key="ttv_message_send_delay" value="20" type="TYPE_INT"/>
+            <property key="auto_gen_service_list" value="true" type="TYPE_INT"/>
+            <property key="insert_empty_extended_event_descriptor" value="0" type="TYPE_BOOLEAN" comment="This option applies only when the extended event descriptor text is empty or comprised only by whitespace characters. 
+			Value 0: no extended event descriptor is generated. 
+			Value 1: an extended event descriptor is generated, but the length of the text will be set to 0 and no other bytes will be generated.
+			Value 2: an extended event descriptor with the text comprised of one space character will be generated."/>
+			<property key="event_descriptor_order" value="4d, 4e, 54, 55" type="TYPE_STRING" comment="The order of the event descriptors on the output. The descriptor tags need to be expressed in hex. Values like 0x99 are not allowed. The descriptors not present in this list will be generated on the output after the ones in the list, in the ascending order of their descriptor tags."/>
+	    <property key="full_EIT_schedules_from_midnight" value="false" type="TYPE_BOOLEAN"/>
+	    <property key="insert_space_in_short_event_descriptor" value="false" type="TYPE_BOOLEAN"/>
+		<property key="generate_empty_strings_with_length_zero" value="true" type="TYPE_BOOLEAN" comment="If set to true, the empty strings will be represented on the output by the byte representation of their 0 length. Besides the bytes needed to represent that they have a lenght of 0, nothing else will be generated. 
+		If set to false: this is for legacy support. In this case, the bytes generated on the output for an empty string will be the bytes necessary to represent the string's encoding plus one more byte."/>
+	</appl>
+	<appl name="gui_server">
+	    <property key="port" value="60001" type="TYPE_INT"/>
+            <property key="schedule_trigger_offset" value="4" type="TYPE_INT"/>
+            <property key="schedule_trigger_interval" value="30" type="TYPE_INT"/>
+	</appl>
+	<appl name="epg_server">
+	    <property key="port" value="50100" type="TYPE_INT"/>
+	    <property key="nr_days_test_files" value="8" type="TYPE_INT"/>
+	    <property key="update_pf_after_file_import" value="1" type="TYPE_INT"/>
+	    <property key="schedule_rebuild_interval_in_minutes" value="0" type="TYPE_INT"/>
+	</appl>
+	<appl name="trigger_server">
+	    <property key="port" value="50200" type="TYPE_INT"/>
+	</appl>
+        <appl name="redundancy">
+	    <property key="SSdoubleoutput" value="false" type="TYPE_BOOLEAN" comment="Set to true if both the Backup and the Main should simultaneously generate UDP output."/>
+	    <property key="port" value="50111" type="TYPE_INT"/>
+            <property key="servera" value="10.0.0.1" type="TYPE_STRING"/>
+            <property key="servera_actual" value="192.168.20.230" type="TYPE_STRING"/>
+            <property key="serverb" value="10.0.0.2" type="TYPE_STRING"/>
+            <property key="serverb_actual" value="192.168.20.231" type="TYPE_STRING"/>
+	</appl>
+	<appl name="bsystem">
+		<property key="save_data" value="true" type="TYPE_BOOLEAN" comment="Enable/disable saving of bsystem.xml"/>
+		<property key="save_to_dot_local" value="false" type="TYPE_BOOLEAN" comment="Save to alternative bsystem.xml.local"/>
+	</appl>
+	<appl name="db_sync">
+	    <property key="enable_external_db_sync" value="false" type="TYPE_BOOLEAN"/>
+	    <property key="site_id" value="2" type="TYPE_INT"/>	
+	    <property key="db_server" value="127.0.0.1" type="TYPE_STRING"/>	
+	    <property key="nit_manipulation" value="9,900" type="TYPE_STRING"/>
+            <property key="default_netcard" value="1" type="TYPE_STRING"/>
+		<property key="nit_only_sites" value="1" type="TYPE_STRING"/>
+	</appl>
+	<appl name="brw_sync">
+		<property key="site_id" value="" type="TYPE_INT"/>
+		<property key="master_ip" value="10.0.0.1" type="TYPE_STRING"/>
+		<property key="standby_ip" value="10.0.0.10" type="TYPE_STRING"/>
+        <property key="master_id" value="4" type="TYPE_INT"/>
+        <property key="master_server" value="standalone" type="TYPE_STRING"/>
+        <!--property key="master_server" value="true" type="TYPE_STRING"/-->
+        <!--property key="master_server" value="standalone" type="TYPE_STRING"/-->
+        <property key="db_server" value="127.0.0.1" type="TYPE_STRING"/>
+		<property key="connection_error_mode" value="0" type="TYPE_STRING"/>
+		<!-- connnection_error_mode 0 = accept to use local config on error communication to CHE -->
+		<!-- connnection_error_mode 1 = do not accept to use local config on error communication to CHE -->
+		<!-- connnection_error_mode 2 = do not read config from CHE, just use local config EMERGENCY -->
+		<property key="ts_threshold" value="20" type="TYPE_INT"/>
+		<property key="network_threshold" value="1" type="TYPE_INT"/>
+		<property key="service_threshold" value="4" type="TYPE_INT"/>
+		<property key="nit_only_sites" value="" type="TYPE_INT_LIST"/>
+	</appl>
+	<appl name="web_server">
+	    <property key="port" value="50000" type="TYPE_INT"/>
+		<property key="ipaddress" value="" type="TYPE_STRING"/>
+	</appl>
+	<appl name="dvb_settings">
+	    <property key="use_lcn" value="1" type="TYPE_INT"/>
+        <property key="lcn_priv_spec" value="00000031" type="TYPE_STRING"/>
+		<property key="lcn_priv_spec_nordig" value="00000029" type="TYPE_STRING"/>
+        <property key="lcn_priv_spec_eb" value="00000028" type="TYPE_STRING"/>
+		<property key="lcn_priv_spec_freeview" value="00000037" type="TYPE_STRING"/>
+		<property key="lcn_priv_spec_freetv" value="00003200" type="TYPE_STRING"/>
+        <property key="irdeto_priv_spec_bat" value="362275" type="TYPE_STRING"/>
+	    <property key="default_language"  value="eng" type="TYPE_STRING"/>
+		<property key="default_maxbitrate"  value="102400" type="TYPE_INT"/>
+	</appl>
+        <appl name="nri_interface">
+	    <property key="ipaddress" value="192.168.0.103" type="TYPE_STRING"/>
+		<property key="active" value="false" type="TYPE_BOOLEAN"/>
+            <property key="port" value="80" type="TYPE_INT"/>
+            <property key="synchronize" value="true" type="TYPE_BOOLEAN"/>
+	</appl>
+	<appl name="ssu">
+            <property key="import_source" value="DVB-SSU" type="TYPE_STRING"/>
+            <property key="generateDSMCCOnly" value="true" type="TYPE_STRING" comment="When generateDSMCCOnly is true, then only the SSU stream is generated, NIT and SDT are suppressed."/>
+            <property key="filler_pid" value="500" type="TYPE_INT"/>
+            <property key="pcrpid" value="8190" type="TYPE_INT"/>
+
+        </appl>
+</barrowa_properties>

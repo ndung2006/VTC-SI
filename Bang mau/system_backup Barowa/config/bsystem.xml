@@ -1,0 +1,2124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sisystem>
+   <system lastSourcePort="35007" persisted_by="Server B 192.168.20.231" system_id="1"
+           system_name="system1"
+           version="15009">
+      <profiles>
+         <profile id="PP1423499440531" name="UDP-ASI Stream" oldname="UDP-ASI Stream" type="mpeg">
+            <EitSch AlarmThreshold="120" HoursAct="192" HoursOth="192"/>
+            <EitExtAct>
+               <Interval Chars="4000" HoursFrom="0" HoursTo="36"/>
+               <Interval Chars="4000" HoursFrom="36" HoursTo="192"/>
+            </EitExtAct>
+            <EitExtOth>
+               <Interval Chars="4000" HoursFrom="0" HoursTo="36"/>
+               <Interval Chars="200" HoursFrom="36" HoursTo="192"/>
+            </EitExtOth>
+            <bw eit="5000000" nit="500000" sdt="500000" tot="200000"/>
+            <eitpf a="1200" ae="true" am="1200" o="10000" oe="false" om="10000"/>
+            <eitsch14 a="20000" ae="true" am="20000" o="20000" oe="false" om="20000"/>
+            <eitsch58 a="20000" ae="true" am="20000" o="20000" oe="false" om="60000"/>
+            <eitsch8 a="30000" ae="true" am="30000" o="10000" oe="false" om="90000"/>
+            <nit a="2000" ae="true" am="2000" o="5000" oe="false" om="20000"/>
+            <sdt a="1000" ae="true" am="1000" o="5000" oe="true" om="20000"/>
+            <bat a="5000" ae="true" am="5000"/>
+            <tot a="5000" ae="false" am="5000"/>
+            <tdt a="5000" ae="false" am="5000"/>
+         </profile>
+         <profile id="PP1423499822250" name="MX8400" oldname="MX8400" type="mx8400">
+            <EitSch AlarmThreshold="120" HoursAct="192" HoursOth="192"/>
+            <EitExtAct/>
+            <EitExtOth/>
+            <bw eit="500000" nit="50000" sdt="50000" tot="20000"/>
+            <eitpf a="1500" ae="false" am="4000" o="10000" oe="false" om="20000"/>
+            <eitsch14 a="10000" ae="false" am="20000" o="10000" oe="false" om="30000"/>
+            <eitsch58 a="10000" ae="false" am="40000" o="10000" oe="false" om="60000"/>
+            <eitsch8 a="10000" ae="false" am="60000" o="10000" oe="false" om="90000"/>
+            <nit a="2000" ae="false" am="8000" o="5000" oe="true" om="20000"/>
+            <sdt a="1000" ae="true" am="1000" o="5000" oe="true" om="20000"/>
+            <bat a="5000" ae="true" am="5000"/>
+            <tot a="1000" ae="false" am="8000"/>
+            <tdt a="1000" ae="false" am="8000"/>
+         </profile>
+      </profiles>
+      <tots>
+         <site id="default" subids="">
+            <local_time_offset/>
+         </site>
+      </tots>
+      <subsystem master="false" subsystem_id="2" subsystem_name="VTC DVB-S" version="2">
+         <service_description csCluster="" master_changes="," nitversion="22" nitversiontype="0" onid="12901"
+                              sdtversion="7"
+                              service_description_id="15"
+                              synchid="-1"
+                              ts_id="8"
+                              tstype="TS">
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="LCN,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="1536"
+                     seq="613"
+                     service_id="861"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="PHU THO RADIO" order="1" provider="VTC" type="2"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="LCN,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="1536"
+                     seq="603"
+                     service_id="838"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="THAI NGUYEN" order="1" provider="VTC" type="1"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="LCN,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="1536"
+                     seq="610"
+                     service_id="855"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="VOV1" order="1" provider="VTC" type="2"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="LCN,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="1536"
+                     seq="620"
+                     service_id="869"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="DAKLAK RADIO" order="1" provider="VTC" type="2"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="LCN,SNA,STY,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="192"
+                     seq="403"
+                     service_id="811"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="VTV3" order="1" provider="" type="1"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="LCN,SNA,STY,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="1536"
+                     seq="537"
+                     service_id="826"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="PHU THO" order="1" provider="VTC" type="1"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="LCN,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="1536"
+                     seq="638"
+                     service_id="863"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="QRN2 RADIO" order="1" provider="VTC" type="2"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="LCN,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="1536"
+                     seq="612"
+                     service_id="857"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="VOV3" order="1" provider="VTC" type="2"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="LCN,SNA,STY,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="192"
+                     seq="393"
+                     service_id="801"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="false"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="HA NOI 1" order="1" provider="" type="1"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="LCN,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="1536"
+                     seq="602"
+                     service_id="837"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="NGHE AN" order="1" provider="VTC" type="1"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes=",LCN,SNA,STY,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="192"
+                     seq="402"
+                     service_id="810"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="VTV2" order="1" provider="" type="1"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes=",LCN,SNA,STY,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="1536"
+                     seq="461"
+                     service_id="820"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="VINH LONG 1" order="1" provider="VTC" type="1"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="LCN,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="1536"
+                     seq="621"
+                     service_id="870"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="LAM DONG RADIO" order="1" provider="VTC" type="2"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="LCN,SNA,STY,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="192"
+                     seq="398"
+                     service_id="806"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="QUANG NINH 3" order="1" provider="" type="1"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="LCN,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="1536"
+                     seq="593"
+                     service_id="828"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="HA NOI 2" order="1" provider="VTC" type="1"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="LCN,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="1536"
+                     seq="604"
+                     service_id="839"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="LAI CHAU" order="1" provider="VTC" type="1"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="LCN,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="1536"
+                     seq="625"
+                     service_id="874"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="NGHE AN RADIO" order="1" provider="VTC" type="2"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="LCN,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="1536"
+                     seq="611"
+                     service_id="856"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="VOV2" order="1" provider="VTC" type="2"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="LCN,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="1536"
+                     seq="618"
+                     service_id="867"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="LAO CAI DAN TOC RADIO" order="1" provider="VTC" type="2"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="LCN,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="1536"
+                     seq="639"
+                     service_id="877"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="CAO BANG RADIO" order="1" provider="VTC" type="2"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="LCN,SNA,STY,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="1536"
+                     seq="534"
+                     service_id="823"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="HAI PHONG 3" order="1" provider="VTC" type="1"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="LCN,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="1536"
+                     seq="597"
+                     service_id="832"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="DAKLAK" order="1" provider="VTC" type="1"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="SID,LCN,SNA,STY,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="1536"
+                     seq="460"
+                     service_id="818"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="SCTV9" order="1" provider="VTC" type="1"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="LCN,SNA,STY,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="192"
+                     seq="404"
+                     service_id="812"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="VTV5" order="1" provider="VTC" type="1"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="LCN,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="1536"
+                     seq="619"
+                     service_id="868"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="TUYEN QUANG RADIO" order="1" provider="VTC" type="2"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="LCN,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="1536"
+                     seq="605"
+                     service_id="840"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="AN GIANG 1" order="1" provider="VTC" type="1"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="LCN,SNA,STY,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="1536"
+                     seq="535"
+                     service_id="824"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="THANH HOA" order="1" provider="VTC" type="1"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes=",LCN,SNA,STY,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="1536"
+                     seq="463"
+                     service_id="822"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="HAI PHONG 1" order="1" provider="VTC" type="1"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="LCN,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="1536"
+                     seq="606"
+                     service_id="841"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="AN GIANG 3" order="1" provider="VTC" type="1"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="LCN,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="1536"
+                     seq="599"
+                     service_id="834"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="LAM DONG 2" order="1" provider="VTC" type="1"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="LCN,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="1536"
+                     seq="624"
+                     service_id="873"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="THANH HOA" order="1" provider="V" type="2"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes=",LCN,SNA,STY,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="192"
+                     seq="396"
+                     service_id="804"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="HTV2" order="1" provider="" type="1"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes=",LCN,SNA,STY,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="1536"
+                     seq="462"
+                     service_id="821"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="VINH LONG 2" order="1" provider="VTC" type="1"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="LCN,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="1536"
+                     seq="627"
+                     service_id="875"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="QUANG NGAI 2 RADIO" order="1" provider="VTC" type="2"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="LCN,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="1536"
+                     seq="596"
+                     service_id="831"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="CAO BANG" order="1" provider="VTC" type="1"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="LCN,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="1536"
+                     seq="607"
+                     service_id="842"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="VTV10 HD" order="1" provider="VTC" type="1"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="LCN,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="1536"
+                     seq="626"
+                     service_id="876"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="LAI CHAU RADIO" order="1" provider="VTC" type="2"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="LCN,SNA,STY,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="1536"
+                     seq="617"
+                     service_id="866"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="LAO CAI RADIO" order="1" provider="VTC" type="2"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes=",LCN,SNA,STY,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="192"
+                     seq="399"
+                     service_id="807"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="DONG NAI 1" order="1" provider="" type="1"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="SID,LCN,SNA,STY,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="1536"
+                     seq="457"
+                     service_id="816"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="ON FOOTBALL" order="1" provider="VTC" type="1"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes=",LCN,SNA,STY,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="192"
+                     seq="397"
+                     service_id="805"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="QUANG NINH 1" order="1" provider="" type="1"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="SID,LCN,SNA,STY,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="192"
+                     seq="406"
+                     service_id="813"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="VTV9" order="1" provider="" type="1"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="LCN,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="1536"
+                     seq="598"
+                     service_id="833"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="LAM DONG" order="1" provider="VTC" type="1"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="LCN,SNA,STY,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="1536"
+                     seq="616"
+                     service_id="865"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="THAI NGUYEN RADIO" order="1" provider="VTC" type="2"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="SID,LCN,SNA,STY,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="192"
+                     seq="407"
+                     service_id="814"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="ON BIBI" order="1" provider="" type="1"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes=",SID,LCN,SNA,STY,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="192"
+                     seq="394"
+                     service_id="802"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="ANTV" order="1" provider="" type="1"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="LCN,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="1536"
+                     seq="615"
+                     service_id="864"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="BAC NINH RADIO" order="1" provider="VTC" type="2"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="LCN,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="1536"
+                     seq="594"
+                     service_id="829"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="SON LA" order="1" provider="VTC" type="1"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="LCN,SNA,STY,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="192"
+                     seq="401"
+                     service_id="809"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="VTV1" order="1" provider="" type="1"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="LCN,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="1536"
+                     seq="622"
+                     service_id="871"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="LAM DONG FM" order="1" provider="VTC" type="2"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="LCN,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="1536"
+                     seq="614"
+                     service_id="862"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="QUANG NINH RADIO" order="1" provider="VTC" type="2"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="LCN,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="1536"
+                     seq="601"
+                     service_id="836"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="BAC NINH" order="1" provider="VTC" type="1"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="LCN,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="1536"
+                     seq="608"
+                     service_id="843"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="VTV6 HD" order="1" provider="VTC" type="1"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="SID,LCN,SNA,STY,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="192"
+                     seq="408"
+                     service_id="815"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="ON SPORTS NEWS" order="1" provider="" type="1"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes=",LCN,SNA,STY,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="192"
+                     seq="395"
+                     service_id="803"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="QPVN" order="1" provider="" type="1"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="LCN,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="1536"
+                     seq="600"
+                     service_id="835"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="NINH BINH" order="1" provider="VTC" type="1"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="LCN,SNA,STY,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="1536"
+                     seq="609"
+                     service_id="844"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="VIETNAM TODAY" order="1" provider="VTC" type="1"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="LCN,SNA,STY,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="1536"
+                     seq="459"
+                     service_id="819"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="SCTV14" order="1" provider="VTC" type="1"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="LCN,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="1536"
+                     seq="595"
+                     service_id="830"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="TUYEN QUANG" order="1" provider="VTC" type="1"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="LCN,SNA,STY,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="192"
+                     seq="400"
+                     service_id="808"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="DONG NAI 2" order="1" provider="" type="1"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="LCN,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="1536"
+                     seq="623"
+                     service_id="872"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="SON LA RADIO" order="1" provider="VTC" type="2"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="LCN,SNA,STY,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="1536"
+                     seq="536"
+                     service_id="825"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="QUANG TRI" order="1" provider="VTC" type="1"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="LCN,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="1536"
+                     seq="592"
+                     service_id="827"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="LAO CAI" order="1" provider="VTC" type="1"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="SID,LCN,SNA,STY,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="1536"
+                     seq="458"
+                     service_id="817"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="ON SPORTS" order="1" provider="VTC" type="1"/>
+            </service>
+         </service_description>
+         <service_description csCluster="" master_changes="" nitversion="22" nitversiontype="0" onid="1"
+                              sdtversion="0"
+                              service_description_id="13"
+                              synchid="-1"
+                              ts_id="3"
+                              tstype="TS">
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="LCN,SNA,STY,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="192"
+                     seq="358"
+                     service_id="4"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="CA MAU" order="1" provider="HTV" type="1"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="SID,,LCN,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="192"
+                     seq="364"
+                     service_id="9"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="DAK LAK" order="1" provider="HTV" type="1"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="SID,,LCN,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="192"
+                     seq="370"
+                     service_id="13"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="LANG SON" order="1" provider="HTV" type="1"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes=",LCN,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="192"
+                     seq="356"
+                     service_id="2"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="HTV9" order="1" provider="HTV" type="1"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="SID,,LCN,SNA,STY,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="192"
+                     seq="452"
+                     service_id="28"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="HTV4" order="1" provider="HTV" type="1"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="SID,LCN,SNA,STY,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="192"
+                     seq="373"
+                     service_id="14"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="TAY NINH" order="1" provider="HTV" type="1"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="SID,,LCN,SNA,STY,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="192"
+                     seq="375"
+                     service_id="16"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="DA NANG 2" order="1" provider="HTV" type="1"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="SID,,LCN,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="192"
+                     seq="368"
+                     service_id="12"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="KHANH HOA" order="1" provider="HTV" type="1"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="SID,LCN,SNA,STY,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="1536"
+                     seq="498"
+                     service_id="24"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="HTV THE THAO" order="1" provider="HTV" type="1"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="SID,,LCN,SNA,STY,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="192"
+                     seq="451"
+                     service_id="27"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="HTV1" order="1" provider="HTV" type="1"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes=",LCN,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="192"
+                     seq="355"
+                     service_id="1"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="HTV7" order="1" provider="HTV" type="1"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="SID,LCN,SNA,STY,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="192"
+                     seq="387"
+                     service_id="25"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="HA TINH" order="1" provider="HTV" type="1"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="SID,LCN,SNA,STY,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="192"
+                     seq="374"
+                     service_id="15"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="DA NANG 1" order="1" provider="HTV" type="1"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="SID,,LCN,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="192"
+                     seq="366"
+                     service_id="10"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="DAK NONG" order="1" provider="HTV" type="1"/>
+            </service>
+         </service_description>
+         <service_description csCluster="" master_changes="," nitversion="22" nitversiontype="0" onid="1"
+                              sdtversion="20"
+                              service_description_id="17"
+                              synchid="-1"
+                              ts_id="1000"
+                              tstype="TS">
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes=","
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="1536"
+                     seq="631"
+                     service_id="1003"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="VTV4" order="1" provider="VTV" type="1"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes=","
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="1536"
+                     seq="630"
+                     service_id="1002"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="VTV3" order="1" provider="VTV" type="1"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes="LCN,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="1536"
+                     seq="632"
+                     service_id="1004"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="VTV5" order="1" provider="VTV" type="1"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes=",LCN,"
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="1536"
+                     seq="633"
+                     service_id="1005"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="VTV CAN THO" order="1" provider="VTV" type="1"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes=","
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="1536"
+                     seq="634"
+                     service_id="1006"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="VTV7" order="1" provider="VTV" type="1"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes=","
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="1536"
+                     seq="635"
+                     service_id="1007"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="VTV8" order="1" provider="VTV" type="1"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes=","
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="1536"
+                     seq="629"
+                     service_id="1001"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="VTV2" order="1" provider="VTC" type="1"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes=","
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="1536"
+                     seq="636"
+                     service_id="1008"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="VTV9" order="1" provider="VTV" type="1"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes=","
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="1536"
+                     seq="628"
+                     service_id="1000"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="VTV1" order="1" provider="VTV" type="1"/>
+            </service>
+            <service ca_mode="0" ca_system_id="0" cs_profile_id="" eit_pf_flag="1"
+                     master_changes=","
+                     masterseq="-1"
+                     rolling_schedule="0"
+                     running_status="4"
+                     schedule_flag="1"
+                     scheduledepth="1536"
+                     seq="637"
+                     service_id="1009"
+                     servicetype="EIT">
+               <service_config days_to_generate_eit_alarm="0" eit_alarm_follow_profile="true"/>
+               <DefaultEitDescriptors/>
+               <service_descriptor name="VIETNAM TODAY" order="1" provider="VTV" type="1"/>
+            </service>
+            <psi>
+               <cat catpid="1" enabled="false" version="0"/>
+               <pat enabled="false" patpid="0" version="25"/>
+               <pmt enabled="false"/>
+            </psi>
+         </service_description>
+         <device_setup service_description_id="15">
+            <device device_id="30" device_name="30" device_profile="PP1423499440531"
+                    device_type="UDP_Stream"
+                    ipaddress="127.0.0.1"
+                    port="1000"
+                    state="2">
+               <key name="src_ip4srvb" value="streaming.1"/>
+               <key name="srvboutputdifferent" value="false"/>
+               <key name="src_port4bsrvB" value="-1"/>
+               <key name="src_port4" value="10304"/>
+               <key name="src_port3" value="7000"/>
+               <key name="asi_offset" value="0"/>
+               <key name="src_port2" value="1235"/>
+               <key name="dest_portmirrorsrvb" value="0"/>
+               <key name="src_ip" value="127.0.0.1"/>
+               <key name="src_port4srvB" value="-1"/>
+               <key name="dest_ipmirrorsrvb" value="127.0.0.1"/>
+               <key name="src_port4b" value="10303"/>
+               <key name="offset" value="0"/>
+               <key name="asi_pmt_offset" value="0"/>
+               <key name="pmt_offset" value="0"/>
+               <key name="asi_port" value="1"/>
+               <key name="dest_port" value="5900"/>
+               <key name="dest_ipsrvb" value="127.0.0.1"/>
+               <key name="dest_portsrvb" value="0"/>
+               <key name="srvboutputactive" value="false"/>
+               <key name="src_ip4b" value="streaming.1"/>
+               <key name="dest_ip" value="239.1.1.1"/>
+               <key name="dest_portb" value="0"/>
+               <key name="src_port" value="1251"/>
+               <key name="src_ip4bsrvb" value="streaming.1"/>
+               <key name="dest_ipb" value="127.0.0.1"/>
+               <key name="src_ip4" value="streaming.2"/>
+               <key name="src_ip3" value="127.0.0.1"/>
+               <key name="src_ip2" value="127.0.0.1"/>
+            </device>
+            <device device_id="29" device_name="29" device_profile="PP1423499440531"
+                    device_type="UDP_Stream"
+                    ipaddress="127.0.0.1"
+                    port="1000"
+                    state="1">
+               <key name="src_ip4srvb" value="streaming.2"/>
+               <key name="srvboutputdifferent" value="true"/>
+               <key name="src_port4bsrvB" value="10423"/>
+               <key name="src_port4" value="10422"/>
+               <key name="src_port3" value="7000"/>
+               <key name="asi_offset" value="0"/>
+               <key name="src_port2" value="1235"/>
+               <key name="dest_portmirrorsrvb" value="0"/>
+               <key name="src_ip" value="127.0.0.1"/>
+               <key name="src_port4srvB" value="10421"/>
+               <key name="dest_ipmirrorsrvb" value="127.0.0.1"/>
+               <key name="src_port4b" value="10424"/>
+               <key name="offset" value="0"/>
+               <key name="asi_pmt_offset" value="0"/>
+               <key name="pmt_offset" value="0"/>
+               <key name="asi_port" value="1"/>
+               <key name="dest_port" value="6000"/>
+               <key name="dest_ipsrvb" value="236.30.231.1"/>
+               <key name="dest_portsrvb" value="6000"/>
+               <key name="srvboutputactive" value="false"/>
+               <key name="src_ip4b" value="streaming.1"/>
+               <key name="dest_ip" value="236.30.230.1"/>
+               <key name="dest_portb" value="0"/>
+               <key name="src_port" value="1251"/>
+               <key name="src_ip4bsrvb" value="streaming.1"/>
+               <key name="dest_ipb" value="127.0.0.1"/>
+               <key name="src_ip4" value="streaming.2"/>
+               <key name="src_ip3" value="127.0.0.1"/>
+               <key name="src_ip2" value="127.0.0.1"/>
+            </device>
+         </device_setup>
+         <device_setup service_description_id="13">
+            <device device_id="26" device_name="26" device_profile="-1" device_type="NOT_USED"
+                    ipaddress="127.0.0.1"
+                    port="1000"
+                    state="2">
+               <key name="src_ip4srvb" value="streaming.1"/>
+               <key name="srvboutputdifferent" value="false"/>
+               <key name="src_port4bsrvB" value="-1"/>
+               <key name="src_port4" value="-1"/>
+               <key name="src_port3" value="7000"/>
+               <key name="asi_offset" value="0"/>
+               <key name="src_port2" value="1235"/>
+               <key name="dest_portmirrorsrvb" value="0"/>
+               <key name="src_ip" value="127.0.0.1"/>
+               <key name="src_port4srvB" value="-1"/>
+               <key name="dest_ipmirrorsrvb" value="127.0.0.1"/>
+               <key name="src_port4b" value="-1"/>
+               <key name="offset" value="0"/>
+               <key name="asi_pmt_offset" value="0"/>
+               <key name="pmt_offset" value="0"/>
+               <key name="asi_port" value="0"/>
+               <key name="dest_port" value="5519"/>
+               <key name="dest_ipsrvb" value="127.0.0.1"/>
+               <key name="dest_portsrvb" value="0"/>
+               <key name="srvboutputactive" value="false"/>
+               <key name="src_ip4b" value="streaming.1"/>
+               <key name="dest_ip" value="10.10.30.230"/>
+               <key name="dest_portb" value="0"/>
+               <key name="src_port" value="1251"/>
+               <key name="src_ip4bsrvb" value="streaming.1"/>
+               <key name="dest_ipb" value="127.0.0.1"/>
+               <key name="src_ip4" value="streaming.2"/>
+               <key name="src_ip3" value="127.0.0.1"/>
+               <key name="src_ip2" value="127.0.0.1"/>
+            </device>
+            <device device_id="25" device_name="25" device_profile="PP1423499440531"
+                    device_type="UDP_Stream"
+                    ipaddress="127.0.0.1"
+                    port="1000"
+                    state="0">
+               <key name="src_ip4srvb" value="streaming.1"/>
+               <key name="srvboutputdifferent" value="false"/>
+               <key name="src_port4bsrvB" value="-1"/>
+               <key name="src_port4" value="10350"/>
+               <key name="src_port3" value="7000"/>
+               <key name="asi_offset" value="0"/>
+               <key name="src_port2" value="1235"/>
+               <key name="dest_portmirrorsrvb" value="0"/>
+               <key name="src_ip" value="192.169.100.81"/>
+               <key name="src_port4srvB" value="-1"/>
+               <key name="dest_ipmirrorsrvb" value="127.0.0.1"/>
+               <key name="src_port4b" value="10349"/>
+               <key name="offset" value="0"/>
+               <key name="asi_pmt_offset" value="0"/>
+               <key name="pmt_offset" value="0"/>
+               <key name="asi_port" value="0"/>
+               <key name="dest_port" value="6000"/>
+               <key name="dest_ipsrvb" value="127.0.0.1"/>
+               <key name="dest_portsrvb" value="0"/>
+               <key name="srvboutputactive" value="false"/>
+               <key name="src_ip4b" value="streaming.3"/>
+               <key name="dest_ip" value="236.30.230.1"/>
+               <key name="dest_portb" value="6000"/>
+               <key name="src_port" value="1251"/>
+               <key name="src_ip4bsrvb" value="streaming.1"/>
+               <key name="dest_ipb" value="236.30.230.1"/>
+               <key name="src_ip4" value="streaming.2"/>
+               <key name="src_ip3" value="127.0.0.1"/>
+               <key name="src_ip2" value="127.0.0.1"/>
+            </device>
+         </device_setup>
+         <device_setup service_description_id="17">
+            <device device_id="33" device_name="" device_profile="" device_type="NOT_USED"
+                    ipaddress="127.0.0.1"
+                    port="1000"
+                    state="2">
+               <key name="src_ip4srvb" value="streaming.1"/>
+               <key name="srvboutputdifferent" value="false"/>
+               <key name="src_port4bsrvB" value="10404"/>
+               <key name="src_port4" value="10401"/>
+               <key name="src_port3" value="7000"/>
+               <key name="asi_offset" value="0"/>
+               <key name="src_port2" value="1235"/>
+               <key name="dest_portmirrorsrvb" value="0"/>
+               <key name="src_ip" value="127.0.0.1"/>
+               <key name="src_port4srvB" value="10403"/>
+               <key name="dest_ipmirrorsrvb" value="127.0.0.1"/>
+               <key name="src_port4b" value="10402"/>
+               <key name="offset" value="0"/>
+               <key name="asi_pmt_offset" value="0"/>
+               <key name="pmt_offset" value="0"/>
+               <key name="asi_port" value="-1"/>
+               <key name="dest_port" value="8000"/>
+               <key name="dest_ipsrvb" value="127.0.0.1"/>
+               <key name="dest_portsrvb" value="0"/>
+               <key name="srvboutputactive" value="false"/>
+               <key name="src_ip4b" value="streaming.1"/>
+               <key name="dest_ip" value="127.0.0.1"/>
+               <key name="dest_portb" value="0"/>
+               <key name="src_port" value="1251"/>
+               <key name="src_ip4bsrvb" value="streaming.1"/>
+               <key name="dest_ipb" value="127.0.0.1"/>
+               <key name="src_ip4" value="streaming.1"/>
+               <key name="src_ip3" value="127.0.0.1"/>
+               <key name="src_ip2" value="127.0.0.1"/>
+            </device>
+            <device device_id="34" device_name="" device_profile="" device_type="NOT_USED"
+                    ipaddress="127.0.0.1"
+                    port="1000"
+                    state="2">
+               <key name="src_ip4srvb" value="streaming.1"/>
+               <key name="srvboutputdifferent" value="false"/>
+               <key name="src_port4bsrvB" value="10408"/>
+               <key name="src_port4" value="10405"/>
+               <key name="src_port3" value="7000"/>
+               <key name="asi_offset" value="0"/>
+               <key name="src_port2" value="1235"/>
+               <key name="dest_portmirrorsrvb" value="0"/>
+               <key name="src_ip" value="127.0.0.1"/>
+               <key name="src_port4srvB" value="10407"/>
+               <key name="dest_ipmirrorsrvb" value="127.0.0.1"/>
+               <key name="src_port4b" value="10406"/>
+               <key name="offset" value="0"/>
+               <key name="asi_pmt_offset" value="0"/>
+               <key name="pmt_offset" value="0"/>
+               <key name="asi_port" value="-1"/>
+               <key name="dest_port" value="8000"/>
+               <key name="dest_ipsrvb" value="127.0.0.1"/>
+               <key name="dest_portsrvb" value="0"/>
+               <key name="srvboutputactive" value="false"/>
+               <key name="src_ip4b" value="streaming.1"/>
+               <key name="dest_ip" value="127.0.0.1"/>
+               <key name="dest_portb" value="0"/>
+               <key name="src_port" value="1251"/>
+               <key name="src_ip4bsrvb" value="streaming.1"/>
+               <key name="dest_ipb" value="127.0.0.1"/>
+               <key name="src_ip4" value="streaming.1"/>
+               <key name="src_ip3" value="127.0.0.1"/>
+               <key name="src_ip2" value="127.0.0.1"/>
+            </device>
+         </device_setup>
+         <network actual="1" net_seq="4" network_id="12901" state="1" version="4" versionCtrl="1">
+            <descriptor key="20785867" name="linkage vicas HDV2" order="2" tag="74">
+               <linkage_descriptor linkage_type="146" name="linkage vicas HDV2" onid="12901"
+                                   private_data="ff04ff04ff00ff01ff30323532ff02"
+                                   sid="851"
+                                   tsid="8"/>
+            </descriptor>
+            <descriptor key="1546582132" name="Irdeto Linkage 0 (0) " order="3" tag="74">
+               <linkage_descriptor linkage_type="130" name="" onid="0" private_data="" sid="0" tsid="0"/>
+            </descriptor>
+            <network_name name="VTC"/>
+            <transport_loop numberofloops="3" orderInNit="1" service_description_id="13">
+               <descriptors>
+                  <descriptor key="137723" name="Service List Descriptor" order="1" tag="65"/>
+                  <descriptor FEC_inner="4" frequency="11088000000" modulation_system="1" modulation_type="2"
+                              name="satellite_delivery_system"
+                              orbital_position="132.0"
+                              order="0"
+                              polarization="1"
+                              roll_off="1"
+                              symbol_rate="18750000"
+                              tag="67"
+                              west_east_flag="1"/>
+               </descriptors>
+               <lcnlist ebook="false" freetv="false" freeview="false" irdeto="false" nordig1="false"
+                        nordig2="false"
+                        sagem="false"/>
+            </transport_loop>
+            <transport_loop numberofloops="3" orderInNit="0" service_description_id="15">
+               <descriptors>
+                  <descriptor key="542386" name="Service List Descriptor" order="1" tag="65"/>
+                  <descriptor FEC_inner="3" frequency="10968000000" modulation_system="1" modulation_type="2"
+                              name="satellite_delivery_system"
+                              orbital_position="132.0"
+                              order="0"
+                              polarization="0"
+                              roll_off="1"
+                              symbol_rate="28800000"
+                              tag="67"
+                              west_east_flag="1"/>
+                  <descriptor key="1546598265" name="Private Data Specifier (Irdeto)" order="3" tag="95">
+                     <private_data_specifier private_data_specifier="3547765"/>
+                  </descriptor>
+               </descriptors>
+               <lcnlist ebook="false" freetv="false" freeview="false" irdeto="false" nordig1="false"
+                        nordig2="false"
+                        sagem="false"/>
+            </transport_loop>
+            <transport_loop numberofloops="3" orderInNit="0" service_description_id="17">
+               <descriptors>
+                  <descriptor key="2778969545" name="Service List Descriptor" order="1" tag="65"/>
+                  <descriptor FEC_inner="3" frequency="11589000000" modulation_system="1" modulation_type="2"
+                              name="satellite_delivery_system"
+                              orbital_position="132.0"
+                              order="0"
+                              polarization="0"
+                              roll_off="1"
+                              symbol_rate="15000000"
+                              tag="67"
+                              west_east_flag="1"/>
+               </descriptors>
+               <lcnlist ebook="false" freetv="false" freeview="false" irdeto="false" nordig1="false"
+                        nordig2="false"
+                        sagem="false"/>
+            </transport_loop>
+         </network>
+         <bouquet bouquet_id="25872" bouquet_seq="1" state="1" version="26">
+            <descriptor key="1439206235" name="Barker" order="2" tag="74">
+               <linkage_descriptor linkage_type="5" name="Barker" onid="12901" private_data="" sid="1639"
+                                   tsid="16"/>
+            </descriptor>
+            <bouquet_name name="VTC_FULLHD"/>
+            <transport_loop service_description_id="13">
+               <descriptors>
+                  <descriptor key="3291067052" name="Service List Descriptor" order="1" tag="65">
+                     <service_list_element service_id="14" service_seq="373" service_type="1"/>
+                     <service_list_element service_id="15" service_seq="374" service_type="1"/>
+                     <service_list_element service_id="12" service_seq="368" service_type="1"/>
+                     <service_list_element service_id="4" service_seq="358" service_type="1"/>
+                     <service_list_element service_id="25" service_seq="387" service_type="1"/>
+                     <service_list_element service_id="1" service_seq="355" service_type="1"/>
+                     <service_list_element service_id="24" service_seq="498" service_type="1"/>
+                     <service_list_element service_id="10" service_seq="366" service_type="1"/>
+                     <service_list_element service_id="27" service_seq="451" service_type="1"/>
+                     <service_list_element service_id="28" service_seq="452" service_type="1"/>
+                     <service_list_element service_id="9" service_seq="364" service_type="1"/>
+                     <service_list_element service_id="13" service_seq="370" service_type="1"/>
+                     <service_list_element service_id="16" service_seq="375" service_type="1"/>
+                     <service_list_element service_id="2" service_seq="356" service_type="1"/>
+                  </descriptor>
+               </descriptors>
+               <lcnlist>
+                  <service sid="366">
+                     <lcn_n1 n="52" v="1"/>
+                  </service>
+                  <service sid="364">
+                     <lcn_n1 n="51" v="1"/>
+                  </service>
+                  <service sid="387">
+                     <lcn_n1 n="59" v="1"/>
+                  </service>
+                  <service sid="452">
+                     <lcn_n1 n="61" v="1"/>
+                  </service>
+                  <service sid="498">
+                     <lcn_n1 n="58" v="1"/>
+                  </service>
+                  <service sid="451">
+                     <lcn_n1 n="60" v="1"/>
+                  </service>
+                  <service sid="358">
+                     <lcn_n1 n="50" v="1"/>
+                  </service>
+                  <service sid="356">
+                     <lcn_n1 n="49" v="1"/>
+                  </service>
+                  <service sid="355">
+                     <lcn_n1 n="48" v="1"/>
+                  </service>
+                  <service sid="375">
+                     <lcn_n1 n="57" v="1"/>
+                  </service>
+                  <service sid="374">
+                     <lcn_n1 n="56" v="1"/>
+                  </service>
+                  <service sid="373">
+                     <lcn_n1 n="55" v="1"/>
+                  </service>
+                  <service sid="370">
+                     <lcn_n1 n="54" v="1"/>
+                  </service>
+                  <service sid="368">
+                     <lcn_n1 n="53" v="1"/>
+                  </service>
+               </lcnlist>
+            </transport_loop>
+            <transport_loop service_description_id="15">
+               <descriptors>
+                  <descriptor key="3291067054" name="Service List Descriptor" order="1" tag="65">
+                     <service_list_element service_id="815" service_seq="408" service_type="1"/>
+                     <service_list_element service_id="856" service_seq="611" service_type="2"/>
+                     <service_list_element service_id="826" service_seq="537" service_type="1"/>
+                     <service_list_element service_id="829" service_seq="594" service_type="1"/>
+                     <service_list_element service_id="828" service_seq="593" service_type="1"/>
+                     <service_list_element service_id="863" service_seq="638" service_type="2"/>
+                     <service_list_element service_id="813" service_seq="406" service_type="1"/>
+                     <service_list_element service_id="819" service_seq="459" service_type="1"/>
+                     <service_list_element service_id="823" service_seq="534" service_type="1"/>
+                     <service_list_element service_id="875" service_seq="627" service_type="2"/>
+                     <service_list_element service_id="820" service_seq="461" service_type="1"/>
+                     <service_list_element service_id="817" service_seq="458" service_type="1"/>
+                     <service_list_element service_id="865" service_seq="616" service_type="2"/>
+                     <service_list_element service_id="807" service_seq="399" service_type="1"/>
+                     <service_list_element service_id="868" service_seq="619" service_type="2"/>
+                     <service_list_element service_id="867" service_seq="618" service_type="2"/>
+                     <service_list_element service_id="814" service_seq="407" service_type="1"/>
+                     <service_list_element service_id="862" service_seq="614" service_type="2"/>
+                     <service_list_element service_id="877" service_seq="639" service_type="2"/>
+                     <service_list_element service_id="869" service_seq="620" service_type="2"/>
+                     <service_list_element service_id="843" service_seq="608" service_type="1"/>
+                     <service_list_element service_id="821" service_seq="462" service_type="1"/>
+                     <service_list_element service_id="832" service_seq="597" service_type="1"/>
+                     <service_list_element service_id="866" service_seq="617" service_type="2"/>
+                     <service_list_element service_id="876" service_seq="626" service_type="2"/>
+                     <service_list_element service_id="871" service_seq="622" service_type="2"/>
+                     <service_list_element service_id="834" service_seq="599" service_type="1"/>
+                     <service_list_element service_id="855" service_seq="610" service_type="2"/>
+                     <service_list_element service_id="872" service_seq="623" service_type="2"/>
+                     <service_list_element service_id="816" service_seq="457" service_type="1"/>
+                     <service_list_element service_id="833" service_seq="598" service_type="1"/>
+                     <service_list_element service_id="806" service_seq="398" service_type="1"/>
+                     <service_list_element service_id="861" service_seq="613" service_type="2"/>
+                     <service_list_element service_id="827" service_seq="592" service_type="1"/>
+                     <service_list_element service_id="811" service_seq="403" service_type="1"/>
+                     <service_list_element service_id="873" service_seq="624" service_type="2"/>
+                     <service_list_element service_id="864" service_seq="615" service_type="2"/>
+                     <service_list_element service_id="838" service_seq="603" service_type="1"/>
+                     <service_list_element service_id="844" service_seq="609" service_type="1"/>
+                     <service_list_element service_id="839" service_seq="604" service_type="1"/>
+                     <service_list_element service_id="836" service_seq="601" service_type="1"/>
+                     <service_list_element service_id="874" service_seq="625" service_type="2"/>
+                     <service_list_element service_id="805" service_seq="397" service_type="1"/>
+                     <service_list_element service_id="824" service_seq="535" service_type="1"/>
+                     <service_list_element service_id="801" service_seq="393" service_type="1"/>
+                     <service_list_element service_id="870" service_seq="621" service_type="2"/>
+                     <service_list_element service_id="825" service_seq="536" service_type="1"/>
+                     <service_list_element service_id="810" service_seq="402" service_type="1"/>
+                     <service_list_element service_id="841" service_seq="606" service_type="1"/>
+                     <service_list_element service_id="804" service_seq="396" service_type="1"/>
+                     <service_list_element service_id="835" service_seq="600" service_type="1"/>
+                     <service_list_element service_id="830" service_seq="595" service_type="1"/>
+                     <service_list_element service_id="818" service_seq="460" service_type="1"/>
+                     <service_list_element service_id="857" service_seq="612" service_type="2"/>
+                     <service_list_element service_id="802" service_seq="394" service_type="1"/>
+                     <service_list_element service_id="808" service_seq="400" service_type="1"/>
+                     <service_list_element service_id="840" service_seq="605" service_type="1"/>
+                     <service_list_element service_id="842" service_seq="607" service_type="1"/>
+                     <service_list_element service_id="831" service_seq="596" service_type="1"/>
+                     <service_list_element service_id="837" service_seq="602" service_type="1"/>
+                     <service_list_element service_id="803" service_seq="395" service_type="1"/>
+                     <service_list_element service_id="809" service_seq="401" service_type="1"/>
+                     <service_list_element service_id="822" service_seq="463" service_type="1"/>
+                     <service_list_element service_id="812" service_seq="404" service_type="1"/>
+                  </descriptor>
+               </descriptors>
+               <lcnlist>
+                  <service sid="463">
+                     <lcn_n1 n="22" v="1"/>
+                  </service>
+                  <service sid="462">
+                     <lcn_n1 n="21" v="1"/>
+                  </service>
+                  <service sid="461">
+                     <lcn_n1 n="20" v="1"/>
+                  </service>
+                  <service sid="460">
+                     <lcn_n1 n="18" v="1"/>
+                  </service>
+                  <service sid="459">
+                     <lcn_n1 n="19" v="1"/>
+                  </service>
+                  <service sid="458">
+                     <lcn_n1 n="17" v="1"/>
+                  </service>
+                  <service sid="457">
+                     <lcn_n1 n="16" v="1"/>
+                  </service>
+                  <service sid="639"/>
+                  <service sid="638">
+                     <lcn_n1 n="402" v="1"/>
+                  </service>
+                  <service sid="537">
+                     <lcn_n1 n="26" v="1"/>
+                  </service>
+                  <service sid="536">
+                     <lcn_n1 n="25" v="1"/>
+                  </service>
+                  <service sid="535">
+                     <lcn_n1 n="24" v="1"/>
+                  </service>
+                  <service sid="534">
+                     <lcn_n1 n="23" v="1"/>
+                  </service>
+                  <service sid="627">
+                     <lcn_n1 n="414" v="1"/>
+                  </service>
+                  <service sid="626">
+                     <lcn_n1 n="415" v="1"/>
+                  </service>
+                  <service sid="625">
+                     <lcn_n1 n="413" v="1"/>
+                  </service>
+                  <service sid="624">
+                     <lcn_n1 n="412" v="1"/>
+                  </service>
+                  <service sid="623">
+                     <lcn_n1 n="411" v="1"/>
+                  </service>
+                  <service sid="622">
+                     <lcn_n1 n="410" v="1"/>
+                  </service>
+                  <service sid="621">
+                     <lcn_n1 n="409" v="1"/>
+                  </service>
+                  <service sid="620">
+                     <lcn_n1 n="408" v="1"/>
+                  </service>
+                  <service sid="619">
+                     <lcn_n1 n="407" v="1"/>
+                  </service>
+                  <service sid="618">
+                     <lcn_n1 n="406" v="1"/>
+                  </service>
+                  <service sid="617">
+                     <lcn_n1 n="405" v="1"/>
+                  </service>
+                  <service sid="616">
+                     <lcn_n1 n="404" v="1"/>
+                  </service>
+                  <service sid="615">
+                     <lcn_n1 n="403" v="1"/>
+                  </service>
+                  <service sid="614">
+                     <lcn_n1 n="401" v="1"/>
+                  </service>
+                  <service sid="613">
+                     <lcn_n1 n="400" v="1"/>
+                  </service>
+                  <service sid="612">
+                     <lcn_n1 n="399" v="1"/>
+                  </service>
+                  <service sid="611">
+                     <lcn_n1 n="398" v="1"/>
+                  </service>
+                  <service sid="610">
+                     <lcn_n1 n="397" v="1"/>
+                  </service>
+                  <service sid="609">
+                     <lcn_n1 n="44" v="1"/>
+                  </service>
+                  <service sid="608">
+                     <lcn_n1 n="43" v="1"/>
+                  </service>
+                  <service sid="607">
+                     <lcn_n1 n="42" v="1"/>
+                  </service>
+                  <service sid="606">
+                     <lcn_n1 n="41" v="1"/>
+                  </service>
+                  <service sid="605">
+                     <lcn_n1 n="40" v="1"/>
+                  </service>
+                  <service sid="604">
+                     <lcn_n1 n="39" v="1"/>
+                  </service>
+                  <service sid="603">
+                     <lcn_n1 n="38" v="1"/>
+                  </service>
+                  <service sid="602">
+                     <lcn_n1 n="37" v="1"/>
+                  </service>
+                  <service sid="601">
+                     <lcn_n1 n="36" v="1"/>
+                  </service>
+                  <service sid="600">
+                     <lcn_n1 n="35" v="1"/>
+                  </service>
+                  <service sid="599">
+                     <lcn_n1 n="34" v="1"/>
+                  </service>
+                  <service sid="598">
+                     <lcn_n1 n="33" v="1"/>
+                  </service>
+                  <service sid="408">
+                     <lcn_n1 n="15" v="1"/>
+                  </service>
+                  <service sid="597">
+                     <lcn_n1 n="32" v="1"/>
+                  </service>
+                  <service sid="407">
+                     <lcn_n1 n="14" v="1"/>
+                  </service>
+                  <service sid="596">
+                     <lcn_n1 n="31" v="1"/>
+                  </service>
+                  <service sid="406">
+                     <lcn_n1 n="13" v="1"/>
+                  </service>
+                  <service sid="595">
+                     <lcn_n1 n="30" v="1"/>
+                  </service>
+                  <service sid="594">
+                     <lcn_n1 n="29" v="1"/>
+                  </service>
+                  <service sid="404">
+                     <lcn_n1 n="12" v="1"/>
+                  </service>
+                  <service sid="593">
+                     <lcn_n1 n="28" v="1"/>
+                  </service>
+                  <service sid="403">
+                     <lcn_n1 n="11" v="1"/>
+                  </service>
+                  <service sid="592">
+                     <lcn_n1 n="27" v="1"/>
+                  </service>
+                  <service sid="402">
+                     <lcn_n1 n="10" v="1"/>
+                  </service>
+                  <service sid="401">
+                     <lcn_n1 n="9" v="1"/>
+                  </service>
+                  <service sid="400">
+                     <lcn_n1 n="8" v="1"/>
+                  </service>
+                  <service sid="399">
+                     <lcn_n1 n="7" v="1"/>
+                  </service>
+                  <service sid="398">
+                     <lcn_n1 n="6" v="1"/>
+                  </service>
+                  <service sid="397">
+                     <lcn_n1 n="5" v="1"/>
+                  </service>
+                  <service sid="396">
+                     <lcn_n1 n="4" v="1"/>
+                  </service>
+                  <service sid="395">
+                     <lcn_n1 n="3" v="1"/>
+                  </service>
+                  <service sid="394">
+                     <lcn_n1 n="2" v="1"/>
+                  </service>
+                  <service sid="393">
+                     <lcn_n1 n="1" v="1"/>
+                  </service>
+               </lcnlist>
+            </transport_loop>
+            <transport_loop service_description_id="17">
+               <descriptors>
+                  <descriptor key="3291067056" name="Service List Descriptor" order="1" tag="65">
+                     <service_list_element service_id="1005" service_seq="633" service_type="1"/>
+                  </descriptor>
+               </descriptors>
+               <lcnlist>
+                  <service sid="633">
+                     <lcn_n1 n="100" v="1"/>
+                  </service>
+               </lcnlist>
+            </transport_loop>
+         </bouquet>
+         <bouquet bouquet_id="25936" bouquet_seq="2" state="1" version="2">
+            <bouquet_name name="VTC_BLOCKEDFTA"/>
+            <transport_loop service_description_id="13">
+               <descriptors>
+                  <descriptor key="3291067058" name="Service List Descriptor" order="1" tag="65">
+                     <service_list_element service_id="1" service_seq="355" service_type="1"/>
+                     <service_list_element service_id="14" service_seq="373" service_type="1"/>
+                     <service_list_element service_id="2" service_seq="356" service_type="1"/>
+                     <service_list_element service_id="25" service_seq="387" service_type="1"/>
+                     <service_list_element service_id="4" service_seq="358" service_type="1"/>
+                     <service_list_element service_id="12" service_seq="368" service_type="1"/>
+                     <service_list_element service_id="24" service_seq="498" service_type="1"/>
+                     <service_list_element service_id="16" service_seq="375" service_type="1"/>
+                     <service_list_element service_id="27" service_seq="451" service_type="1"/>
+                     <service_list_element service_id="9" service_seq="364" service_type="1"/>
+                     <service_list_element service_id="28" service_seq="452" service_type="1"/>
+                     <service_list_element service_id="13" service_seq="370" service_type="1"/>
+                     <service_list_element service_id="15" service_seq="374" service_type="1"/>
+                     <service_list_element service_id="10" service_seq="366" service_type="1"/>
+                  </descriptor>
+               </descriptors>
+               <lcnlist/>
+            </transport_loop>
+            <transport_loop service_description_id="15">
+               <descriptors>
+                  <descriptor key="3291067059" name="Service List Descriptor" order="1" tag="65">
+                     <service_list_element service_id="830" service_seq="595" service_type="1"/>
+                     <service_list_element service_id="838" service_seq="603" service_type="1"/>
+                     <service_list_element service_id="821" service_seq="462" service_type="1"/>
+                     <service_list_element service_id="844" service_seq="609" service_type="1"/>
+                     <service_list_element service_id="824" service_seq="535" service_type="1"/>
+                     <service_list_element service_id="831" service_seq="596" service_type="1"/>
+                     <service_list_element service_id="827" service_seq="592" service_type="1"/>
+                     <service_list_element service_id="835" service_seq="600" service_type="1"/>
+                     <service_list_element service_id="836" service_seq="601" service_type="1"/>
+                     <service_list_element service_id="826" service_seq="537" service_type="1"/>
+                     <service_list_element service_id="806" service_seq="398" service_type="1"/>
+                     <service_list_element service_id="807" service_seq="399" service_type="1"/>
+                     <service_list_element service_id="834" service_seq="599" service_type="1"/>
+                     <service_list_element service_id="832" service_seq="597" service_type="1"/>
+                     <service_list_element service_id="825" service_seq="536" service_type="1"/>
+                     <service_list_element service_id="804" service_seq="396" service_type="1"/>
+                     <service_list_element service_id="820" service_seq="461" service_type="1"/>
+                     <service_list_element service_id="803" service_seq="395" service_type="1"/>
+                     <service_list_element service_id="802" service_seq="394" service_type="1"/>
+                     <service_list_element service_id="841" service_seq="606" service_type="1"/>
+                     <service_list_element service_id="822" service_seq="463" service_type="1"/>
+                     <service_list_element service_id="829" service_seq="594" service_type="1"/>
+                     <service_list_element service_id="808" service_seq="400" service_type="1"/>
+                     <service_list_element service_id="839" service_seq="604" service_type="1"/>
+                     <service_list_element service_id="840" service_seq="605" service_type="1"/>
+                     <service_list_element service_id="805" service_seq="397" service_type="1"/>
+                     <service_list_element service_id="833" service_seq="598" service_type="1"/>
+                     <service_list_element service_id="823" service_seq="534" service_type="1"/>
+                     <service_list_element service_id="837" service_seq="602" service_type="1"/>
+                  </descriptor>
+               </descriptors>
+               <lcnlist/>
+            </transport_loop>
+            <transport_loop service_description_id="17">
+               <descriptors>
+                  <descriptor key="3291067060" name="Service List Descriptor" order="1" tag="65">
+                     <service_list_element service_id="1005" service_seq="633" service_type="1"/>
+                     <service_list_element service_id="1006" service_seq="634" service_type="1"/>
+                     <service_list_element service_id="1003" service_seq="631" service_type="1"/>
+                     <service_list_element service_id="1009" service_seq="637" service_type="1"/>
+                     <service_list_element service_id="1007" service_seq="635" service_type="1"/>
+                  </descriptor>
+               </descriptors>
+               <lcnlist/>
+            </transport_loop>
+         </bouquet>
+         <bouquet bouquet_id="13858" bouquet_seq="3" state="1" version="18">
+            <descriptor key="198915" name="Private Data Specifier (Irdeto)" order="2" tag="95">
+               <private_data_specifier private_data_specifier="3547765"/>
+            </descriptor>
+            <descriptor key="925874" name="Linkage Descriptor 0 (0)" order="3" tag="74">
+               <linkage_descriptor linkage_type="128" name="Linkage Descriptor 0 (0)" onid="12901"
+                                   private_data="3502"
+                                   sid="852"
+                                   tsid="8"/>
+            </descriptor>
+            <descriptor key="1849627" name="HD9 SSU2" order="5" tag="74">
+               <linkage_descriptor linkage_type="128" name="HD9 SSU2" onid="12901" private_data="3502" sid="852"
+                                   tsid="8"/>
+            </descriptor>
+            <descriptor key="1851081" name="SSU Linkage 852 (8) ()" order="6" tag="74">
+               <linkage_descriptor linkage_type="9" name="" onid="12901" oui="000000"
+                                   private_data="120001190e00af00040000009d0000000c0300"
+                                   selectorbyte=""
+                                   sid="852"
+                                   tsid="8"/>
+            </descriptor>
+            <descriptor key="3874566" name="SSU HD05" order="7" tag="74">
+               <linkage_descriptor linkage_type="128" name="SSU HD05" onid="12901" private_data="3502" sid="853"
+                                   tsid="8"/>
+            </descriptor>
+            <descriptor key="3877485" name="Irdeto Linkage 853 (8) " order="8" tag="74">
+               <linkage_descriptor linkage_type="130" name="" onid="12901" private_data="ff35ff1dff00ff9dff06ff02"
+                                   sid="853"
+                                   tsid="8"/>
+            </descriptor>
+            <descriptor key="4351637" name="Irdeto Linkage 51 (9) " order="4" tag="74">
+               <linkage_descriptor linkage_type="130" name="" onid="12901" private_data="ff35ff24ff00ff9dff0aff02"
+                                   sid="51"
+                                   tsid="9"/>
+            </descriptor>
+            <descriptor key="4961858" name="SSU HD05I" order="9" tag="74">
+               <linkage_descriptor linkage_type="128" name="SSU HD05I" onid="12901" private_data="3502" sid="854"
+                                   tsid="8"/>
+            </descriptor>
+            <descriptor key="4962997" name="Irdeto Linkage 854 (8) " order="10" tag="74">
+               <linkage_descriptor linkage_type="130" name="" onid="12901" private_data="ff35ff39ff00ff9dff0eff02"
+                                   sid="854"
+                                   tsid="8"/>
+            </descriptor>
+            <descriptor key="5062263" name="TS16 SSU SH9" order="12" tag="74">
+               <linkage_descriptor linkage_type="128" name="TS16 SSU SH9" onid="12901" private_data="3502"
+                                   sid="1653"
+                                   tsid="16"/>
+            </descriptor>
+            <descriptor key="5063469" name="Irdeto Linkage 1653 (16) " order="12" tag="74">
+               <linkage_descriptor linkage_type="130" name="" onid="12901" private_data="ff35ff24ff00ff9dff0aff02"
+                                   sid="1653"
+                                   tsid="16"/>
+            </descriptor>
+            <bouquet_name name="Master"/>
+         </bouquet>
+         <bouquet bouquet_id="25888" bouquet_seq="5" state="1" version="27">
+            <bouquet_name name="VTCHD_Basic"/>
+         </bouquet>
+         <bouquet bouquet_id="26116" bouquet_seq="11" state="1" version="13">
+            <bouquet_name name="Quang Ninh"/>
+            <transport_loop service_description_id="15">
+               <descriptors>
+                  <descriptor key="3291067065" name="Service List Descriptor" order="1" tag="65">
+                     <service_list_element service_id="826" service_seq="537" service_type="1"/>
+                     <service_list_element service_id="819" service_seq="459" service_type="1"/>
+                     <service_list_element service_id="820" service_seq="461" service_type="1"/>
+                     <service_list_element service_id="813" service_seq="406" service_type="1"/>
+                     <service_list_element service_id="806" service_seq="398" service_type="1"/>
+                     <service_list_element service_id="801" service_seq="393" service_type="1"/>
+                     <service_list_element service_id="823" service_seq="534" service_type="1"/>
+                     <service_list_element service_id="803" service_seq="395" service_type="1"/>
+                     <service_list_element service_id="805" service_seq="397" service_type="1"/>
+                  </descriptor>
+               </descriptors>
+               <lcnlist>
+                  <service sid="459">
+                     <lcn_n1 n="53" v="1"/>
+                  </service>
+                  <service sid="406">
+                     <lcn_n1 n="3" v="1"/>
+                  </service>
+                  <service sid="537">
+                     <lcn_n1 n="54" v="1"/>
+                  </service>
+                  <service sid="398">
+                     <lcn_n1 n="2" v="1"/>
+                  </service>
+                  <service sid="397">
+                     <lcn_n1 n="1" v="1"/>
+                  </service>
+                  <service sid="534">
+                     <lcn_n1 n="17" v="1"/>
+                  </service>
+                  <service sid="395">
+                     <lcn_n1 n="6" v="1"/>
+                  </service>
+                  <service sid="393">
+                     <lcn_n1 n="5" v="1"/>
+                  </service>
+                  <service sid="461">
+                     <lcn_n1 n="51" v="1"/>
+                  </service>
+               </lcnlist>
+            </transport_loop>
+         </bouquet>
+         <bouquet bouquet_id="68" bouquet_seq="12" state="1" version="10">
+            <descriptor key="3207471936" name="Linkage Descriptor 0 (0)" order="2" tag="74">
+               <linkage_descriptor linkage_type="144" name="Linkage Descriptor 0 (0)" onid="12901"
+                                   private_data="30ff31ff4844ff3034ff313830303030ff31ff4844ff3036ff323730303030ff31ff4844ff3132ff353430303030ff30ff4844ff3234ff363030303030"
+                                   sid="0"
+                                   tsid="12901"/>
+            </descriptor>
+            <bouquet_name name="MA QR"/>
+         </bouquet>
+         <bouquet bouquet_id="-1" bouquet_seq="13" state="0" version="0">
+            <bouquet_name name="Bouquet"/>
+         </bouquet>
+      </subsystem>
+   </system>
+</sisystem>

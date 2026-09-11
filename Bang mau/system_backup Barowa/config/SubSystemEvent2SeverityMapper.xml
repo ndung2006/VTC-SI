@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:subSystemEvent2SeverityMapper xmlns:ns2="subSystemEvent2SeverityMapper">
+    <subSystemList>
+        <subSystemEvent2SeverityMapping>
+            <subSystemId>
+                <subSystemId>OUTPUT_DEVICE</subSystemId>
+            </subSystemId>
+            <itemList>
+                <item>
+                    <eventId>1</eventId>
+                    <severity>CRITICAL</severity>
+                    <eventTxt>Description of event 1</eventTxt>
+                </item>
+                <item>
+                    <eventId>2</eventId>
+                    <severity>FATAL</severity>
+                    <eventTxt>Description of event 2</eventTxt>
+                </item>
+                <item>
+                    <eventId>3</eventId>
+                    <severity>INDETERMINATE</severity>
+                    <eventTxt>Description of event 3</eventTxt>
+                </item>
+                <item>
+                    <eventId>4</eventId>
+                    <severity>INFO</severity>
+                    <eventTxt>Description of event 4</eventTxt>
+                </item>
+            </itemList>
+        </subSystemEvent2SeverityMapping>
+        <subSystemEvent2SeverityMapping>
+            <subSystemId>
+                <subSystemId>ALARM-TESTER</subSystemId>
+            </subSystemId>
+            <itemList>
+                <item>
+                    <eventId>1</eventId>
+                    <severity>INDETERMINATE</severity>
+                    <eventTxt>Connection to redundant server lost</eventTxt>
+                </item>
+                <item>
+                    <eventId>2</eventId>
+                    <severity>INFO</severity>
+                    <eventTxt>Property not found</eventTxt>
+                </item>
+                <item>
+                    <eventId>3</eventId>
+                    <severity>MINOR</severity>
+                    <eventTxt>HB missing</eventTxt>
+                </item>
+                <item>
+                    <eventId>4</eventId>
+                    <severity>MAJOR</severity>
+                    <eventTxt>Something MAJOR has happened</eventTxt>
+                </item>
+                <item>
+                    <eventId>5</eventId>
+                    <severity>CRITICAL</severity>
+                    <eventTxt>Ohhh this is critical</eventTxt>
+                </item>
+                <item>
+                    <eventId>6</eventId>
+                    <severity>FATAL</severity>
+                    <eventTxt>UPS something FATAL has happened</eventTxt>
+                </item>           
+                <item>
+                    <eventId>7</eventId>
+                    <severity>WARNING</severity>
+                    <eventTxt>This is a warning message</eventTxt>
+                </item>           
+            </itemList>
+        </subSystemEvent2SeverityMapping>
+    </subSystemList>
+</ns2:subSystemEvent2SeverityMapper>

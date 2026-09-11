@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}Thay đổi — vtcsi{% endblock %}
+{% block body %}
+
+<h1>Thay đổi chưa ghi nhận</h1>
+<p class="sub">Giao diện ghi thẳng vào file YAML. Cho tới khi commit, thay đổi mới
+chỉ nằm trên đĩa — không có lịch sử, không quay lui được.</p>
+
+{% if git.is_repo %}
+  {% if git.dirty %}
+    <h2>{{ git.dirty|length }} file đã đổi</h2>
+    <div class="tw"><table>
+    {% for f in git.dirty %}<tr><td class="m">{{ f }}</td></tr>{% endfor %}
+    </table></div>
+  {% else %}
+    <p class="msg ok">Không có thay đổi nào chờ. Kho sạch, khớp với HEAD.</p>
+  {% endif %}
+
+  {% if diff %}
+  <h2>Khác biệt</h2>
+  <pre>{{ diff }}</pre>
+  {% endif %}
+
+  {% if git.dirty %}
+  <h2>Ghi nhận</h2>
+  <div class="card">
+    <form method="post" action="/thay-doi/commit">
+      <label for="author">Người thực hiện</label>
+      <input type="text" name="author" id="author" required
+             placeholder="tên bạn — đi vào trường tác giả của commit">
+      <label for="message">Lý do thay đổi</label>
+      <input type="text" name="message" id="message" required
+             placeholder="ví dụ: them kenh VTC14 HD theo cong van 245/2026">
+      <span class="dim" style="font-size:12.5px">Viết cho người đọc
+        <span class="m">git log</span> sáu tháng sau, không phải cho mình hôm nay.
+        <b>Ai</b> và <b>vì sao</b> là hai câu hỏi mà giao diện Barrowa không trả lời được.</span>
+      <div class="row"><button type="submit">Ghi nhận thay đổi</button></div>
+    </form>
+  </div>
+  {% endif %}
+
+  <h2>Bước tiếp theo</h2>
+  <div class="card">
+    <p style="margin-top:0">Commit xong <b>chưa phải là phát sóng</b>. Còn ba bước,
+    theo đúng thứ tự:</p>
+    <pre>vtcsi validate                 # cau hinh co hop le khong
+vtcsi preflight &lt;dump&gt;.xml     # bang nao can tang version
+vtcsi build --out build        # sinh XML cho tsp</pre>
+    <p style="margin-bottom:0" class="dim">Nếu <span class="m">preflight</span> báo
+    <span class="m">đổi ngầm</span> thì dừng lại: nội dung đã đổi mà version giữ
+    nguyên, đầu thu sẽ không đọc lại bảng.</p>
+  </div>
+
+{% else %}
+  <div class="card">
+    <p style="margin-top:0">Chưa có kho git nên không có gì để so sánh. Khởi tạo:</p>
+    <pre>git init
+git add .
+git commit -m "gieo cau hinh tu song ngay 2026-09-11"</pre>
+    <p style="margin-bottom:0">Làm bước này <b>trước</b> khi sửa gì qua giao diện —
+    nếu không thì bản gieo từ sóng, thứ duy nhất ta biết chắc là đúng, sẽ không
+    còn chỗ nào để quay về.</p>
+  </div>
+{% endif %}
+
+{% endblock %}

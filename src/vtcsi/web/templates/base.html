@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}vtcsi{% endblock %}</title>
+<style>
+:root{
+  --ground:#f1f4f5; --surface:#fff; --surface-2:#e8eef0;
+  --ink:#0e1618; --ink-2:#37474b; --muted:#6a7b7f;
+  --rule:#ccd9db; --rule-2:#e2eaec;
+  --accent:#056a73; --ok:#2b6b4a; --warn:#8c5a15; --crit:#9d2b22;
+  --sans:"Segoe UI",system-ui,sans-serif;
+  --mono:ui-monospace,"Cascadia Mono",Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root{
+  --ground:#0c1214; --surface:#141d1f; --surface-2:#1b2629;
+  --ink:#e3ecee; --ink-2:#b3c3c6; --muted:#8a9b9f;
+  --rule:#2b393d; --rule-2:#1f2b2e;
+  --accent:#4fc3cb; --ok:#5fb389; --warn:#d3a253; --crit:#e4756c;
+}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);font:15px/1.55 var(--sans)}
+a{color:var(--accent)}
+.wrap{max-width:1040px;margin:0 auto;padding:0 20px 60px}
+header{border-bottom:2px solid var(--ink);margin-bottom:22px}
+.head{max-width:1040px;margin:0 auto;padding:14px 20px;display:flex;gap:18px;align-items:baseline;flex-wrap:wrap}
+.brand{font-weight:700;font-size:19px;letter-spacing:-.01em}
+.brand span{color:var(--muted);font-weight:400;font-size:13px;margin-left:8px}
+nav{display:flex;gap:16px;margin-left:auto;font-size:14px}
+h1{font-size:24px;margin:0 0 4px;letter-spacing:-.01em}
+h2{font-size:17px;margin:26px 0 8px;border-bottom:1px solid var(--rule);padding-bottom:5px}
+.sub{color:var(--muted);font-size:13.5px;margin:0 0 18px}
+.m,code{font-family:var(--mono);font-size:.9em;font-variant-numeric:tabular-nums}
+
+.msg{padding:9px 14px;border-radius:3px;margin:0 0 16px;font-size:14px}
+.msg.ok{background:var(--surface);border-left:3px solid var(--ok)}
+.msg.err{background:var(--surface);border-left:3px solid var(--crit)}
+.msg.warn{background:var(--surface);border-left:3px solid var(--warn)}
+
+table{border-collapse:collapse;width:100%;font-size:14px;margin:0 0 16px}
+th{text-align:left;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+   color:var(--muted);font-weight:500;padding:7px 12px 7px 0;border-bottom:1px solid var(--rule)}
+td{padding:7px 12px 7px 0;border-bottom:1px solid var(--rule-2);vertical-align:top}
+tr:hover td{background:var(--surface)}
+td.n,th.n{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums}
+.tw{overflow-x:auto}
+
+.card{background:var(--surface);border:1px solid var(--rule);padding:16px 18px;margin:0 0 16px}
+.grid{display:grid;gap:14px;grid-template-columns:1fr}
+@media(min-width:720px){.grid.two{grid-template-columns:1fr 1fr}}
+
+label{display:block;font-size:13px;color:var(--ink-2);margin:12px 0 3px}
+input[type=text],input[type=number],select,textarea{
+  width:100%;padding:7px 9px;font:14px var(--sans);color:var(--ink);
+  background:var(--ground);border:1px solid var(--rule);border-radius:3px}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:1px}
+.check{display:flex;gap:8px;align-items:center;margin:9px 0}
+.check input{width:auto}
+.check label{margin:0}
+
+button,.btn{font:14px var(--sans);padding:8px 15px;border-radius:3px;cursor:pointer;
+  border:1px solid var(--accent);background:var(--accent);color:var(--ground);font-weight:600;
+  text-decoration:none;display:inline-block}
+button.alt,.btn.alt{background:transparent;color:var(--accent)}
+button.danger{background:var(--crit);border-color:var(--crit)}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:16px}
+
+.pill{font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;
+  padding:2px 7px;border-radius:2px;font-weight:600;white-space:nowrap}
+.pill.ok{background:var(--ok);color:var(--ground)}
+.pill.warn{background:var(--warn);color:var(--ground)}
+.pill.crit{background:var(--crit);color:var(--ground)}
+.pill.mute{background:var(--surface-2);color:var(--muted)}
+
+pre{background:var(--surface);border:1px solid var(--rule);padding:14px;overflow-x:auto;
+  font-family:var(--mono);font-size:12.5px;line-height:1.5;margin:0 0 16px}
+.dim{color:var(--muted)}
+footer{margin-top:40px;border-top:1px solid var(--rule);padding-top:14px;
+  font-size:12.5px;color:var(--muted)}
+</style>
+</head>
+<body>
+<header><div class="head">
+  <div class="brand">vtcsi <span>báo hiệu PSI/SI</span></div>
+  <nav>
+    <a href="/">Tổng quan</a>
+    <a href="/thay-doi">Thay đổi{% if git.dirty %} ({{ git.dirty|length }}){% endif %}</a>
+  </nav>
+</div></header>
+
+<div class="wrap">
+{% if note %}<p class="msg ok">{{ note }}</p>{% endif %}
+{% if err %}<p class="msg err">{{ err }}</p>{% endif %}
+{% if not git.is_repo %}
+<p class="msg warn"><b>Thư mục này chưa phải kho git.</b>
+  File vẫn ghi được, nhưng không có lịch sử: không xem được diff, không quay lui được,
+  không biết ai đổi gì. Chạy <code>git init</code> ở thư mục dự án trước khi dùng thật.</p>
+{% endif %}
+
+{% block body %}{% endblock %}
+
+<footer>
+  Cấu hình: <span class="m">{{ config_dir }}</span>
+  {% if git.is_repo %} · HEAD <span class="m">{{ git.head }}</span>{% endif %}
+  <br>Giao diện này ghi thẳng vào file YAML trong git — không giữ kho dữ liệu song song.
+</footer>
+</div>
+</body>
+</html>

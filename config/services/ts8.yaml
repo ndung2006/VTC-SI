@@ -1,0 +1,515 @@
+# Sinh bởi vtcsi. Sửa tay thoải mái — đây là nguồn sự thật.
+ts_id: 8
+services:
+- service_id: 801
+  name: HA NOI 1
+  provider: ''
+  type: 1
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 802
+  name: ANTV
+  provider: ''
+  type: 1
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 803
+  name: QPVN
+  provider: ''
+  type: 1
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 804
+  name: HTV2
+  provider: ''
+  type: 1
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 805
+  name: QUANG NINH 1
+  provider: ''
+  type: 1
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 806
+  name: QUANG NINH 3
+  provider: ''
+  type: 1
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 807
+  name: DONG NAI 1
+  provider: ''
+  type: 1
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 808
+  name: DONG NAI 2
+  provider: ''
+  type: 1
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 809
+  name: VTV1
+  provider: ''
+  type: 1
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 810
+  name: VTV2
+  provider: ''
+  type: 1
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 811
+  name: VTV3
+  provider: ''
+  type: 1
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 812
+  name: VTV5
+  provider: VTC
+  type: 1
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 813
+  name: VTV9
+  provider: ''
+  type: 1
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 814
+  name: ON BIBI
+  provider: ''
+  type: 1
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 815
+  name: ON SPORTS NEWS
+  provider: ''
+  type: 1
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 816
+  name: ON FOOTBALL
+  provider: VTC
+  type: 1
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 817
+  name: ON SPORTS
+  provider: VTC
+  type: 1
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 818
+  name: SCTV9
+  provider: VTC
+  type: 1
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 819
+  name: SCTV14
+  provider: VTC
+  type: 1
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 820
+  name: VINH LONG 1
+  provider: VTC
+  type: 1
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 821
+  name: VINH LONG 2
+  provider: VTC
+  type: 1
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 822
+  name: HAI PHONG 1
+  provider: VTC
+  type: 1
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 823
+  name: HAI PHONG 3
+  provider: VTC
+  type: 1
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 824
+  name: THANH HOA
+  provider: VTC
+  type: 1
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 825
+  name: QUANG TRI
+  provider: VTC
+  type: 1
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 826
+  name: PHU THO
+  provider: VTC
+  type: 1
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 827
+  name: LAO CAI
+  provider: VTC
+  type: 1
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 828
+  name: HA NOI 2
+  provider: VTC
+  type: 1
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 829
+  name: SON LA
+  provider: VTC
+  type: 1
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 830
+  name: TUYEN QUANG
+  provider: VTC
+  type: 1
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 831
+  name: CAO BANG
+  provider: VTC
+  type: 1
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 832
+  name: DAKLAK
+  provider: VTC
+  type: 1
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 833
+  name: LAM DONG
+  provider: VTC
+  type: 1
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 834
+  name: LAM DONG 2
+  provider: VTC
+  type: 1
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 835
+  name: NINH BINH
+  provider: VTC
+  type: 1
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 836
+  name: BAC NINH
+  provider: VTC
+  type: 1
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 837
+  name: NGHE AN
+  provider: VTC
+  type: 1
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 838
+  name: THAI NGUYEN
+  provider: VTC
+  type: 1
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 839
+  name: LAI CHAU
+  provider: VTC
+  type: 1
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 840
+  name: AN GIANG 1
+  provider: VTC
+  type: 1
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 841
+  name: AN GIANG 3
+  provider: VTC
+  type: 1
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 842
+  name: VTV10 HD
+  provider: VTC
+  type: 1
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 843
+  name: VTV6 HD
+  provider: VTC
+  type: 1
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 844
+  name: VIETNAM TODAY
+  provider: VTC
+  type: 1
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 855
+  name: VOV1
+  provider: VTC
+  type: 2
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 856
+  name: VOV2
+  provider: VTC
+  type: 2
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 857
+  name: VOV3
+  provider: VTC
+  type: 2
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 861
+  name: PHU THO RADIO
+  provider: VTC
+  type: 2
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 862
+  name: QUANG NINH RADIO
+  provider: VTC
+  type: 2
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 863
+  name: QRN2 RADIO
+  provider: VTC
+  type: 2
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 864
+  name: BAC NINH RADIO
+  provider: VTC
+  type: 2
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 865
+  name: THAI NGUYEN RADIO
+  provider: VTC
+  type: 2
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 866
+  name: LAO CAI RADIO
+  provider: VTC
+  type: 2
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 867
+  name: LAO CAI DAN TOC RADIO
+  provider: VTC
+  type: 2
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 868
+  name: TUYEN QUANG RADIO
+  provider: VTC
+  type: 2
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 869
+  name: DAKLAK RADIO
+  provider: VTC
+  type: 2
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 870
+  name: LAM DONG RADIO
+  provider: VTC
+  type: 2
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 871
+  name: LAM DONG FM
+  provider: VTC
+  type: 2
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 872
+  name: SON LA RADIO
+  provider: VTC
+  type: 2
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 873
+  name: THANH HOA
+  provider: V
+  type: 2
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 874
+  name: NGHE AN RADIO
+  provider: VTC
+  type: 2
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 875
+  name: QUANG NGAI 2 RADIO
+  provider: VTC
+  type: 2
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 876
+  name: LAI CHAU RADIO
+  provider: VTC
+  type: 2
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
+- service_id: 877
+  name: CAO BANG RADIO
+  provider: VTC
+  type: 2
+  running_status: running
+  free_ca_mode: false
+  eit_pf: true
+  eit_schedule: true
