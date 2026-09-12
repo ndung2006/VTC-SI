@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-.5 -.5 69 37" width="52" height="28"
+     fill="none" stroke-width="3" role="img"
+     aria-label="Dấu VTC-SI: hai tấm lệch nhau, viền đứt ở mọi góc">
+  <title>VTC-SI — dấu</title>
+  <style>
+    /* `currentColor` hop khi nhung thang vao trang — no lat theo nen.
+       Nhung khi file nay duoc dung qua `img src` hay lam favicon thi
+       khong co trang nao de thua mau, va `currentColor` roi ve DEN:
+       tren nen toi la mat sach phan khung, chi con ba doan nhan.
+       Nen dat mau ngay tai goc file, kem mot luat cho nen toi. */
+    :root { color: #0e1618 }
+    @media (prefers-color-scheme: dark) { :root { color: #e3ecee } }
+  </style>
+
+
+  <!--
+    NÉT 3, KHÔNG PHẢI 2 — và đó là cỡ chữ, không phải sở thích.
+
+    Dấu này dùng ở 20–30px. Nét 2 trên khung cao 37 dựng ra 1,1px: mảnh tới
+    mức khử răng cưa làm nó nhạt đi, và cái viền vốn đã đứt đoạn thì nhìn ra
+    nhiễu chứ không ra hình. Nét 3 cho 2,1px ở 26px — đặc, đọc được.
+
+    `logo.svg` và `logo-ngang.svg` giữ nét 2 vì chúng dùng từ 40px trở lên,
+    ở đó nét 3 thành nặng nề. Cùng một hình, hai cân nặng theo cỡ dùng.
+
+    viewBox đệm 0,5 mỗi phía để nét 3 không bị cắt ở mép.
+  -->
+
+  <!--
+    HÌNH: hợp của hai tấm 44×25 lệch nhau (22, 9).
+      tấm trên  (1,1)–(45,26)   — lịch EPG đi vào
+      tấm dưới  (23,10)–(67,35) — bảng SI đi ra
+    Chúng chồng lên nhau đúng phần giữa: chỗ một tệp XML trở thành byte trên sóng.
+
+    ĐỈNH của viền hợp, theo chiều kim đồng hồ:
+      A(1,1) B(45,1) C(45,10) D(67,10) E(67,35) F(23,35) G(23,26) H(1,26)
+
+    Mỗi cạnh lùi 2.5 khỏi hai đầu, nên TÁM góc đều hở. Đó là ý của bản
+    guide: một viền đứt đoạn, đọc ra như tín hiệu chứ không như cái hộp.
+
+    Cạnh trái và cạnh phải có thêm một khe ở giữa — nhịp của bản guide.
+    Cạnh trên và dưới để liền: thêm khe nữa thì ở cỡ 20px nó nát.
+
+    MÀU: phần khung dùng `currentColor` nên tự lật theo nền sáng/tối.
+    Ba đoạn nhấn dùng màu thật, chọn để đọc được trên CẢ hai nền.
+  -->
+
+  <g stroke="currentColor">
+    <path d="M3.5 1H42.5"/>      <!-- trên          -->
+    <path d="M45 3.5V7.5"/>      <!-- bậc phải trên -->
+    <path d="M47.5 10H64.5"/>    <!-- ngang giữa    -->
+    <path d="M64.5 35H25.5"/>    <!-- dưới          -->
+    <path d="M23 32.5V28.5"/>    <!-- bậc trái dưới -->
+    <path d="M20.5 26H3.5"/>     <!-- ngang giữa    -->
+  </g>
+
+  <g stroke="#c8641e">
+    <path d="M1 3.5V12"/>        <!-- trái, đoạn trên -->
+    <path d="M1 15V23.5"/>       <!-- trái, đoạn dưới -->
+  </g>
+
+  <path stroke="#c23f74" d="M67 12.5V21"/>   <!-- phải, đoạn trên -->
+  <path stroke="#2f86cc" d="M67 24V32.5"/>   <!-- phải, đoạn dưới -->
+</svg>

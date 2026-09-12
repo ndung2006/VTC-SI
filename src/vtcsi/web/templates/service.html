@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}{{ 'Dịch vụ mới' if new else svc.name }} — vtcsi{% endblock %}
+{% block title %}{{ 'Dịch vụ mới' if new else svc.name }} — VTC-SI{% endblock %}
 {% block body %}
 
 <p class="sub"><a href="/ts/{{ sdt.ts_id }}">← TS {{ sdt.ts_id }}</a></p>
@@ -48,20 +48,30 @@
     <label for="free_ca_mode">Có khoá mã (<span class="m">free_CA_mode</span>) —
       bỏ trống nghĩa là kênh xem tự do</label>
   </div>
-  <div class="check">
-    <input type="checkbox" name="eit_pf" id="eit_pf" value="true"
-           {{ 'checked' if svc.eit_pf }}>
-    <label for="eit_pf">Khai có EIT hiện tại/kế tiếp</label>
+  <label style="margin-top:16px">EPG</label>
+  <div class="check" style="margin-top:0">
+    <label class="cong-tac">
+      <input type="checkbox" name="epg" id="epg" value="true"
+             {{ 'checked' if svc.eit_pf or svc.eit_schedule }}>
+      <span class="nut" aria-hidden="true"></span>
+      <span class="chu">{{ 'Bật' if svc.eit_pf or svc.eit_schedule else 'Tắt' }}</span>
+    </label>
   </div>
-  <div class="check">
-    <input type="checkbox" name="eit_schedule" id="eit_schedule" value="true"
-           {{ 'checked' if svc.eit_schedule }}>
-    <label for="eit_schedule">Khai có EIT lịch dài</label>
-  </div>
-  <span class="dim" style="font-size:12.5px">Hai ô EIT chỉ là <i>lời khai</i>
-  trong SDT; có sự kiện thật hay không là do file lịch quyết định. Sóng hiện tại
-  khai <span class="m">true</span> cho cả 20 kênh phát thanh vốn không bao giờ
-  có lịch — nên đừng coi hai ô này là chỉ báo.</span>
+  <span class="dim" style="font-size:12.5px">
+    Một công tắc, không phải hai ô. <b>Tắt</b> thì hạ cả
+    <span class="m">EIT_present_following</span> lẫn
+    <span class="m">EIT_schedule</span> trong SDT, <b>và</b>
+    <span class="m">vtcsi epg</span> không sinh bảng EIT cho kênh này. Hai việc
+    đó luôn đi cùng nhau — hạ cờ mà vẫn phát bảng là khai một đằng phát một nẻo.
+  </span>
+
+  {% if svc.eit_pf != svc.eit_schedule %}
+  <p class="msg warn" style="margin-top:10px">Hai cờ đang khai <b>khác nhau</b>:
+    <span class="m">p/f={{ svc.eit_pf|lower }}</span>,
+    <span class="m">lịch={{ svc.eit_schedule|lower }}</span>. Giao diện không
+    tạo ra được trạng thái này, nên nó đến từ một lần sửa YAML bằng tay. Lưu
+    lần này sẽ <b>đưa cả hai về cùng một giá trị</b> theo công tắc ở trên.</p>
+  {% endif %}
 
   <div class="row">
     <button type="submit">{{ 'Thêm dịch vụ' if new else 'Lưu' }}</button>

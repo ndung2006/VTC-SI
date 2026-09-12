@@ -16,13 +16,14 @@ Bỏ qua khi chưa cài TSDuck. Cài xong là tự chạy.
 
 from __future__ import annotations
 
-import shutil
 import subprocess
 import tempfile
 import unittest
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
+import seed
+import tsduck_path
 from vtcsi.config import loader
 from vtcsi.tables import tsduck as T
 
@@ -40,8 +41,10 @@ def _compile(tmp: Path, name: str, element: ET.Element) -> bytes:
         HEADER + "\n<tsduck>\n" + ET.tostring(element, encoding="unicode") + "</tsduck>\n",
         encoding="utf-8")
     out = src.with_suffix(".bin")
-    r = subprocess.run(["tstabcomp", "--compile", str(src), "--output", str(out)],
-                       capture_output=True, text=True, timeout=60)
+    r = subprocess.run([tsduck_path.require("tstabcomp"), "--compile", str(src),
+                        "--output", str(out)],
+                       capture_output=True, text=True, timeout=60,
+                       env=tsduck_path.on_path())
     if r.returncode != 0 or not out.exists():
         raise AssertionError(
             f"tstabcomp tu choi {name}.xml:\n{r.stdout}\n{r.stderr}")
@@ -51,14 +54,19 @@ def _compile(tmp: Path, name: str, element: ET.Element) -> bytes:
 class BinaryCase(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        if shutil.which("tstabcomp") is None:
-            raise unittest.SkipTest("chua cai TSDuck — bai nay tu chay khi co tstabcomp")
+        tsduck_path.require("tstabcomp")
         if not GOLDEN.exists():
             raise unittest.SkipTest("khong tim thay chuan vang")
-        if not (CONFIG / "network.yaml").exists():
-            raise unittest.SkipTest("chua gieo cau hinh")
         cls.air_xml = ET.fromstring(GOLDEN.read_text(encoding="utf-8"))
-        cls.cfg = loader.load(CONFIG)
+        # Ban gieo **da commit**, khong phai thu muc dang sua. Xem `tests/seed.py`:
+        # `config/` la cho nguoi van hanh sua moi ngay, nen so no voi song se do
+        # len dung luc ho lam dung — va o day, mot bai byte do la tin hieu manh
+        # nhat ca du an, khong duoc phep keu bua.
+        td = seed.committed_config()
+        try:
+            cls.cfg = loader.load(Path(td.name) / "config")
+        finally:
+            td.cleanup()
 
     def setUp(self) -> None:
         self._tmp = tempfile.TemporaryDirectory()

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Đăng nhập — VTC-SI{% endblock %}
+{% block body %}
+
+<div style="max-width:26em;margin:40px auto 0">
+  <h1>Đăng nhập</h1>
+  <p class="sub">Giao diện này sửa được cấu hình đang phát sóng.</p>
+
+  {% if khoa and khoa > 0 %}
+  <p class="msg err">Sai quá nhiều lần. Thử lại sau
+    <b>{{ khoa|round|int }}</b> giây.</p>
+  {% endif %}
+
+  <div class="card">
+    <form method="post" action="/dang-nhap">
+      <input type="hidden" name="tiep" value="{{ tiep }}">
+      <label for="user">Tên đăng nhập</label>
+      <input type="text" name="user" id="user" autocomplete="username"
+             autofocus required>
+      <label for="password">Mật khẩu</label>
+      <input type="password" name="password" id="password"
+             autocomplete="current-password" required>
+      <div class="row"><button type="submit">Đăng nhập</button></div>
+    </form>
+  </div>
+
+  <p class="sub">Quên mật khẩu thì đặt lại từ terminal của máy chạy dịch vụ:
+  <span class="m">vtcsi passwd --force</span>. Không có cách đặt lại qua trình
+  duyệt — quyền shell trên máy phát mới là ranh giới thật.</p>
+</div>
+
+{% endblock %}

@@ -1,7 +1,7 @@
 # Mindmap phần mềm — `vtcsi`
 
-> Bản đồ **mã nguồn**. Toàn cảnh hệ thống ở [`mindmap.md`](mindmap.md); đặc tả ở [`spec.md`](spec.md) phiên bản **1.0**.
-> Trạng thái: **241 test xanh, 10 chờ cài TSDuck**. Lõi và đường ra sóng không phụ thuộc gói ngoài nào
+> Bản đồ **mã nguồn**. Toàn cảnh hệ thống ở [`mindmap.md`](mindmap.md); đặc tả ở [`spec.md`](spec.md) phiên bản **2.3**.
+> Trạng thái: **770 test xanh, 0 bỏ qua** — kể cả bảy bài so byte. Lõi và đường ra sóng không phụ thuộc gói ngoài nào
 > ngoài `pyyaml`; giao diện web là nhóm phụ thuộc tuỳ chọn `[web]`.
 
 ---
@@ -18,6 +18,9 @@ mindmap
         entities.py ✓ — bám cấu trúc TRÊN SÓNG
         plain.py ✓ — model sang dict và ngược lại
         version.py ✓ — luật version 5 bit
+        lcn.py ✓ — luật số kênh, tìm ra RO-23
+        linkage.py ✓ — descriptor 0x4A, hex thô
+        topology.py ✓ — vòng transport của bouquet
         diff.py ✓ — so theo khoá, không theo vị trí
       tables
         delivery.py ✓ — descriptor 0x43 ra byte
@@ -26,7 +29,8 @@ mindmap
       epg.transform
         parse.py ✓ — đọc lược đồ PSI
         eventid.py ✓ — cấp id tất định
-        window.py ✓ — gộp và cắt cửa sổ 192 giờ
+        window.py ✓ — gộp, cắt cửa sổ, lọc kênh tắt EPG
+        timeline.py ✓ — lưới một ngày cho màn giám sát
     Vỏ có I-O
       config ✓
         loader.py ✓ — YAML sang model, tách file theo TS
@@ -35,25 +39,47 @@ mindmap
       version ✓
         preflight.py ✓ — bắt ca đổi ngầm trước khi đấu nối
       pipeline
-        tspbuild.py ✓ — dựng dòng lệnh tsp
-        supervise.py ○ — chạy và trông chừng
+        tspbuild.py ✓ — không ký tự đại diện, một bảng mã — dựng dòng lệnh tsp
+        supervise.py ✓ — chạy tsp, dựng lại khi chết
+        Ngó hộp thư mỗi 5s — file mới là lên sóng ngay
+        Đổi nội dung thì KHÔNG khởi động lại
+        Tính lại --time mỗi lần dựng
       web ✓
         app.py ✓ — FastAPI, không phải SPA
         templates ✓ — server render, POST rồi chuyển hướng
+        Màn hình TS · dịch vụ · bouquet · số kênh ✓
+        Công tắc EPG từng kênh — chặn thật, không chỉ khai ✓
+        Lưu là sinh lại ngay, không chờ chu kỳ ✓
+        Màn hình linkage · vòng transport ✓
+        auth.py ✓ — scrypt, cookie ký HMAC, vé máy riêng
+        POST /api/epg ✓ — hệ lập lịch ngoài đẩy XML vào
+        /giam-sat ✓ — đủ kênh TS actual; kênh tắt có dòng rỗng
+        Kiểm trước khi ghi — hộp thư không bao giờ có file hỏng
+        Chặn ở MỘT middleware, không rải decorator
+        Mật khẩu đầu tiên chỉ đặt từ terminal
+        Cấu hình hỏng ra TRANG, không ra stack trace ✓
+        Mọi thông báo là tiếng Việt có dấu ✓
+        Version nhập tay, lùi lại được ✓
         Ghi thẳng YAML trong git, không có kho thứ hai
-        Chưa có màn hình bouquet và LCN ○
     Tiến trình riêng
       vtccmp
         cmpcli.py ✓ — compare patch capture
         So ở MỨC SECTION, không phải bảng hoàn chỉnh
         alert.py ○ — SNMP trap và Prometheus
-    Kiểm thử — 241 xanh
+    Kiểm thử — 686 xanh, 0 bỏ qua
       Vector byte cố định ✓ — ba descriptor 0x43
       Vòng tròn model sang YAML sang model ✓
       event_id qua cửa sổ 8 ngày ✓
       Quét import giữ lõi thuần ✓
-      Giao diện nhập liệu ✓ — 30 bài
-      Chuẩn vàng ở MỨC BYTE ○ — chờ cài tstabcomp
+      Giao diện nhập liệu ✓ — 58 bài
+      Luật số kênh ✓ — 46 bài, soi cả bản gieo
+      Trông chừng tsp ✓ — 41 bài, không tiến trình thật
+      Lệnh vận hành ✓ — 18 bài, EIT rỗng bị chặn
+      Linkage và vòng transport ✓ — 92 bài
+      Đăng nhập và đổi mật khẩu ✓ — 39 bài
+      Hộp thư lịch và tuyến API ✓ — 35 bài
+      Màn giám sát ✓ — 49 bài
+      Chuẩn vàng ở MỨC BYTE ✓ — NIT, 3 SDT, 6 BAT khớp từng byte
     Luật code bất biến
       Lõi thuần không import gì chạm I-O
       Không gọi đồng hồ trong lõi — truyền vào
@@ -78,11 +104,13 @@ PSI-SI/
 │
 ├── pyproject.toml
 ├── config/                      # DỮ LIỆU, không phải code — nguồn sự thật
-│   ├── network.yaml  services/  bouquets/  output.yaml
+│   ├── network.yaml  services/  bouquets/
+│   └── dau-ra.yaml               #   NGOÀI git — mỗi máy một địa chỉ (FR-86)
 │
 ├── src/vtcsi/
 │   ├── model/
-│   │   └── entities.py          ✓ thuần
+│   │   ├── entities.py          ✓ thuần
+│   │   └── output.py            ✓ thuần — địa chỉ ra, KHÔNG phải báo hiệu
 │   ├── tables/
 │   │   ├── delivery.py          ✓ thuần — descriptor 0x43
 │   │   └── nit.py sdt.py bat.py xmlout.py
@@ -225,6 +253,14 @@ Ba điểm đáng chú ý.
 | `vtccmp run` | Đối chiếu và báo động | Một, máy nào cũng được | **host** — cần multicast vào | `unless-stopped` |
 | `vtcsi web` | Giao diện nhập liệu | Một | bridge, có proxy | Coolify quản bình thường |
 
+`Dockerfile` và `docker-compose.yml` đã có. Ảnh nền **trixie** vì TSDuck 3.44
+chỉ phát hành gói `debian13`; phiên bản TSDuck **ghim tường minh**, vì tự nâng
+là tự đổi byte trên sóng mà không ai duyệt. Gắn vào container là **cả kho git**
+(`/repo`), không phải riêng `config/` — `git commit` cần `.git` đúng chỗ.
+
+Lệnh mặc định của ảnh là `vtcsi validate`, **không phải** `run`: chạy một ảnh
+mới mà nó lập tức bơm multicast vào mạng nhà đài là cách hỏng tệ nhất.
+
 Container `vtcsi run` **không đặt CPU quota** — throttling của cgroup chèn khựng vào đúng chỗ cần đều nhịp.
 
 ---
@@ -240,11 +276,19 @@ Container `vtcsi run` **không đặt CPU quota** — throttling của cgroup ch
 | Vòng tròn cấu hình | Model → YAML → model, và YAML → sóng đã gieo | AC-2 | ✓ 24 bài |
 | `model.version` | Năm phán quyết, kể cả ca `đổi ngầm` | AC-3 | ✓ 23 bài |
 | `epg.transform.window` | Gộp, cắt, loại chồng lấn, loại sự kiện quá 24 giờ | AC-8, RO-22 | ✓ 20 bài |
-| `pipeline.tspbuild` | Mọi tuỳ chọn ghim từ `.adoc` chính thức | AC-6 | ✓ 20 bài (3 chờ TSDuck) |
+| `pipeline.tspbuild` | Mọi tuỳ chọn ghim từ `.adoc`, đối chiếu với `tsp` thật | AC-6 | ✓ 20 bài |
 | `tables.eit` | Dựng EIT, định dạng BCD, một bảng mã duy nhất | AC-8 | ✓ 24 bài |
 | Giao diện nhập liệu | Chạy trên bản sao `config/`; NIT bám SDT; lưu lại không xáo file | FR-3, FR-34…41 | ✓ 30 bài |
+| `model.lcn` | Trùng số, ngoài dải, số mồ côi, báo động giả | FR-57, RO-23 | ✓ 46 bài |
+| `pipeline.supervise` | Giãn cách, chết lặp, đổi nội dung không dựng lại | NFR-2 | ✓ 41 bài |
+| `vtcsi refresh` · `run` | EIT rỗng không ghi đè; `--dry-run` dựng đúng lệnh; địa chỉ ra lấy từ file, `--to` đè lên | AC-6, FR-86 | ✓ 34 bài |
+| `model.output` · `config.output` | Đọc IP, dải multicast, luật chặn và lời nhắc, vòng tròn ra đĩa | FR-86, FR-87 | ✓ 41 bài |
+| Màn hình đầu ra | Địa chỉ hỏng không chạm đĩa; file cũ còn nguyên; nhánh `fork` hiện trong lệnh xem trước | FR-86…88 | ✓ 31 bài |
+| `model.linkage` · `topology` | Hex, trần 248 byte, trùng lặp và thứ tự | FR-59…61, RO-8 | ✓ 51 bài |
+| Màn hình linkage | Byte Irdeto qua biểu mẫu không suy suyển | FR-59, FR-60 | ✓ 41 bài |
+| Màn hình bouquet | Gửi nguyên bảng số kênh; thao tác bị từ chối không ghi đĩa | FR-57 | ✓ 28 bài |
 | Chuẩn vàng ở mức XML | So với `dvb_tables_dump_win.xml` | AC-2 | ✓ trong `test_roundtrip` |
-| **Chuẩn vàng ở mức byte** | Cả hai cây XML qua `tstabcomp`, so chuỗi byte | AC-1, AC-2 | ○ 7 bài chờ cài TSDuck |
+| **Chuẩn vàng ở mức byte** | Cả hai cây XML qua `tstabcomp`, so chuỗi byte | AC-1, AC-2 | ✓ 7 bài — **khớp từng byte** |
 | Tất định | Build cùng commit hai lần hai máy, so hash | AC-12 | ○ |
 | Độc lập | Giết `vtccmp`, hai nguồn vẫn phát | AC-13 | ○ |
 | Nguội | Tắt nguồn kia, khởi động lại từ máy tắt | AC-11 | ○ |

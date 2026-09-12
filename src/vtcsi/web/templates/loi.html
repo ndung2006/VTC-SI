@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Cấu hình không đọc được — VTC-SI{% endblock %}
+{% block body %}
+
+<h1>Cấu hình không đọc được</h1>
+<p class="sub">Giao diện đọc lại file YAML ở mỗi lượt truy cập, nên một file hỏng
+làm cả trang không mở được. Đây là điều tốt: thà dừng ở đây còn hơn phát ra sóng
+một bảng sai.</p>
+
+<p class="msg err" style="font-size:15px">{{ loi }}</p>
+
+<div class="card">
+  <b>Đường lui</b>
+  <p style="margin:8px 0 0">Nếu vừa sửa YAML bằng tay và muốn bỏ hết:</p>
+  <pre style="margin:8px 0 0">git checkout -- config</pre>
+  <p style="margin:10px 0 0">Muốn xem mình đã đổi gì trước khi bỏ:</p>
+  <pre style="margin:8px 0 0">git diff config</pre>
+  <p style="margin:10px 0 0" class="dim">Chạy ở thư mục
+  <span class="m">{{ config_dir.parent }}</span>.</p>
+</div>
+
+<div class="card">
+  <b>Kiểm tra sau khi sửa</b>
+  <pre style="margin:8px 0 0">vtcsi validate</pre>
+  <p style="margin:10px 0 0" class="dim">Lệnh đó nói cùng một thông điệp như trên
+  nhưng chạy được ở terminal, nên sửa xong là thử lại ngay không cần bấm F5.</p>
+</div>
+
+<p class="sub"><a href="/">← thử lại trang tổng quan</a></p>
+
+{% endblock %}

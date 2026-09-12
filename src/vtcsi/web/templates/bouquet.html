@@ -1,0 +1,253 @@
+{% extends "base.html" %}
+{% block title %}{{ b.name }} — VTC-SI{% endblock %}
+{% block body %}
+
+<p class="sub"><a href="/">← tổng quan</a></p>
+<h1>{{ b.name }}</h1>
+<p class="sub">
+  bouquet_id <span class="m">0x{{ '%04x' % b.bouquet_id }}</span>
+  ({{ b.bouquet_id }}) ·
+  BAT version <span class="m">{{ b.version }}</span> ·
+  {{ b.ts_loops|length }} transport stream ·
+  {% set nsvc = b.ts_loops|map(attribute='services')|map('length')|sum %}
+  {% set nlcn = b.ts_loops|map(attribute='lcn')|map('length')|sum %}
+  {{ nsvc }} dịch vụ · {{ nlcn }} số kênh
+  {% if b.linkages %} · {{ b.linkages|length }} linkage{% endif %}
+</p>
+
+{% if not numbered and nsvc %}
+<p class="msg warn"><b>Bouquet này không đánh số kênh nào.</b>
+  Nó là một <i>nhóm</i> — thường để khoá mã hoặc để OTA — chứ không phải danh
+  sách kênh. Vì vậy phần "thiếu số kênh" bên dưới không báo gì: một cảnh báo
+  luôn kêu là một cảnh báo đã bị tắt.</p>
+{% endif %}
+
+{% if not b.ts_loops and not b.linkages %}
+<p class="msg err"><b>Bouquet này không nói gì cả.</b>
+  Không vòng transport, không linkage — nó vẫn được phát ra sóng dưới dạng một
+  bảng BAT trống. Đây là <b>RO-15</b>. Thêm vòng transport ở cuối trang.</p>
+{% elif not b.ts_loops %}
+<p class="msg warn"><b>Bouquet này chỉ mang linkage, không có vòng transport.</b>
+  Đó là cách dùng hợp lệ: nó là nhóm con trỏ OTA chứ không phải danh sách kênh.
+  0x0044 và 0x3622 đều như vậy.</p>
+{% endif %}
+
+{% if problems %}
+<h2>Soi số kênh</h2>
+{% for p in problems %}
+<p class="msg {{ 'err' if p.blocking else 'warn' }}" style="margin-bottom:8px">
+  {% if p.blocking %}<b>Chặn:</b>{% endif %} {{ p.message }}</p>
+{% endfor %}
+{% endif %}
+
+{% for L in loops %}
+{% set t = L.ts %}
+<h2>TS {{ t.ts_id }} — {{ L.members|length }} dịch vụ</h2>
+
+{% if L.members %}
+<form method="post" action="/bouquet/{{ '%04x' % b.bouquet_id }}/ts/{{ t.ts_id }}/lcn">
+<div class="tw"><table>
+<tr>
+  <th class="n" style="width:5.5em">Số kênh</th>
+  <th style="width:5em">Hiện</th>
+  <th class="n">SID</th><th>Tên</th><th>Loại</th><th style="width:6em"></th>
+</tr>
+{% for m in L.members %}
+<tr>
+  <td class="n">
+    <input type="number" name="lcn_{{ m.service_id }}" min="1" max="1023"
+           style="width:5em;text-align:right"
+           value="{{ m.entry.lcn if m.entry else '' }}">
+  </td>
+  <td>
+    <input type="checkbox" name="vis_{{ m.service_id }}" value="true"
+           {{ 'checked' if (m.entry is none) or m.entry.visible }}>
+  </td>
+  <td class="n">{{ m.service_id }}</td>
+  <td>
+    {% if m.svc %}<a href="/ts/{{ t.ts_id }}/service/{{ m.service_id }}">{{ m.svc.name }}</a>
+    {% else %}<span class="pill crit">không có trong SDT</span>{% endif %}
+  </td>
+  <td>{% if m.svc %}{{ 'TV' if m.svc.service_type.value == 1 else 'Radio' }}{% endif %}</td>
+  <td></td>
+</tr>
+{% endfor %}
+</table></div>
+<div class="row">
+  <button type="submit">Lưu bảng số kênh TS {{ t.ts_id }}</button>
+  <span class="dim">Gửi <b>cả bảng</b> một lượt — xoá trống một ô nghĩa là bỏ
+    số kênh đó, và trùng số chỉ phát hiện được khi nhìn cả bảng cùng lúc.</span>
+</div>
+</form>
+
+<div class="card" style="margin-top:16px">
+  <b>Bỏ một kênh khỏi bouquet</b>
+  <p class="dim" style="font-size:13px;margin:6px 0 0">Kênh vẫn còn trong SDT và
+  vẫn phát; nó chỉ thôi thuộc gói này, và mất số kênh trong gói này.</p>
+  <form method="post"
+        action="/bouquet/{{ '%04x' % b.bouquet_id }}/ts/{{ t.ts_id }}/remove">
+    <label for="rm{{ t.ts_id }}">Dịch vụ</label>
+    <select name="service_id" id="rm{{ t.ts_id }}">
+      {% for m in L.members %}
+      <option value="{{ m.service_id }}">{{ m.service_id }} —
+        {{ m.svc.name if m.svc else '?' }}{% if m.entry %} (số {{ m.entry.lcn }}){% endif %}</option>
+      {% endfor %}
+    </select>
+    <div class="row"><button type="submit" class="danger">Bỏ khỏi bouquet</button></div>
+  </form>
+</div>
+{% endif %}
+
+{% if L.outside %}
+<div class="card">
+  <b>Thêm kênh vào bouquet</b> — {{ L.outside|length }} dịch vụ ở TS {{ t.ts_id }}
+  chưa có trong gói này
+  <form method="post"
+        action="/bouquet/{{ '%04x' % b.bouquet_id }}/ts/{{ t.ts_id }}/add">
+    <div class="grid two">
+      <div>
+        <label for="add{{ t.ts_id }}">Dịch vụ</label>
+        <select name="service_id" id="add{{ t.ts_id }}">
+          {% for x in L.outside %}
+          <option value="{{ x.service_id }}">{{ x.service_id }} — {{ x.name }}
+            ({{ 'TV' if x.service_type.value == 1 else 'Radio' }})</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label for="num{{ t.ts_id }}">Số kênh</label>
+        <input type="number" name="number" id="num{{ t.ts_id }}" min="1" max="1023"
+               value="{{ suggestion if numbered else '' }}"
+               placeholder="để trống nếu chưa gán">
+        {% if numbered and suggestion %}
+        <span class="dim" style="font-size:12.5px">Gợi ý {{ suggestion }} — ngay
+          sau số cao nhất đang dùng. Lỗ hổng ở giữa thường là chỗ để dành, nên
+          không tự lấp.</span>
+        {% endif %}
+      </div>
+    </div>
+    <div class="row"><button type="submit">Thêm vào bouquet</button></div>
+  </form>
+</div>
+{% elif L.members %}
+<p class="sub">Cả {{ L.members|length }} dịch vụ của TS {{ t.ts_id }} đều đã ở trong gói này.</p>
+{% endif %}
+
+{% endfor %}
+
+<h2>Linkage
+  <a class="btn alt" style="float:right;margin-top:-4px"
+     href="/linkage/{{ '%04x' % b.bouquet_id }}/moi">+ thêm</a></h2>
+
+{% for p in link_problems %}
+<p class="msg {{ 'err' if p.blocking else 'warn' }}" style="margin-bottom:8px">
+  mục [{{ p.index }}]: {{ p.message }}</p>
+{% endfor %}
+
+{% if b.linkages %}
+<div class="tw"><table>
+<tr><th class="n" style="width:3em">#</th><th class="n">Loại</th><th>Nghĩa</th>
+    <th class="n">TSID</th><th class="n">ONID</th><th class="n">SID</th>
+    <th>Dữ liệu riêng</th><th></th></tr>
+{% for k in b.linkages %}
+<tr>
+  <td class="n dim">{{ loop.index0 }}</td>
+  <td class="n">0x{{ '%02x' % k.linkage_type }}</td>
+  <td style="font-size:13px">{{ describe(k.linkage_type) }}</td>
+  <td class="n">{{ k.ts_id }}</td>
+  <td class="n">{{ k.original_network_id }}</td>
+  <td class="n">{{ k.service_id }}</td>
+  <td class="m" style="font-size:11.5px;max-width:16em;word-break:break-all">
+    {% if k.private_data %}{{ as_hex(k.private_data) }}
+      <span class="dim">({{ k.private_data|length }} B)</span>
+    {% else %}<span class="dim">—</span>{% endif %}</td>
+  <td><a href="/linkage/{{ '%04x' % b.bouquet_id }}/{{ loop.index0 }}">sửa</a></td>
+</tr>
+{% endfor %}
+</table></div>
+<p class="sub">Byte dữ liệu riêng của Irdeto và ViCAS ta chưa có đặc tả, nên
+chúng được giữ nguyên từng byte. Đọc kỹ cảnh báo ở
+<a href="/linkage">trang linkage</a> trước khi sửa.</p>
+{% else %}
+<p class="sub">Bouquet này không mang linkage nào.</p>
+{% endif %}
+
+<h2>Vòng transport</h2>
+
+{% if spare %}
+<div class="card">
+  <b>Thêm một vòng transport</b>
+  <p class="dim" style="font-size:13px;margin:6px 0 0">Vòng mới ra <b>rỗng</b> —
+  thêm vòng và chọn kênh là hai quyết định khác nhau. Chọn kênh xong thì quay
+  lên phần của TS đó.</p>
+  <form method="post" action="/bouquet/{{ '%04x' % b.bouquet_id }}/ts/add">
+    <div class="grid two">
+      <div>
+        <label for="newts">Transport stream</label>
+        <select name="ts_id" id="newts">
+          {% for x in spare %}
+          <option value="{{ x.ts_id }}" data-onid="{{ x.onid }}">TS {{ x.ts_id }}
+            — {{ x.services }} dịch vụ, ONID {{ x.onid }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label for="newonid">original_network_id</label>
+        <input type="number" name="original_network_id" id="newonid"
+               min="0" max="65535" required value="{{ spare[0].onid }}">
+        <span class="dim" style="font-size:12.5px">Lấy sẵn từ SDT của TS đầu
+        danh sách. <b>Đổi theo TS bạn chọn</b> — ở VTC, TS 8 mang 12901 còn
+        TS 3 và 1000 mang 1, nên ô này không suy ra được từ TSID.</span>
+      </div>
+    </div>
+    <label for="newpds">private_data_specifier</label>
+    <input type="text" name="pds" id="newpds" autocomplete="off"
+           value="{{ suggested_pds or '' }}"
+           placeholder="để trống nếu vòng này không dùng LCN">
+    <span class="dim" style="font-size:12.5px">Bắt buộc nếu vòng này sẽ có số
+    kênh: <span class="m">private_data_specifier</span> phải đứng <b>ngay
+    trước</b> descriptor LCN, thiếu nó thì đầu thu không hiểu descriptor đó.
+    Cả sáu vòng đang phát đều dùng <span class="m">NorDig</span> — giữ nguyên
+    chữ đó. Gõ <span class="m">0x00000029</span> ra đúng byte nhưng YAML sẽ đọc
+    thành <span class="m">41</span> và lệch với phần còn lại.</span>
+    <div class="row"><button type="submit">Thêm vòng transport</button></div>
+  </form>
+</div>
+{% else %}
+<p class="sub">Cả {{ cfg.sdts|length }} transport stream đều đã có vòng trong
+bouquet này.</p>
+{% endif %}
+
+{% if b.ts_loops %}
+<div class="card">
+  <b>Bỏ cả một vòng transport</b>
+  <p class="dim" style="font-size:13px;margin:6px 0 0">Bỏ vòng là gỡ
+  <b>toàn bộ</b> kênh của TS đó khỏi gói, cùng số kênh của chúng. Hậu quả chỉ
+  lộ ra sau lần dò kế tiếp của đầu thu.</p>
+  <form method="post" action="/bouquet/{{ '%04x' % b.bouquet_id }}/ts/drop">
+    <div class="grid two">
+      <div>
+        <label for="dropts">Vòng transport</label>
+        <select name="ts_id" id="dropts">
+          {% for L in loops %}
+          <option value="{{ L.ts.ts_id }}">TS {{ L.ts.ts_id }} —
+            {{ L.members|length }} dịch vụ, {{ L.ts.lcn|length }} số kênh</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label for="dropconfirm">Gõ số dịch vụ của vòng đó để xác nhận</label>
+        <input type="text" name="confirm" id="dropconfirm" autocomplete="off"
+               placeholder="vòng rỗng thì để trống">
+      </div>
+    </div>
+    <div class="row"><button type="submit" class="danger">Bỏ cả vòng</button></div>
+  </form>
+</div>
+{% endif %}
+
+<p class="sub" style="margin-top:28px">Sửa ở đây <b>không</b> tăng BAT version.
+Xong thì chạy <span class="m">vtcsi preflight</span>, rồi tăng version bouquet
+này ở <a href="/">trang tổng quan</a>.</p>
+
+{% endblock %}

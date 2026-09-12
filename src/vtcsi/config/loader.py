@@ -54,15 +54,24 @@ def _dump(data, path: Path) -> None:
         default_flow_style=False,
         width=100,
     )
-    path.write_text(_HEADER + body, encoding="utf-8")
+    # newline="\n" la bat buoc, khong phai chi tiet vun vat.
+    #
+    # Che van ban cua Python tren Windows doi \n thanh \r\n. Mot ben chay
+    # Windows, mot ben chay Linux trong Docker, thi cung mot cau hinh cho ra
+    # hai chuoi byte khac nhau tren dia — va "cung commit thi cung byte"
+    # (§3.3 spec.md) la co che dong bo cua ca he. Git che giau duoc chuyen
+    # nay khi so sanh, nen no de trot lot cho toi luc hai may thuc su phai
+    # chung mot cau tra loi.
+    with path.open("w", encoding="utf-8", newline="\n") as fh:
+        fh.write(_HEADER + body)
 
 
 def _load(path: Path):
     if not path.exists():
-        raise ConfigError(f"thieu file cau hinh: {path}")
+        raise ConfigError(f"thiếu file cấu hình: {path}")
     data = yaml.safe_load(path.read_text(encoding="utf-8"))
     if data is None:
-        raise ConfigError(f"file rong: {path}")
+        raise ConfigError(f"file rỗng: {path}")
     return data
 
 
@@ -105,7 +114,7 @@ def load(root: Path) -> Config:
     """Đọc cấu hình từ đĩa thành mô hình."""
     net = _load(root / NETWORK_FILE)
     if "network" not in net:
-        raise ConfigError(f"{NETWORK_FILE}: thieu khoa 'network'")
+        raise ConfigError(f"{NETWORK_FILE}: thiếu khoá 'network'")
     network = net["network"]
 
     for ts in network.get("transport_streams", []):
@@ -115,7 +124,7 @@ def load(root: Path) -> Config:
         if block.get("ts_id") != ts_id:
             raise ConfigError(
                 f"{path.name}: ts_id ben trong la {block.get('ts_id')!r}, "
-                f"khong khop ten file")
+                f"không khớp tên file")
         ts["services"] = block.get("services", [])
 
     bouquet_dir = root / BOUQUETS_DIR

@@ -183,5 +183,53 @@ class TestAgainstRealFile(unittest.TestCase):
         self.assertEqual(len(W.services_below(out, self.start, hours=120)), 44)
 
 
+
+class TestOnlyServices(unittest.TestCase):
+    """Lọc theo công tắc EPG của từng kênh.
+
+    Cờ ``EIT_schedule_flag`` trong SDT chỉ là *lời khai* — đầu thu vẫn hiện EPG
+    nếu bảng có trên sóng. Nên tắt EPG một kênh **thật sự** là không sinh bảng
+    cho nó, và đó là việc của hàm này.
+    """
+
+    def setUp(self) -> None:
+        self.events = (
+            ev(1, T0, 60),
+            ev(2, T0, 60),
+            ev(3, T0, 60),
+            ev(1, T0 + timedelta(hours=1), 60),
+        )
+
+    def test_it_keeps_only_what_is_allowed(self) -> None:
+        keep, _ = W.only_services(self.events, {1, 3})
+        self.assertEqual({e.service_id for e in keep}, {1, 3})
+        self.assertEqual(len(keep), 3)
+
+    def test_it_names_what_it_dropped(self) -> None:
+        """Tat EPG mot kenh phai NOI RA — ba thang sau con nguoi ta hoi lai."""
+        _, bo = W.only_services(self.events, {1})
+        self.assertEqual(bo, (2, 3))
+
+    def test_allowing_everything_drops_nothing(self) -> None:
+        keep, bo = W.only_services(self.events, {1, 2, 3})
+        self.assertEqual(keep, self.events)
+        self.assertEqual(bo, ())
+
+    def test_allowing_nothing_keeps_nothing(self) -> None:
+        keep, bo = W.only_services(self.events, set())
+        self.assertEqual(keep, ())
+        self.assertEqual(bo, (1, 2, 3))
+
+    def test_a_service_with_no_events_is_not_reported_as_dropped(self) -> None:
+        """Kenh khong co su kien thi khong co gi de bo — keu la keu bua."""
+        _, bo = W.only_services(self.events, {1, 2, 3, 99})
+        self.assertEqual(bo, ())
+
+    def test_order_is_untouched(self) -> None:
+        keep, _ = W.only_services(self.events, {1, 2, 3})
+        self.assertEqual([e.start_utc for e in keep],
+                         [e.start_utc for e in self.events])
+
+
 if __name__ == "__main__":
     unittest.main()

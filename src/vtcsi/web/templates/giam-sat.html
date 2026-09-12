@@ -1,0 +1,312 @@
+{% extends "base.html" %}
+{% block title %}Giám sát — VTC-SI{% endblock %}
+{% block body %}
+<style>
+/* Lưới cần bề ngang. Nới riêng cho trang này, không đụng các trang khác. */
+.wrap{max-width:none}
+
+.thanh{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin:0 0 12px}
+.thanh .day{display:flex;gap:0}
+.thanh .day button{border-radius:0;border-right-width:0}
+.thanh .day button:first-child{border-radius:3px 0 0 3px}
+.thanh .day button:last-child{border-radius:0 3px 3px 0;border-right-width:1px}
+.thanh button.chon{background:var(--accent);border-color:var(--accent);color:var(--ground)}
+.thanh input[type=date]{width:auto}
+.dong-ho{font-family:var(--mono);font-size:16px;font-weight:700;color:var(--crit);
+  font-variant-numeric:tabular-nums;margin-left:auto}
+
+.so{display:flex;gap:18px;flex-wrap:wrap;padding:8px 12px;background:var(--surface);
+  border:1px solid var(--rule);font-size:12.5px;color:var(--ink-2);margin:0 0 12px}
+.so b{color:var(--ink);font-variant-numeric:tabular-nums}
+.so .xau b{color:var(--crit)} .so .vua b{color:var(--warn)}
+
+.khung{overflow:auto;background:var(--surface);border:1px solid var(--rule);
+  max-height:72vh;position:relative}
+.luoi{position:relative;width:max-content;min-width:100%}
+
+.thuoc{position:sticky;top:0;z-index:6;display:flex;height:28px;
+  background:var(--surface-2);border-bottom:1px solid var(--rule)}
+.thuoc .goc{position:sticky;left:0;z-index:7;width:200px;flex:0 0 200px;
+  background:var(--surface-2);border-right:1px solid var(--rule);
+  display:flex;align-items:center;padding:0 12px;font-size:11px;font-weight:600;
+  text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+.thuoc .vach{position:relative;flex:0 0 auto}
+.vach .v{position:absolute;top:0;height:28px;border-left:1px solid var(--rule-2);
+  padding:6px 0 0 5px;font-size:11px;color:var(--muted);font-family:var(--mono)}
+.vach .v.sau{border-left-color:var(--rule);color:var(--ink-2);font-weight:600}
+
+.hang{display:flex;height:34px;border-bottom:1px solid var(--rule-2)}
+.hang:hover .ten{background:var(--surface-2)}
+.ten{position:sticky;left:0;z-index:5;width:200px;flex:0 0 200px;
+  background:var(--surface);border-right:1px solid var(--rule);
+  display:flex;align-items:center;gap:7px;padding:0 10px 0 12px;overflow:hidden}
+.ten .sid{font-family:var(--mono);font-size:11px;color:var(--muted);flex:0 0 auto}
+.ten .t{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;
+  text-overflow:ellipsis}
+.ten .radio{font-size:10px;color:var(--muted);margin-left:auto;flex:0 0 auto}
+
+.rai{position:relative;flex:0 0 auto;height:33px}
+.gio{position:absolute;top:0;bottom:0;border-left:1px solid var(--rule-2)}
+.gio.sau{border-left-color:var(--rule)}
+
+.o{position:absolute;top:3px;height:27px;border-radius:3px;overflow:hidden;
+  background:var(--surface-2);border:1px solid var(--accent);
+  padding:0 6px;display:flex;align-items:center;cursor:pointer;
+  font-size:12.5px;color:var(--ink);white-space:nowrap}
+.o:hover{z-index:3;box-shadow:0 2px 8px rgba(0,0,0,.22)}
+.o.dang{background:var(--crit);border-color:var(--crit);color:#fff;font-weight:600;z-index:2}
+.o .tm{font-family:var(--mono);font-size:11px;color:var(--muted);margin-right:5px;flex:0 0 auto}
+.o.dang .tm{color:rgba(255,255,255,.85)}
+
+.ho{position:absolute;top:3px;height:27px;border-radius:3px;
+  background:repeating-linear-gradient(135deg,var(--surface-2),var(--surface-2) 5px,
+    transparent 5px,transparent 10px);
+  border:1px dashed var(--crit)}
+
+.khong{position:absolute;top:3px;height:27px;left:0;border-radius:3px;
+  background:var(--surface-2);border:1px dashed var(--rule);
+  display:flex;align-items:center;justify-content:center;
+  font-size:12.5px;color:var(--muted);font-style:italic}
+
+/* Tat EPG khac hAn thieu lich: mot ben la lua chon, mot ben la su co. */
+.hang.tat .ten{opacity:.55}
+.hang.tat .rai{background:repeating-linear-gradient(135deg,
+  transparent,transparent 7px,var(--surface-2) 7px,var(--surface-2) 14px)}
+.khong.tat{background:none;border-style:solid;border-color:var(--rule);
+  font-style:normal;letter-spacing:.04em}
+.ten .cong-tac-tat{font-size:10px;font-weight:700;letter-spacing:.05em;
+  color:var(--muted);border:1px solid var(--rule);border-radius:2px;
+  padding:0 4px;margin-left:auto;flex:0 0 auto}
+
+.moc{position:absolute;top:28px;bottom:0;width:2px;background:var(--crit);
+  z-index:4;pointer-events:none}
+.moc::before{content:"";position:absolute;top:-5px;left:-4px;width:10px;height:10px;
+  border-radius:50%;background:var(--crit)}
+.trong{padding:36px 20px;text-align:center;color:var(--muted)}
+</style>
+
+<h1>Giám sát</h1>
+<p class="sub">Lịch sẽ lên sóng của <b>TS {{ ts_id }}</b> — transport stream
+actual. Đây là thứ đầu thu sẽ thấy, không phải thứ có trong hộp thư.</p>
+
+{% if canh_bao %}
+<p class="msg warn"><b>Quản lý PSI/SI:</b> {{ canh_bao }}. Lưới bên dưới trống vì
+không có sự kiện nào để vẽ, không phải vì các kênh không có chương trình.</p>
+{% endif %}
+
+{% if so_tat %}
+<p class="msg"><b>{{ so_tat }} kênh đang <span class="m">tắt EPG</span></b> —
+vẫn có dòng ở đây vì chúng vẫn là kênh của TS {{ ts_id }}, nhưng dòng để trống
+kể cả khi hộp thư có lịch cho chúng: kênh tắt không có bảng EIT nào được sinh
+ra, nên vẽ chương trình lên đó sẽ là nói dối. Bật lại ở
+<a href="/ts/{{ ts_id }}">trang TS {{ ts_id }}</a>.</p>
+{% endif %}
+
+<div class="thanh">
+  <div class="field" style="display:flex;gap:7px;align-items:center">
+    <label for="ngay" style="margin:0">Ngày</label>
+    <input type="date" id="ngay" value="{{ ngay }}">
+  </div>
+  <button type="button" class="alt" id="homnay">Hôm nay</button>
+  <div class="day">
+    <button type="button" class="alt" data-px="2">Nén</button>
+    <button type="button" class="alt chon" data-px="4">Vừa</button>
+    <button type="button" class="alt" data-px="8">Giãn</button>
+  </div>
+  <button type="button" class="alt" id="nhay">Về giờ hiện tại</button>
+  <span class="dong-ho" id="dongho"></span>
+</div>
+
+<div class="so" id="so"></div>
+<div class="khung" id="khung"><div class="luoi" id="luoi">
+  <div class="trong">Đang tải…</div></div></div>
+
+<p class="sub" style="margin-top:12px">Ô <span class="pill crit">đỏ</span> là
+chương trình đang phát. Vùng gạch chéo viền đỏ là <b>lỗ hổng lịch</b> — khoảng
+trống từ 5 phút trở lên giữa hai chương trình, chỗ đầu thu sẽ hiện "Không có
+thông tin". Lỗ hổng chỉ tính <b>giữa</b> hai chương trình: một kênh lên sóng từ
+05:00 không có "lỗ hổng năm tiếng", nó chỉ chưa phát.</p>
+
+<p class="sub">Dòng gạch chéo mờ, gắn nhãn <span class="m">TẮT</span>, là kênh
+đã tắt EPG. Nó để trống vì <b>không có bảng EIT nào</b> trên sóng cho kênh đó —
+khác hẳn "Không có thông tin", vốn là kênh đang bật mà thiếu lịch. Một bên là
+lựa chọn, một bên là sự cố.</p>
+
+<dialog id="hop">
+  <h3 style="margin:0 0 4px;font-size:17px" id="hTen"></h3>
+  <div class="m" style="font-size:12.5px;color:var(--muted);margin-bottom:12px"
+       id="hPhu"></div>
+  <p style="margin:0 0 14px;font-size:13.5px;color:var(--ink-2)" id="hMo"></p>
+  <div class="row" style="margin-top:0;justify-content:flex-end">
+    <button type="button" class="alt" id="hDong">Đóng</button>
+  </div>
+</dialog>
+
+<script>
+"use strict";
+(function () {
+  var PX = 4, DL = null, dem = null;
+  var NAV = 200;                    // phải khớp .ten{width} ở trên
+  var $ = function (id) { return document.getElementById(id); };
+
+  function esc(t) {
+    return String(t == null ? "" : t).replace(/[&<>"]/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+    });
+  }
+  function hhmm(m) {
+    var x = ((m % 1440) + 1440) % 1440;
+    return String(Math.floor(x / 60)).padStart(2, "0") + ":" +
+           String(x % 60).padStart(2, "0");
+  }
+  function phutBayGio() {
+    var n = new Date();
+    return n.getHours() * 60 + n.getMinutes();
+  }
+
+  function veSo() {
+    var t = DL.tong;
+    $("so").innerHTML =
+      '<span>Kênh <b>' + t.kenh + '</b></span>' +
+      '<span>Có lịch <b>' + t.co_lich + '</b></span>' +
+      '<span class="' + (t.trong ? 'xau' : '') + '">Chưa có lịch <b>' +
+        t.trong + '</b></span>' +
+      '<span>Sự kiện <b>' + t.su_kien.toLocaleString("vi-VN") + '</b></span>' +
+      '<span class="vua">Lỗ hổng lịch <b>' + t.lo_hong + '</b></span>' +
+      (t.tat_epg ? '<span>Tắt EPG <b>' + t.tat_epg + '</b></span>' : '') +
+      (DL.hom_nay ? '' : '<span>Không phải hôm nay — không có vạch giờ hiện tại</span>');
+  }
+
+  function ve() {
+    veSo();
+    var W = 1440 * PX, h, vach = "", gio = "";
+    for (h = 0; h <= 24; h++) {
+      var x = h * 60 * PX, sau = (h % 6 === 0) ? " sau" : "";
+      vach += '<div class="v' + sau + '" style="left:' + x + 'px">' +
+              String(h).padStart(2, "0") + ':00</div>';
+      gio += '<div class="gio' + sau + '" style="left:' + x + 'px"></div>';
+    }
+
+    var now = DL.hom_nay ? phutBayGio() : -1;
+    var hang = DL.dong.map(function (r) {
+      var trong = gio;
+      if (r.epg === false) {
+        trong += '<div class="khong tat" style="width:' + W +
+          'px">Đã tắt EPG — kênh này không có bảng EIT trên sóng</div>';
+      } else if (!r.muc.length) {
+        trong += '<div class="khong" style="width:' + W + 'px">Không có thông tin</div>';
+      } else {
+        r.ho.forEach(function (g) {
+          trong += '<div class="ho" style="left:' + (g[0] * PX) + 'px;width:' +
+            (g[1] * PX) + 'px" title="Lỗ hổng ' + g[1] + ' phút, từ ' +
+            hhmm(g[0]) + '"></div>';
+        });
+        r.muc.forEach(function (e, i) {
+          var dang = now >= e.s && now < e.s + e.p;
+          var w = Math.max(3, e.p * PX - 2);
+          var nhan = w > 74
+            ? '<span class="tm">' + hhmm(e.s) + '</span>' + esc(e.t)
+            : (w > 30 ? esc(e.t) : "");
+          trong += '<div class="o' + (dang ? " dang" : "") + '" style="left:' +
+            (e.s * PX) + 'px;width:' + w + 'px" data-c="' + r.id +
+            '" data-i="' + i + '" title="' +
+            esc(hhmm(e.s) + " – " + hhmm(e.s + e.p) + "  " + e.t) + '">' +
+            nhan + '</div>';
+        });
+      }
+      var nhan = r.epg === false
+        ? '<span class="cong-tac-tat" title="Tắt EPG trong SDT">TẮT</span>'
+        : (r.radio ? '<span class="radio">radio</span>' : '');
+      return '<div class="hang' + (r.epg === false ? ' tat' : '') + '">' +
+        '<div class="ten">' +
+        '<span class="sid">' + r.id + '</span>' +
+        '<span class="t">' + esc(r.ten) + '</span>' + nhan + '</div>' +
+        '<div class="rai" style="width:' + W + 'px">' + trong + '</div></div>';
+    }).join("");
+
+    $("luoi").innerHTML =
+      '<div class="thuoc"><div class="goc">Kênh</div>' +
+      '<div class="vach" style="width:' + W + 'px">' + vach + '</div></div>' +
+      (hang || '<div class="trong">Không có kênh nào đang bật EPG.</div>') +
+      (now >= 0 ? '<div class="moc" id="ml" style="left:' +
+        (now * PX + NAV) + 'px"></div>' : '');
+
+    Array.prototype.forEach.call($("luoi").querySelectorAll(".o"), function (el) {
+      el.addEventListener("click", function () {
+        var r = DL.dong.filter(function (x) { return String(x.id) === el.dataset.c; })[0];
+        var e = r.muc[+el.dataset.i];
+        $("hTen").textContent = e.t;
+        $("hPhu").textContent = r.ten + " · " + r.id + " · " +
+          hhmm(e.s) + " – " + hhmm(e.s + e.p) + " · " + e.p + " phút";
+        $("hMo").textContent = e.m || "Không có mô tả.";
+        if ($("hop").showModal) $("hop").showModal();
+      });
+    });
+  }
+
+  function veGio() {
+    if (!DL || !DL.hom_nay) return;
+    var k = $("khung"), x = phutBayGio() * PX + NAV;
+    k.scrollTo({ left: Math.max(0, x - k.clientWidth / 2), behavior: "smooth" });
+  }
+
+  function nhipGio() {
+    var n = new Date();
+    $("dongho").textContent = String(n.getHours()).padStart(2, "0") + ":" +
+      String(n.getMinutes()).padStart(2, "0");
+    if (!DL || !DL.hom_nay) return;
+    var now = phutBayGio(), ml = $("ml");
+    if (ml) ml.style.left = (now * PX + NAV) + "px";
+    // Chi doi o nao that su can doi. Ve lai ca luoi moi phut thi mat vi tri
+    // cuon va dong luon hop chi tiet nguoi dung dang mo.
+    DL.dong.forEach(function (r) {
+      r.muc.forEach(function (e, i) {
+        var el = $("luoi").querySelector(
+          '.o[data-c="' + r.id + '"][data-i="' + i + '"]');
+        if (!el) return;
+        var dang = now >= e.s && now < e.s + e.p;
+        if (el.classList.contains("dang") !== dang) el.classList.toggle("dang", dang);
+      });
+    });
+  }
+
+  function nap(giua) {
+    fetch("/giam-sat/du-lieu?ngay=" + encodeURIComponent($("ngay").value),
+          { credentials: "same-origin" })
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        if (d.loi) throw new Error(d.loi);
+        DL = d;
+        ve();
+        if (giua) setTimeout(veGio, 60);
+      })
+      .catch(function (e) {
+        $("luoi").innerHTML = '<div class="trong">' + esc(e.message) + '</div>';
+      });
+  }
+
+  $("ngay").addEventListener("change", function () { nap(true); });
+  $("homnay").addEventListener("click", function () {
+    $("ngay").value = {{ hom_nay | tojson }};
+    nap(true);
+  });
+  $("nhay").addEventListener("click", veGio);
+  $("hDong").addEventListener("click", function () { $("hop").close(); });
+  Array.prototype.forEach.call(document.querySelectorAll("[data-px]"), function (b) {
+    b.addEventListener("click", function () {
+      Array.prototype.forEach.call(document.querySelectorAll("[data-px]"),
+        function (x) { x.classList.toggle("chon", x === b); });
+      PX = +b.dataset.px;
+      ve();
+      veGio();
+    });
+  });
+
+  nap(true);
+  nhipGio();
+  clearInterval(dem);
+  dem = setInterval(nhipGio, 20000);
+})();
+</script>
+
+{% endblock %}

@@ -15,6 +15,7 @@ import unittest
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
+import seed
 from vtcsi.config import loader
 from vtcsi.model.plain import ConfigError
 from vtcsi.tables import tsduck as T
@@ -145,17 +146,21 @@ class TestLoaderRefusesBadInput(unittest.TestCase):
 
 
 class TestSeededConfigInRepo(unittest.TestCase):
-    """Cấu hình đã gieo sẵn trong repo phải luôn khớp chuẩn vàng.
+    """Bản gieo **đã commit** phải luôn khớp chuẩn vàng.
 
-    Nếu ai sửa ``config/`` mà lệch khỏi sóng, bài này đỏ — đó chính là vai trò
-    của lệnh ``vtcsi diff`` nhưng chạy tự động.
+    Đọc từ HEAD chứ không đọc thư mục làm việc. Lý do đầy đủ ở ``tests/seed.py``,
+    tóm tắt: ``config/`` cốt để sửa, nên một thao tác hợp lệ của người vận hành
+    không được làm đỏ bộ test. Việc canh cấu hình *đang sửa* là của
+    ``vtcsi preflight``, và nó phân biệt được `đổi ngầm` với `tăng thừa` —
+    thứ bài test này không làm nổi.
     """
 
-    def test_repo_config_matches_golden(self) -> None:
-        root = Path(__file__).parent.parent / "config"
-        if not (root / "network.yaml").exists():
-            raise unittest.SkipTest("chua gieo cau hinh")
-        cfg = loader.load(root)
+    def test_committed_config_matches_golden(self) -> None:
+        td = seed.committed_config()
+        try:
+            cfg = loader.load(Path(td.name) / "config")
+        finally:
+            td.cleanup()
         air = T.read_dump(_require())
         self.assertEqual(cfg.network, air.network)
         self.assertEqual(cfg.sdts, air.sdts)

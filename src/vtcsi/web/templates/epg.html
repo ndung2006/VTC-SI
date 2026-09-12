@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+{% block title %}Quản lý PSI/SI — VTC-SI{% endblock %}
+{% block body %}
+
+<h1>Quản lý PSI/SI</h1>
+<p class="sub">Hai đầu của hệ: XML lịch đi <b>vào</b>, dòng TS đi <b>ra</b>.</p>
+
+{% set trang_con = 'vao' %}{% include "_tabs-psisi.html" %}
+
+<p class="sub">Hộp thư lịch — nơi hệ lập lịch bên ngoài bàn giao file XML. Có
+file mới là <b>sinh lại EIT ngay</b>, không chờ chu kỳ.</p>
+
+<h2>Đường đi của một file</h2>
+<div class="card">
+<figure style="margin:0">
+<svg viewBox="0 0 900 132" role="img" width="100%" style="height:auto"
+     aria-label="Hệ lập lịch bên ngoài gửi XML qua HTTPS tới VTC-SI, VTC-SI sinh bảng và phát UDP multicast tới headend">
+  <defs>
+    <marker id="mui" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/>
+    </marker>
+  </defs>
+  <g fill="none" stroke="currentColor" stroke-width="1.5">
+    <rect x="4"   y="30" width="180" height="56" rx="3"/>
+    <rect x="290" y="30" width="180" height="56" rx="3" stroke="var(--accent)" stroke-width="2"/>
+    <rect x="576" y="30" width="180" height="56" rx="3"/>
+    <rect x="800" y="30" width="96"  height="56" rx="3"/>
+    <line x1="184" y1="58" x2="284" y2="58" marker-end="url(#mui)"/>
+    <line x1="470" y1="58" x2="570" y2="58" marker-end="url(#mui)"/>
+    <line x1="756" y1="58" x2="794" y2="58" marker-end="url(#mui)"/>
+  </g>
+  <g fill="currentColor" font-size="12.5" text-anchor="middle">
+    <text x="94"  y="54">Lập lịch · kiểm duyệt</text>
+    <text x="94"  y="70">xuất bản · sinh XML</text>
+    <text x="380" y="54" font-weight="700">VTC-SI nhận XML</text>
+    <text x="380" y="70">kiểm, ghi, sinh lại</text>
+    <text x="666" y="54">tsp → UDP multicast</text>
+    <text x="666" y="70">PID 16, 17, 18</text>
+    <text x="848" y="62">Headend</text>
+  </g>
+  <g fill="var(--muted)" font-size="11" text-anchor="middle">
+    <text x="234" y="50">HTTPS</text>
+    <text x="234" y="100">POST /api/epg</text>
+    <text x="520" y="50">nửa giây</text>
+    <text x="94"  y="20">bên ngoài</text>
+    <text x="380" y="20">hệ này</text>
+    <text x="848" y="20">bên ngoài</text>
+  </g>
+</svg>
+<figcaption class="dim" style="font-size:12.5px;margin-top:6px">
+  Hệ này chỉ giữ đúng ô giữa. Hai đầu là hệ khác, và ranh giới giữa chúng là
+  một file XML — thứ kiểm được, lưu được, gửi lại được.
+</figcaption>
+</figure>
+</div>
+
+<h2>File đang có <span class="dim" style="font-weight:400;font-size:13.5px">— {{ inbox }}</span></h2>
+{% if files %}
+<div class="tw"><table>
+<tr><th>File</th><th class="n">TSID</th><th class="n">Dịch vụ</th>
+    <th class="n">Sự kiện</th><th>Khoảng thời gian</th><th class="n">Kích thước</th><th></th></tr>
+{% for f in files %}
+<tr>
+  <td class="m">{{ f.ten }}</td>
+  {% if f.loi %}
+  <td colspan="4"><span class="pill crit">không đọc được</span>
+    <span class="dim">{{ f.loi }}</span></td>
+  {% else %}
+  <td class="n">{{ f.ts_id }}</td>
+  <td class="n">{{ f.so_dich_vu }}</td>
+  <td class="n">{{ f.so_su_kien }}</td>
+  <td class="m">{{ f.tu.astimezone().strftime('%d/%m %H:%M') if f.tu else '—' }}
+    → {{ f.den.astimezone().strftime('%d/%m %H:%M') if f.den else '—' }}</td>
+  {% endif %}
+  <td class="n">{{ (f.byte / 1024)|round|int }} KB</td>
+  <td>
+    <form method="post" action="/epg/xoa" style="margin:0">
+      <input type="hidden" name="ten" value="{{ f.ten }}">
+      <button type="submit" class="alt" style="padding:3px 9px;font-size:13px">xoá</button>
+    </form>
+  </td>
+</tr>
+{% endfor %}
+</table></div>
+<p class="sub">Thứ tự tên file là thứ tự nạp, và <b>file nạp sau thắng</b> khi
+trùng khoá. Vì vậy tên theo ngày là đủ để "bản sửa gửi sau" hoạt động đúng —
+gửi lại cùng một ngày thì ghi đè, không đẻ ra bản trùng.</p>
+{% else %}
+<p class="msg warn"><b>Hộp thư trống.</b> Chưa có file lịch nào, nên EIT không
+sinh được. Các bảng NIT, SDT và BAT vẫn phát bình thường — mất EPG khó chịu,
+mất NIT mới là mất kênh.</p>
+{% endif %}
+
+<h2>Nạp file bằng tay</h2>
+<div class="card">
+  <p style="margin-top:0">Đi đúng đường như API: kiểm trước, ghi sau, rồi sinh
+  lại ngay.</p>
+  <form method="post" action="/epg/tai-len" enctype="multipart/form-data">
+    <label for="file">File XML</label>
+    <input type="file" name="file" id="file" accept=".xml,text/xml,application/xml" required>
+    <label for="ten">Tên file (để trống thì tự đặt theo ngày sớm nhất trong file)</label>
+    <input type="text" name="ten" id="ten" placeholder="2026-09-12.xml">
+    <div class="row"><button type="submit">Nạp và áp dụng</button></div>
+  </form>
+</div>
+
+<h2>Cho hệ bên ngoài gọi vào</h2>
+<div class="card">
+  <p style="margin-top:0">Một tuyến, một vé. Thân yêu cầu là <b>chính nội dung
+  XML</b>, không bọc JSON — bên gửi đã có sẵn file, bắt họ mã hoá base64 rồi
+  nhét vào một trường JSON chỉ thêm một bước để sai.</p>
+
+  <pre>curl -X POST https://&lt;máy-chủ&gt;/api/epg \
+     -H "Authorization: Bearer {{ token or '&lt;vé&gt;' }}" \
+     -H "Content-Type: application/xml" \
+     --data-binary @lich-2026-09-12.xml</pre>
+
+  <p>Trả về JSON: tên file đã ghi, TSID, số dịch vụ, số sự kiện, khoảng thời
+  gian, và kết quả sinh lại. Đủ để hệ bên ngoài ghi log và biết chắc đã tới nơi.</p>
+
+  <p>Hỏng thì trả mã <span class="m">400</span> kèm lý do, và <b>không ghi gì
+  cả</b>. Kiểm trước khi ghi là cố ý: một file hỏng nằm trong hộp thư sẽ làm
+  hỏng lần sinh EIT kế tiếp, mà lần đó xảy ra vài giây sau và không ai đang nhìn.</p>
+
+  <label>Vé hiện tại</label>
+  {% if token %}
+  <input type="text" readonly value="{{ token }}" onclick="this.select()"
+         style="font-family:var(--mono);font-size:12.5px">
+  <span class="dim" style="font-size:12.5px">Bấm vào để chọn rồi sao chép.
+  Vé này <b>không</b> đổi khi bạn đổi mật khẩu — hai thứ có vòng đời khác nhau,
+  và bắt hệ bên ngoài cấu hình lại mỗi lần đổi mật khẩu là cách chắc chắn để có
+  người tắt xác thực cho đỡ phiền.</span>
+  {% else %}
+  <p class="msg err">Chưa có vé. Cấp một cái bên dưới.</p>
+  {% endif %}
+
+  <form method="post" action="/epg/ve-moi">
+    <div class="row">
+      <button type="submit" class="danger">Cấp vé mới</button>
+      <span class="dim">Vé cũ chết ngay. Hệ bên ngoài sẽ bị từ chối
+        <span class="m">401</span> cho tới khi cập nhật.</span>
+    </div>
+  </form>
+
+  <p class="dim" style="font-size:12.5px;margin-bottom:0">Vé chỉ đọc từ header,
+  <b>không</b> từ query string: URL nằm trong log của mọi proxy trên đường đi,
+  và một cái vé đã vào log là một cái vé đã lộ.</p>
+</div>
+
+{% endblock %}

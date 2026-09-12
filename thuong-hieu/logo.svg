@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 68 36" width="136" height="72"
+     fill="none" stroke-width="2" role="img"
+     aria-label="Logo VTC-SI: hai tấm lệch nhau, chữ EPG nằm trong tấm trên">
+  <title>VTC-SI — logo</title>
+  <style>
+    /* `currentColor` hop khi nhung thang vao trang — no lat theo nen.
+       Nhung khi file nay duoc dung qua `img src` hay lam favicon thi
+       khong co trang nao de thua mau, va `currentColor` roi ve DEN:
+       tren nen toi la mat sach phan khung, chi con ba doan nhan.
+       Nen dat mau ngay tai goc file, kem mot luat cho nen toi. */
+    :root { color: #0e1618 }
+    @media (prefers-color-scheme: dark) { :root { color: #e3ecee } }
+  </style>
+
+
+  <!--
+    Giống `dau.svg`, thêm chữ EPG trong tấm trên.
+
+    CỠ NHỎ NHẤT DÙNG ĐƯỢC: khoảng 40px chiều cao. Dưới mức đó chữ EPG
+    thành vệt mờ — dùng `dau.svg` thay vào. Đây là lý do thanh đầu trang
+    dùng dấu trơn: ở 22px thì ba chữ cái không đọc được, và một logo có
+    chữ không đọc được thì tệ hơn một logo không có chữ.
+  -->
+
+  <g stroke="currentColor">
+    <path d="M3.5 1H42.5"/>
+    <path d="M45 3.5V7.5"/>
+    <path d="M47.5 10H64.5"/>
+    <path d="M64.5 35H25.5"/>
+    <path d="M23 32.5V28.5"/>
+    <path d="M20.5 26H3.5"/>
+  </g>
+
+  <g stroke="#c8641e">
+    <path d="M1 3.5V12"/>
+    <path d="M1 15V23.5"/>
+  </g>
+  <path stroke="#c23f74" d="M67 12.5V21"/>
+  <path stroke="#2f86cc" d="M67 24V32.5"/>
+
+  <text x="8" y="17.5" fill="currentColor" stroke="none"
+        font-family="'Segoe UI',system-ui,sans-serif" font-size="8"
+        font-weight="700" letter-spacing=".8">EPG</text>
+</svg>

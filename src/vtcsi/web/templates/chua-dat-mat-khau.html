@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Chưa đặt mật khẩu — VTC-SI{% endblock %}
+{% block body %}
+
+<h1>Chưa đặt mật khẩu</h1>
+<p class="sub">Giao diện không phục vụ gì cho tới khi có mật khẩu.</p>
+
+<p class="msg warn"><b>Không có trang "tạo tài khoản lần đầu" ở đây, và đó là
+chủ ý.</b> Một trang như vậy nghĩa là <i>ai chạm tới cổng trước thì người đó
+làm chủ</i>. Người có quyền shell trên máy phát mới là chủ hợp pháp — ta dùng
+lại đúng ranh giới đó.</p>
+
+<div class="card">
+  <b>Đặt mật khẩu</b>
+  <p style="margin:8px 0 0">Trên máy đang chạy dịch vụ:</p>
+  <pre style="margin:8px 0 0">vtcsi passwd</pre>
+  <p style="margin:10px 0 0">Lệnh hỏi tên đăng nhập và mật khẩu hai lần, không
+  hiện lên màn hình. Đặt xong thì bấm F5 ở đây — không cần khởi động lại dịch
+  vụ.</p>
+</div>
+
+<div class="card">
+  <b>File sẽ được ghi ở</b>
+  <pre style="margin:8px 0 0">{{ auth_file }}</pre>
+  <p style="margin:10px 0 0">File này <b>không được vào git</b>. Băm mật khẩu
+  lọt vào git là nằm trong lịch sử mãi mãi, kể cả sau khi xoá file đi. Trang
+  <b>Quản trị</b> sẽ tự kiểm tra lại điều đó bằng
+  <span class="m">git check-ignore</span> và kêu nếu sai.</p>
+</div>
+
+{% endblock %}

@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Quản trị — VTC-SI{% endblock %}
+{% block body %}
+
+<h1>Quản trị</h1>
+<p class="sub">Đăng nhập và mật khẩu. Không có gì về nội dung phát sóng ở đây.</p>
+
+<h2>Phiên hiện tại</h2>
+<div class="tw"><table>
+<tr><th>Mục</th><th>Giá trị</th></tr>
+<tr><td>Đang đăng nhập</td><td class="m">{{ nguoi_dung }}</td></tr>
+<tr><td>Mật khẩu đổi lần cuối</td><td class="m">{{ doi_luc or '—' }}</td></tr>
+<tr><td>Phiên sống</td><td>{{ phien_gio }} giờ — dài hơn một ca trực, ngắn hơn một ngày</td></tr>
+<tr><td>File đăng nhập</td><td class="m" style="word-break:break-all">{{ auth_file }}</td></tr>
+<tr><td>Nằm ngoài git</td><td>
+  {% if ignored is none %}<span class="pill mute">không hỏi được</span>
+  {% elif ignored %}<span class="pill ok">có</span>
+  {% else %}<span class="pill crit">KHÔNG</span>{% endif %}
+</td></tr>
+</table></div>
+
+{% if ignored is sameas false %}
+<p class="msg err"><b>File đăng nhập đang nằm trong tầm của git.</b>
+  Commit một lần là băm mật khẩu nằm trong lịch sử <b>mãi mãi</b>, kể cả sau
+  khi xoá file. Thêm dòng này vào <span class="m">.gitignore</span> rồi kiểm
+  lại bằng <span class="m">git status</span>:</p>
+<pre>{{ auth_file.name }}</pre>
+{% endif %}
+
+<h2>Đổi mật khẩu</h2>
+<div class="card">
+  <p style="margin-top:0">Đổi mật khẩu <b>đăng xuất mọi nơi</b>, kể cả trình
+  duyệt này — khoá ký phiên đổi theo. Đó đúng là điều bạn muốn khi đổi mật khẩu
+  vì nghi bị lộ.</p>
+  <form method="post" action="/quan-tri/doi-mat-khau">
+    <label for="cu">Mật khẩu hiện tại</label>
+    <input type="password" name="cu" id="cu" autocomplete="current-password" required>
+    <label for="moi">Mật khẩu mới</label>
+    <input type="password" name="moi" id="moi" autocomplete="new-password"
+           minlength="{{ toi_thieu }}" required>
+    <span class="dim" style="font-size:12.5px">Ít nhất {{ toi_thieu }} ký tự.
+    Không đòi phải có chữ hoa hay ký tự lạ — luật đó đẩy người ta tới
+    <span class="m">Vtc@2026</span>, ngắn và đoán được. Một câu dài dễ nhớ
+    mạnh hơn nhiều.</span>
+    <label for="lai">Gõ lại mật khẩu mới</label>
+    <input type="password" name="lai" id="lai" autocomplete="new-password"
+           minlength="{{ toi_thieu }}" required>
+    <div class="row"><button type="submit" class="danger">Đổi mật khẩu</button></div>
+  </form>
+</div>
+
+<h2>Đăng xuất</h2>
+<div class="card">
+  <p style="margin-top:0">Chỉ xoá cookie của trình duyệt này. Các phiên khác
+  vẫn còn — muốn cắt hết thì đổi mật khẩu.</p>
+  <form method="post" action="/dang-xuat">
+    <div class="row" style="margin-top:0"><button type="submit" class="alt">Đăng xuất</button></div>
+  </form>
+</div>
+
+<h2>Quên mật khẩu</h2>
+<div class="card">
+  <p style="margin-top:0">Không có đường phục hồi qua trình duyệt. Trên máy
+  chạy dịch vụ:</p>
+  <pre style="margin:8px 0 0">vtcsi passwd --force</pre>
+  <p style="margin:10px 0 0" class="dim">Quyền shell trên máy phát là ranh giới
+  thật của hệ này; mọi đường vòng qua email hay câu hỏi bí mật đều chỉ làm ranh
+  giới đó yếu đi.</p>
+</div>
+
+{% endblock %}

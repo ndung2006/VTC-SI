@@ -11,11 +11,12 @@ có — nên phần "chờ cài" thu về đúng một bài test, thay vì chặ
 
 from __future__ import annotations
 
-import shutil
 import subprocess
 import unittest
 from datetime import datetime, timezone
+from pathlib import Path
 
+import tsduck_path
 from vtcsi.pipeline import tspbuild as B
 
 T0 = datetime(2026, 9, 11, 10, 0, tzinfo=timezone.utc)
@@ -23,7 +24,9 @@ T0 = datetime(2026, 9, 11, 10, 0, tzinfo=timezone.utc)
 
 def _plan(**kw) -> B.Plan:
     args = dict(build_dir="build", eit_dir="build/eit", ts_id=8,
-                other_ts_ids=(3, 1000), destination="236.30.232.1:6000",
+                other_ts_ids=(3, 1000),
+                bouquet_ids=(0x0044, 0x3622, 0x6510, 0x6520, 0x6550, 0x6604),
+                destination="236.30.232.1:6000",
                 local_address="10.10.30.240")
     args.update(kw)
     return B.plan_from_config(**args)
@@ -59,7 +62,22 @@ class TestStructure(unittest.TestCase):
         cls.cmd = B.build(_plan(), start_time=T0)
 
     def test_starts_from_null_input(self) -> None:
-        self.assertEqual(self.cmd[:4], ["tsp", "-I", "null", "-P"])
+        self.assertEqual(self.cmd[:6],
+                         ["tsp", "--bitrate", "2000000", "-I", "null", "-P"])
+
+    def test_the_bitrate_is_declared_before_every_plugin(self) -> None:
+        """`-I null` khong khai bitrate, va `inject` can biet de tinh nhip goi.
+
+        Dua bitrate cho rieng `regulate` — nam CUOI chuoi — thi khong du:
+        ``tsp`` chet ngay khi khoi dong voi *input bitrate unknown or too low*.
+        Lan chay toan trinh dau tien bat duoc; truoc do dong lenh nay chi duoc
+        so chuoi trong cac bai kiem chu chua bao gio duoc chay that.
+        """
+        self.assertLess(self.cmd.index("--bitrate"), self.cmd.index("-P"))
+        i = self.cmd.index("--bitrate")
+        j = len(self.cmd) - 1 - self.cmd[::-1].index("--bitrate")
+        self.assertEqual(self.cmd[i + 1], self.cmd[j + 1],
+                         "bitrate khai o dau phai bang bitrate cua regulate")
 
     def test_three_pids_only(self) -> None:
         pids = [self.cmd[i + 1] for i, a in enumerate(self.cmd) if a == "--pid"]
@@ -114,11 +132,16 @@ class TestRefusesBadInput(unittest.TestCase):
 
 
 class TestShellRendering(unittest.TestCase):
-    def test_wildcards_are_quoted(self) -> None:
-        """Không quote thì shell bung ký tự đại diện trước khi tsp thấy."""
+    def test_the_one_remaining_wildcard_is_quoted(self) -> None:
+        """Không quote thì shell bung ký tự đại diện trước khi tsp thấy.
+
+        Chỉ còn đúng một chỗ được phép mang ký tự đại diện: ``eitinject
+        --files``. Tuyến ``inject`` thì không — xem
+        ``TestNoWildcardReachesInject``.
+        """
         line = B.shell(B.build(_plan(), start_time=T0))
         self.assertIn("'build/eit/*.xml'", line)
-        self.assertIn("'build/bat-*.xml=5000'", line)
+        self.assertNotIn("bat-*", line)
 
 
 class TestMissingOptions(unittest.TestCase):
@@ -139,12 +162,12 @@ class TestAgainstInstalledTsduck(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls) -> None:
-        if shutil.which("tsp") is None:
-            raise unittest.SkipTest("chua cai TSDuck — bai nay tu chay khi co tsp")
+        tsduck_path.require("tsp")
 
     def _help(self, flag: str, plugin: str) -> str:
-        r = subprocess.run(["tsp", flag, plugin, "--help"],
-                           capture_output=True, text=True, timeout=30)
+        r = subprocess.run([tsduck_path.require("tsp"), flag, plugin, "--help"],
+                           capture_output=True, text=True, timeout=30,
+                           env=tsduck_path.on_path())
         return r.stdout + r.stderr
 
     def test_processor_plugin_options_exist(self) -> None:
@@ -170,3 +193,82 @@ class TestAgainstInstalledTsduck(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestNoWildcardReachesInject(unittest.TestCase):
+    """``inject`` KHONG no ky tu dai dien, va khong bao loi khi khong tim thay.
+
+    Lan chay toan trinh dau tien lam lo ra: lenh cu dua ``bat-*.xml`` cho
+    ``inject``, ``tsp`` chay binh thuong, PID 17 van co bitrate, NIT va SDT van
+    len song — va ca sau BAT bien mat khong mot dong loi.
+
+    ``eitinject --files`` thi nguoc lai, co no ky tu dai dien; bai cuoi ghim su
+    khac nhau do lai, vi no la thu de quen nhat.
+    """
+
+    def test_every_injected_file_is_a_real_name(self) -> None:
+        for x in (_plan().nit,) + _plan().sdt_bat:
+            with self.subTest(path=x.path):
+                self.assertNotIn("*", x.path)
+                self.assertNotIn("?", x.path)
+
+    def test_one_entry_per_bouquet(self) -> None:
+        quets = (0x0044, 0x3622, 0x6510)
+        paths = [x.path for x in _plan(bouquet_ids=quets).sdt_bat
+                 if "bat-" in x.path]
+        self.assertEqual(paths, ["build/bat-0044.xml", "build/bat-3622.xml",
+                                 "build/bat-6510.xml"])
+
+    def test_the_names_match_what_build_writes(self) -> None:
+        """Ten file phai khop chinh xac voi thu `vtcsi build` ghi ra."""
+        from vtcsi.config import loader
+        goc = Path(__file__).parent.parent / "config"
+        cfg = loader.load(goc)
+        quets = tuple(sorted(q.bouquet_id for q in cfg.bouquets))
+        want = {f"build/bat-{q:04x}.xml" for q in quets}
+        got = {x.path for x in _plan(bouquet_ids=quets).sdt_bat if "bat-" in x.path}
+        self.assertEqual(got, want)
+
+    def test_eitinject_keeps_its_wildcard(self) -> None:
+        """Hai plugin, hai luat — `eitinject` co no, nen giu `*.xml`."""
+        self.assertTrue(_plan().eit_files.endswith("*.xml"))
+
+
+class TestOneCharsetOnAir(unittest.TestCase):
+    """Ep mot bang ma duy nhat cho ten su kien.
+
+    Khong dat thi TSDuck chon bang ma cho TUNG CHUOI — phan lon ra 0x15 UTF-8,
+    nhung mot so ten ra ISO-8859-15 hay ISO-8859-2. Hop chuan ca, va giai dung
+    ca; nhung ban thu song that cho thay Barrowa chi dung 0x15 va de tran.
+
+    Cac bai so byte khong bat duoc chuyen nay: chung bien dich CA HAI ben bang
+    cung mot `tstabcomp` voi cung tuy chon, nen bang ma la thu chung khong the
+    thay. No chi lo ra khi dua qua `tsp` that.
+    """
+
+    def setUp(self) -> None:
+        self.cmd = B.build(_plan(), start_time=T0)
+
+    def test_eitinject_is_pinned_to_utf8(self) -> None:
+        i = self.cmd.index("--default-charset")
+        self.assertEqual(self.cmd[i + 1], "UTF-8")
+
+    def test_it_sits_inside_the_eitinject_block(self) -> None:
+        """Dat nham vao `inject` se doi ca SDT/BAT — von dang trung song that."""
+        self.assertGreater(self.cmd.index("--default-charset"),
+                           self.cmd.index("eitinject"))
+
+    def test_inject_keeps_the_default(self) -> None:
+        """Ten dich vu va ten bouquet thuan ASCII: de tran, trung tung byte."""
+        khoi = " ".join(self.cmd[:self.cmd.index("eitinject")])
+        self.assertNotIn("--default-charset", khoi)
+
+    def test_tsduck_knows_the_option(self) -> None:
+        """Ghim ten tuy chon va gia tri vao chinh TSDuck dang cai."""
+        tsp = tsduck_path.require("tsp")
+        r = subprocess.run([tsp, "-P", "eitinject", "--help"],
+                           capture_output=True, text=True, timeout=60,
+                           env=tsduck_path.on_path())
+        vb = r.stdout + r.stderr
+        self.assertIn("--default-charset", vb)
+        self.assertIn("UTF-8", vb)

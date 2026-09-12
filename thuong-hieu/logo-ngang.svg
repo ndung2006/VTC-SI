@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 208 36" width="416" height="72"
+     fill="none" role="img"
+     aria-label="VTC-SI — báo hiệu PSI/SI. Dấu hai tấm lệch nhau, chữ EPG trong tấm trên.">
+  <title>VTC-SI — logo nằm ngang</title>
+  <style>
+    /* `currentColor` hop khi nhung thang vao trang — no lat theo nen.
+       Nhung khi file nay duoc dung qua `img src` hay lam favicon thi
+       khong co trang nao de thua mau, va `currentColor` roi ve DEN:
+       tren nen toi la mat sach phan khung, chi con ba doan nhan.
+       Nen dat mau ngay tai goc file, kem mot luat cho nen toi. */
+    :root { color: #0e1618 }
+    @media (prefers-color-scheme: dark) { :root { color: #e3ecee } }
+  </style>
+
+
+  <!--
+    Bản dùng chính: dấu bên trái, tên bên phải.
+
+    Đây là chỗ ý của bản guide khép lại. Dấu mang chữ **EPG** — thứ đi vào.
+    Tên mang chữ **SI** — thứ đi ra. Hai tấm chồng nhau ở giữa là quãng
+    biến đổi, và cả hệ này chỉ làm đúng một việc đó.
+
+    Nét của chữ SI nhận màu nhấn, để mắt bắt được cặp EPG → SI mà không
+    cần ai giải thích.
+  -->
+
+  <g stroke-width="2">
+    <g stroke="currentColor">
+      <path d="M3.5 1H42.5"/>
+      <path d="M45 3.5V7.5"/>
+      <path d="M47.5 10H64.5"/>
+      <path d="M64.5 35H25.5"/>
+      <path d="M23 32.5V28.5"/>
+      <path d="M20.5 26H3.5"/>
+    </g>
+    <g stroke="#c8641e">
+      <path d="M1 3.5V12"/>
+      <path d="M1 15V23.5"/>
+    </g>
+    <path stroke="#c23f74" d="M67 12.5V21"/>
+    <path stroke="#2f86cc" d="M67 24V32.5"/>
+  </g>
+
+  <text x="8" y="17.5" fill="currentColor"
+        font-family="'Segoe UI',system-ui,sans-serif" font-size="8"
+        font-weight="700" letter-spacing=".8">EPG</text>
+
+  <text x="84" y="27" font-family="'Segoe UI',system-ui,sans-serif"
+        font-size="25" font-weight="700" letter-spacing="-.4">
+    <tspan fill="currentColor">VTC-</tspan><tspan fill="#c23f74">SI</tspan>
+  </text>
+</svg>

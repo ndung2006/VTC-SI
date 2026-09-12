@@ -23,7 +23,26 @@ from datetime import datetime, timedelta, timezone
 from vtcsi.model.entities import Event, RunningStatus
 
 TABLE_PF = "pf"
-TABLE_SCHEDULE = "schedule"
+"""``type`` của EIT present/following — table_id 0x4E."""
+
+TABLE_SCHEDULE = "0"
+"""``type`` của EIT schedule actual — table_id 0x50.
+
+Trông như một con số kỳ lạ, và đó là lý do phải ghi lại. Lược đồ XML của
+TSDuck khai ``type="pf|uint4"``: hoặc chữ ``pf``, hoặc **một số 0–15** cộng
+vào 0x50 để ra table_id. Không có chữ ``schedule``.
+
+Ở đây từng ghi ``"schedule"`` — tự nhiên hơn khi đọc, và chạy trót lọt qua
+mọi bài kiểm của chính mình, vì chúng đọc lại XML bằng ``ElementTree`` chứ
+không đưa cho TSDuck. Chỉ tới lần chạy toàn trình đầu tiên ``eitinject`` mới
+nói ra: *'schedule' is not a valid value for attribute 'type'* — và từ chối
+**toàn bộ** bảng EIT, tức là mất sạch EPG trong khi NIT/SDT/BAT vẫn lên sóng
+bình thường. Một kiểu hỏng lặng lẽ đúng nghĩa.
+
+Số 0 là đúng nghĩa chứ không phải chọn bừa: EIT schedule actual chia theo
+table_id 0x50–0x5F, mỗi bảng phủ bốn ngày. Lịch của hệ này chưa bao giờ dài
+quá bốn ngày, nên tất cả nằm gọn trong bảng đầu.
+"""
 
 #: Bảng mã duy nhất dùng cho toàn hệ. 0x15 là UTF-8 theo EN 300 468 Annex A.
 #: Đặt ở mức ``tsp`` bằng tuỳ chọn bộ ký tự, không đặt trên từng chuỗi.
@@ -161,6 +180,36 @@ def write_all(
         )
         for sid in sorted(by_service)
     ]
+
+
+def drop_services(document: ET.Element,
+                  allowed) -> tuple[ET.Element, tuple[int, ...]]:
+    """Gỡ khỏi một tài liệu EIT những dịch vụ không được phép lên EPG.
+
+    Dùng cho đúng một tình huống, và nó là tình huống xấu: hộp thư chỉ còn lịch
+    cũ nên **không sinh lại được** EIT, mà người trực vừa tắt EPG của một kênh
+    vì có sự cố. Nếu chỉ "giữ nguyên file cũ" thì kênh đó vẫn có chương trình
+    trên đầu thu — công tắc khẩn không làm được việc của nó đúng lúc cần nhất.
+
+    Gỡ bảng khỏi tài liệu cũ thì làm được cả khi không có dữ liệu mới: ta không
+    cần biết chương trình nào đang chạy, chỉ cần biết kênh nào phải im.
+
+    Trả về ``(tài liệu mới, những dịch vụ đã gỡ)``. Tài liệu vào **không đổi**.
+    """
+    made = ET.fromstring(ET.tostring(document, encoding="unicode"))
+    go: list[int] = []
+    for el in list(made):
+        raw = el.get("service_id")
+        if raw is None:
+            continue
+        try:
+            sid = int(raw, 0)
+        except ValueError:
+            continue
+        if sid not in allowed:
+            made.remove(el)
+            go.append(sid)
+    return made, tuple(sorted(go))
 
 
 def to_document(tables: list[ET.Element]) -> ET.Element:

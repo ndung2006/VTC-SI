@@ -14,6 +14,7 @@ import unittest
 from dataclasses import replace
 from pathlib import Path
 
+import seed
 from vtcsi.config import loader
 from vtcsi.model import version as V
 from vtcsi.tables import tsduck as T
@@ -30,9 +31,16 @@ def _air():
 
 
 def _cfg():
-    if not (CONFIG / "network.yaml").exists():
-        raise unittest.SkipTest("chua gieo cau hinh")
-    return loader.load(CONFIG)
+    """Ban gieo **da commit**, khong phai thu muc dang sua.
+
+    Xem ``tests/seed.py``. Doc thang ``config/`` thi moi lan nguoi van hanh
+    tang mot version la ba bai o duoi do — dung luc ho dang lam dung.
+    """
+    td = seed.committed_config()
+    try:
+        return loader.load(Path(td.name) / "config")
+    finally:
+        td.cleanup()
 
 
 class TestFieldWidth(unittest.TestCase):
@@ -46,7 +54,7 @@ class TestFieldWidth(unittest.TestCase):
     def test_thirty_two_is_out_of_range(self) -> None:
         with self.assertRaises(V.VersionError) as ctx:
             V.validate(32)
-        self.assertIn("0..31", str(ctx.exception))
+        self.assertIn("0…31", str(ctx.exception))
 
     def test_negative_refused(self) -> None:
         with self.assertRaises(V.VersionError):
@@ -123,6 +131,46 @@ class TestClassify(unittest.TestCase):
     def test_explanations_name_the_next_value(self) -> None:
         msg = V.explain(V.Verdict.SILENT_CHANGE, config_version=4, air_version=4)
         self.assertIn("5", msg)
+
+
+class TestDescribeMove(unittest.TestCase):
+    """Câu nói cho người vận hành đọc trước khi bấm.
+
+    Ba loại bước có ba hệ quả khác nhau, nên chúng phải đọc ra khác nhau. Và
+    **lùi lại là hợp lệ**: đầu thu phát hiện version *đổi* chứ không phải
+    *tăng*, vì trường 5 bit quay vòng nên không có thứ tự tuyệt đối.
+    """
+
+    def test_a_step_forward(self) -> None:
+        self.assertIn("bước kế tiếp", V.describe_move(5, 6))
+
+    def test_a_step_back(self) -> None:
+        self.assertIn("lùi lại", V.describe_move(6, 5))
+
+    def test_a_far_jump(self) -> None:
+        self.assertIn("nhảy xa", V.describe_move(5, 12))
+
+    def test_no_move_at_all(self) -> None:
+        self.assertIn("giữ nguyên", V.describe_move(5, 5))
+
+    def test_it_wraps_forward(self) -> None:
+        self.assertIn("bước kế tiếp", V.describe_move(31, 0))
+
+    def test_it_wraps_backward(self) -> None:
+        self.assertIn("lùi lại", V.describe_move(0, 31))
+
+    def test_both_numbers_appear(self) -> None:
+        for a, b in ((5, 6), (6, 5), (5, 12), (31, 0)):
+            with self.subTest(a=a, b=b):
+                text = V.describe_move(a, b)
+                self.assertIn(str(a), text)
+                self.assertIn(str(b), text)
+
+    def test_out_of_range_is_refused_on_either_side(self) -> None:
+        with self.assertRaises(V.VersionError):
+            V.describe_move(5, 32)
+        with self.assertRaises(V.VersionError):
+            V.describe_move(-1, 5)
 
 
 class TestPreflightOnRealConfig(unittest.TestCase):

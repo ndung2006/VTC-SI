@@ -19,6 +19,7 @@ Bỏ qua khi chưa cài FastAPI: giao diện là phần tuỳ chọn, lõi khôn
 from __future__ import annotations
 
 import filecmp
+import re
 import shutil
 import tempfile
 import unittest
@@ -29,9 +30,11 @@ try:
 except ImportError:  # pragma: no cover
     TestClient = None  # type: ignore[assignment]
 
+import seed
 from vtcsi.config import loader
 
-GOC = Path(__file__).parent.parent / "config"
+#: Duoc dat trong `setUpClass` tu ban da commit — xem `tests/seed.py`.
+GOC: Path
 TS = 8
 SID = 838  # dich vu co that trong ban gieo
 
@@ -41,8 +44,13 @@ class WebCase(unittest.TestCase):
     def setUpClass(cls) -> None:
         if TestClient is None:
             raise unittest.SkipTest("chua cai fastapi — giao dien la phan tuy chon")
-        if not (GOC / "network.yaml").exists():
-            raise unittest.SkipTest("chua gieo cau hinh")
+        global GOC
+        cls._seed = seed.committed_config()
+        GOC = Path(cls._seed.name) / "config"
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        cls._seed.cleanup()
 
     def setUp(self) -> None:
         self._tmp = tempfile.TemporaryDirectory()
@@ -51,7 +59,13 @@ class WebCase(unittest.TestCase):
         shutil.copytree(GOC, self.dir)
 
         from vtcsi.web.app import create_app
-        self.c = TestClient(create_app(self.dir, self.root))
+        # `require_login=False`: cac bai o day kiem viec SUA CAU HINH, khong
+        # kiem dang nhap. Bat dang nhap len se bat moi bai phai qua scrypt —
+        # cham ~100 ms moi lan dung `setUp` — ma khong kiem them duoc gi.
+        # Phan xac thuc co bo bai rieng o `test_web_auth.py`, va o day mac dinh
+        # BAT la dieu bai `test_web_auth` ghim lai.
+        self.c = TestClient(create_app(self.dir, self.root,
+                                       require_login=False))
 
     def tearDown(self) -> None:
         self._tmp.cleanup()
@@ -90,6 +104,74 @@ class WebCase(unittest.TestCase):
         self.assertIn(fragment, got)
 
 
+class TestTheRouteTableIsComplete(WebCase):
+    """Kiem ke tuyen duong — bai nay ra doi vi mot lan suyt mat.
+
+    Mot lan sua bang cach cat-va-dan da xoa nguyen khoi route bouquet, va thu
+    duy nhat bat duoc la mot subtest o cho khac, bao "404 != 500". Ghim danh
+    sach o day de lan sau lo mat thi bao thang vao mat.
+    """
+
+    MONG_DOI = {
+        ("GET", "/"),
+        ("GET", "/ts/{ts_id}"),
+        ("GET", "/ts/{ts_id}/service/{service_id}"),
+        ("GET", "/ts/{ts_id}/new"),
+        ("POST", "/ts/{ts_id}/service/save"),
+        ("POST", "/ts/{ts_id}/eit"),
+        ("POST", "/ts/{ts_id}/service/{service_id}/delete"),
+        ("POST", "/version/set"),
+        ("POST", "/ap-dung"),
+        ("GET", "/giam-sat"),
+        ("GET", "/giam-sat/du-lieu"),
+        ("GET", "/epg"),
+        ("POST", "/api/epg"),
+        ("POST", "/epg/tai-len"),
+        ("POST", "/epg/xoa"),
+        ("POST", "/epg/ve-moi"),
+        ("GET", "/dau-ra"),
+        ("POST", "/dau-ra/luu"),
+        ("GET", "/bouquet/{raw}"),
+        ("POST", "/bouquet/{raw}/ts/{ts_id}/lcn"),
+        ("POST", "/bouquet/{raw}/ts/{ts_id}/add"),
+        ("POST", "/bouquet/{raw}/ts/{ts_id}/remove"),
+        ("POST", "/bouquet/{raw}/ts/add"),
+        ("POST", "/bouquet/{raw}/ts/drop"),
+        ("GET", "/linkage"),
+        ("GET", "/linkage/{raw}/{index}"),
+        ("POST", "/linkage/{raw}/save"),
+        ("POST", "/linkage/{raw}/{index}/delete"),
+        ("GET", "/thay-doi"),
+        ("POST", "/thay-doi/commit"),
+        ("GET", "/dang-nhap"),
+        ("POST", "/dang-nhap"),
+        ("POST", "/dang-xuat"),
+        ("GET", "/quan-tri"),
+        ("POST", "/quan-tri/doi-mat-khau"),
+    }
+
+    def _routes(self) -> set:
+        out = set()
+        for r in self.c.app.routes:
+            for m in getattr(r, "methods", ()) or ():
+                if m in ("GET", "POST"):
+                    out.add((m, r.path))
+        return out
+
+    def test_nothing_is_missing(self) -> None:
+        thieu = self.MONG_DOI - self._routes()
+        self.assertEqual(thieu, set(), f"mat {len(thieu)} tuyen duong")
+
+    def test_nothing_appeared_unannounced(self) -> None:
+        """Them route ma quen ghi vao day thi bai nay nhac."""
+        la = self._routes() - self.MONG_DOI
+        self.assertEqual(la, set(), "co route moi chua ghi vao MONG_DOI")
+
+    def test_the_old_bump_route_is_gone(self) -> None:
+        """`/version/bump` da thanh `/version/set` — version nhap tay, lui duoc."""
+        self.assertNotIn(("POST", "/version/bump"), self._routes())
+
+
 class TestEveryPageRenders(WebCase):
     """Truoc moi thu: cac trang co dung duoc khong."""
 
@@ -119,27 +201,182 @@ class TestEveryPageRenders(WebCase):
         self.assertIn("chưa phải kho git", self.c.get("/").text)
 
 
+class TestBrokenConfigIsNotAStackTrace(WebCase):
+    """Cau hinh hong thi ra TRANG, khong ra stack trace Python.
+
+    Giao dien doc lai YAML moi luot, nen chi mot file hong — thuong la sua tay
+    roi lech thut dau dong — la moi trang chet. Nem stack trace vao mat nguoi
+    truc luc hai gio sang khong giup duoc gi.
+    """
+
+    def setUp(self) -> None:
+        super().setUp()
+        import yaml
+        from vtcsi.web.app import create_app
+        f = self.dir / "bouquets" / "6604-quang-ninh.yaml"
+        if not f.exists():
+            self.skipTest("ban gieo khong co bouquet 0x6604")
+        d = yaml.safe_load(f.read_text(encoding="utf-8"))
+        d["transport_streams"][0]["services"].append(9999)
+        f.write_text(yaml.safe_dump(d, allow_unicode=True, sort_keys=False),
+                     encoding="utf-8")
+        self.c = TestClient(create_app(self.dir, self.root, require_login=False),
+                            raise_server_exceptions=False)
+
+    def test_every_page_answers_with_a_readable_error(self) -> None:
+        for url in ("/", f"/ts/{TS}", "/linkage", "/bouquet/6510"):
+            with self.subTest(url=url):
+                r = self.c.get(url)
+                self.assertEqual(r.status_code, 500)
+                self.assertIn("Cấu hình không đọc được", r.text)
+
+    def test_it_names_what_is_wrong_and_where(self) -> None:
+        text = self.c.get("/").text
+        self.assertIn("9999", text)
+        self.assertIn("0x6604", text)
+
+    def test_it_offers_the_way_back(self) -> None:
+        self.assertIn("git checkout -- config", self.c.get("/").text)
+
+    def test_no_stack_trace_reaches_the_browser(self) -> None:
+        text = self.c.get("/").text
+        self.assertNotIn("Traceback", text)
+        self.assertNotIn(".py\", line", text)
+
+    def test_the_changes_page_still_works(self) -> None:
+        """Day moi la diem quan trong: van xem duoc diff va quay lui duoc.
+
+        Trang `thay-doi` khong nap cau hinh, nen no song sot qua mot file hong
+        — va no dung la trang can dung de sua chuyen do.
+        """
+        self.assertEqual(self.c.get("/thay-doi").status_code, 200)
+
+
+class TestTheEpgSwitch(WebCase):
+    """Cột EPG trên trang TS — một công tắc cho mỗi kênh.
+
+    Công tắc đặt **cả hai** cờ ``eit_pf`` và ``eit_schedule``, vì câu hỏi người
+    vận hành đang trả lời là "kênh này có EPG hay không". Việc nó **thật sự**
+    chặn EIT nằm ở ``test_cli_run.py`` — ở đây chỉ kiểm phần ghi cấu hình.
+    """
+
+    def flags(self):
+        return {x.service_id: (x.eit_pf, x.eit_schedule) for x in self.sdt().services}
+
+    def send(self, on: set[int]):
+        return self.c.post(f"/ts/{TS}/eit",
+                           data={f"eit_{s}": "true" for s in on},
+                           follow_redirects=False)
+
+    def all_ids(self) -> set[int]:
+        return {x.service_id for x in self.sdt().services}
+
+    def test_turning_one_channel_off(self) -> None:
+        ids = self.all_ids()
+        target = sorted(ids)[0]
+        self.assertRedirectCarries(self.send(ids - {target}), "note", "tắt")
+        self.assertEqual(self.flags()[target], (False, False))
+
+    def test_the_others_are_untouched(self) -> None:
+        ids = self.all_ids()
+        target = sorted(ids)[0]
+        before = self.flags()
+        self.send(ids - {target})
+        after = self.flags()
+        self.assertEqual({k: v for k, v in before.items() if k != target},
+                         {k: v for k, v in after.items() if k != target})
+
+    def test_both_flags_move_together(self) -> None:
+        ids = self.all_ids()
+        target = sorted(ids)[0]
+        self.send(ids - {target})
+        self.assertEqual(self.flags()[target], (False, False))
+        self.send(ids)
+        self.assertEqual(self.flags()[target], (True, True))
+
+    def test_turning_everything_off(self) -> None:
+        self.assertRedirectCarries(self.send(set()), "note", "0 bật")
+        self.assertTrue(all(v == (False, False) for v in self.flags().values()))
+
+    def test_turning_everything_back_on(self) -> None:
+        self.send(set())
+        self.send(self.all_ids())
+        self.assertTrue(all(v == (True, True) for v in self.flags().values()))
+
+    def test_sending_no_change_is_refused_not_silently_accepted(self) -> None:
+        """Bam ma khong doi gi thi nguoi ta dang nham — im lang se giau di."""
+        self.assertRedirectCarries(self.send(self.all_ids()), "err", "không có kênh nào")
+
+    def test_an_unknown_transport_stream_is_refused(self) -> None:
+        r = self.c.post("/ts/999/eit", data={}, follow_redirects=False)
+        self.assertRedirectCarries(r, "err", "999")
+
+    def test_the_switch_shows_up_on_the_page(self) -> None:
+        page = self.c.get(f"/ts/{TS}").text
+        self.assertIn("cong-tac", page)
+        self.assertIn("Lưu cột EPG", page)
+        self.assertIn("Bật", page)
+
+    def test_a_mismatched_pair_is_flagged_on_the_page(self) -> None:
+        """p/f va lich khai khac nhau thi cot phai noi ra, khong lam tron."""
+        from dataclasses import replace
+        cfg = self.cfg()
+        sdt = self.sdt()
+        target = sorted(self.all_ids())[0]
+        cfg = replace(cfg, sdts=tuple(
+            replace(s, services=tuple(
+                replace(x, eit_pf=True, eit_schedule=False)
+                if x.service_id == target else x for x in s.services))
+            if s.ts_id == TS else s for s in cfg.sdts))
+        loader.save(cfg, self.dir)
+        self.assertIn("lệch", self.c.get(f"/ts/{TS}").text)
+
+
 class TestEditingAService(WebCase):
     def test_rename_is_written_to_yaml(self) -> None:
         r = self.post(f"/ts/{TS}/service/save", service_id=SID, name="VTC THU NGHIEM",
                       provider="VTC", service_type=1, creating="false")
-        self.assertRedirectCarries(r, "note", "sua")
+        self.assertRedirectCarries(r, "note", "sửa")
         svc = next(x for x in self.sdt().services if x.service_id == SID)
         self.assertEqual(svc.name, "VTC THU NGHIEM")
 
     def test_blank_name_is_refused(self) -> None:
         r = self.post(f"/ts/{TS}/service/save", service_id=SID, name="   ",
                       provider="VTC", service_type=1, creating="false")
-        self.assertRedirectCarries(r, "err", "ten dich vu")
+        self.assertRedirectCarries(r, "err", "tên dịch vụ")
         self.assertNotEqual(
             next(x for x in self.sdt().services if x.service_id == SID).name.strip(), "")
 
-    def test_unchecked_box_clears_the_flag(self) -> None:
-        """O khong tich phai thanh false — khong phai giu nguyen gia tri cu."""
+    def test_an_unset_switch_turns_epg_off_on_both_flags(self) -> None:
+        """Cong tac khong bat thi CA HAI co ve false, khong phai mot."""
         self.post(f"/ts/{TS}/service/save", service_id=SID, name="X", provider="",
-                  service_type=1, creating="false")  # khong gui eit_pf
-        self.assertFalse(next(x for x in self.sdt().services
-                              if x.service_id == SID).eit_pf)
+                  service_type=1, creating="false")  # khong gui `epg`
+        svc = next(x for x in self.sdt().services if x.service_id == SID)
+        self.assertFalse(svc.eit_pf)
+        self.assertFalse(svc.eit_schedule)
+
+    def test_the_switch_sets_both_flags_together(self) -> None:
+        self.post(f"/ts/{TS}/service/save", service_id=SID, name="X", provider="",
+                  service_type=1, epg="true", creating="false")
+        svc = next(x for x in self.sdt().services if x.service_id == SID)
+        self.assertTrue(svc.eit_pf)
+        self.assertTrue(svc.eit_schedule)
+
+    def test_a_hand_edited_mismatch_is_healed_on_save(self) -> None:
+        """Hai co lech nhau chi den tu sua YAML tay; luu lai la dua ve mot moi."""
+        from dataclasses import replace
+        cfg = self.cfg()
+        cfg = replace(cfg, sdts=tuple(
+            replace(s, services=tuple(
+                replace(x, eit_pf=True, eit_schedule=False)
+                if x.service_id == SID else x for x in s.services))
+            if s.ts_id == TS else s for s in cfg.sdts))
+        loader.save(cfg, self.dir)
+
+        self.post(f"/ts/{TS}/service/save", service_id=SID, name="X", provider="",
+                  service_type=1, epg="true", creating="false")
+        svc = next(x for x in self.sdt().services if x.service_id == SID)
+        self.assertEqual(svc.eit_pf, svc.eit_schedule)
 
     def test_editing_one_service_leaves_the_rest_alone(self) -> None:
         before = {x.service_id: x.name for x in self.sdt().services}
@@ -153,13 +390,13 @@ class TestEditingAService(WebCase):
 
 class TestAddingAService(WebCase):
     def test_new_service_lands_in_yaml(self) -> None:
-        self.assertRedirectCarries(self.add(4242, "KENH MOI"), "note", "them")
+        self.assertRedirectCarries(self.add(4242, "KENH MOI"), "note", "thêm")
         self.assertTrue(self.in_sdt(4242))
 
     def test_duplicate_service_id_is_refused(self) -> None:
         self.add(4242, "KENH MOI")
         r = self.add(4242, "TRUNG SO")
-        self.assertRedirectCarries(r, "err", "da ton tai")
+        self.assertRedirectCarries(r, "err", "đã tồn tại")
         self.assertEqual(
             next(x for x in self.sdt().services if x.service_id == 4242).name,
             "KENH MOI")
@@ -208,7 +445,7 @@ class TestNitFollowsSdt(WebCase):
 class TestDeletingAService(WebCase):
     def test_wrong_confirmation_keeps_the_service(self) -> None:
         r = self.post(f"/ts/{TS}/service/{SID}/delete", confirm_name="gõ đại")
-        self.assertRedirectCarries(r, "err", "go dung ten")
+        self.assertRedirectCarries(r, "err", "gõ đúng tên")
         self.assertTrue(self.in_sdt(SID))
 
     def test_empty_confirmation_keeps_the_service(self) -> None:
@@ -236,50 +473,97 @@ class TestDeletingAService(WebCase):
                              for r in t.services))
 
 
-class TestDangerousThingsAreHard(WebCase):
-    def test_version_does_not_move_without_the_word(self) -> None:
-        before = self.cfg().network.version
-        r = self.post("/version/bump", table="nit", confirm="")
-        self.assertRedirectCarries(r, "err", "TANG")
-        self.assertEqual(self.cfg().network.version, before)
+class TestSettingAVersion(WebCase):
+    """Đặt version **bằng tay**, lùi lại được.
 
-    def test_version_does_not_move_on_a_near_miss(self) -> None:
-        before = self.cfg().network.version
-        for typo in ("tang", "TANG ", "TĂNG", "yes"):
-            with self.subTest(typo=typo):
-                self.post("/version/bump", table="nit", confirm=typo)
-                self.assertEqual(self.cfg().network.version, before)
+    Đầu thu phát hiện version *đổi* chứ không phải *tăng* — trường 5 bit quay
+    vòng nên không có thứ tự tuyệt đối. Nếu chỉ cho tăng thì cách duy nhất để
+    sửa một lần đặt nhầm là bấm thêm 31 lần, và mỗi lần đó cả mạng dò lại kênh.
+    """
 
-    def test_confirmed_bump_moves_exactly_one(self) -> None:
-        before = self.cfg().network.version
-        self.post("/version/bump", table="nit", confirm="TANG")
-        self.assertEqual(self.cfg().network.version, (before + 1) % 32)
+    def set(self, table: str, version: int, confirm: str | None = None):
+        return self.post("/version/set", table=table, version=version,
+                         confirm=str(version) if confirm is None else confirm)
 
-    def test_bumping_one_sdt_leaves_the_others(self) -> None:
+    def nit(self) -> int:
+        return self.cfg().network.version
+
+    def test_a_normal_step_forward(self) -> None:
+        now = self.nit()
+        self.assertRedirectCarries(self.set("nit", (now + 1) % 32), "note",
+                                   "bước kế tiếp")
+        self.assertEqual(self.nit(), (now + 1) % 32)
+
+    def test_a_step_back_is_allowed(self) -> None:
+        """Day la ca ma ban cu chi cho tang khong lam duoc."""
+        now = self.nit()
+        self.set("nit", (now + 1) % 32)
+        self.assertRedirectCarries(self.set("nit", now), "note", "lùi lại")
+        self.assertEqual(self.nit(), now)
+
+    def test_a_far_jump_is_allowed_but_named(self) -> None:
+        self.assertRedirectCarries(self.set("nit", (self.nit() + 7) % 32),
+                                   "note", "nhảy xa")
+
+    def test_it_wraps_after_thirty_one(self) -> None:
+        self.set("nit", 31)
+        self.assertRedirectCarries(self.set("nit", 0), "note", "bước kế tiếp")
+        self.assertEqual(self.nit(), 0)
+
+    def test_the_wrong_confirmation_changes_nothing(self) -> None:
+        now = self.nit()
+        want = (now + 3) % 32
+        self.assertRedirectCarries(self.set("nit", want, confirm=str(want + 1)),
+                                   "err", str(want))
+        self.assertEqual(self.nit(), now)
+
+    def test_an_empty_confirmation_changes_nothing(self) -> None:
+        now = self.nit()
+        self.set("nit", (now + 1) % 32, confirm="")
+        self.assertEqual(self.nit(), now)
+
+    def test_a_value_outside_five_bits_is_refused(self) -> None:
+        now = self.nit()
+        for bad in (32, 33, -1, 255):
+            with self.subTest(bad=bad):
+                self.assertRedirectCarries(self.set("nit", bad), "err",
+                                           "ngoài dải")
+                self.assertEqual(self.nit(), now)
+
+    def test_setting_the_value_it_already_has_is_refused(self) -> None:
+        """Khong phai thao tac rong: nguoi bam dang nham, va im lang se giau di."""
+        self.assertRedirectCarries(self.set("nit", self.nit()), "err", "rồi")
+
+    def test_one_table_moves_and_the_others_do_not(self) -> None:
         before = {s.ts_id: s.version for s in self.cfg().sdts}
-        self.post("/version/bump", table=f"sdt:{TS}", confirm="TANG")
+        self.set(f"sdt:{TS}", (before[TS] + 1) % 32)
         after = {s.ts_id: s.version for s in self.cfg().sdts}
         self.assertEqual(after[TS], (before[TS] + 1) % 32)
         self.assertEqual({k: v for k, v in before.items() if k != TS},
                          {k: v for k, v in after.items() if k != TS})
 
-    def test_bumping_a_bouquet(self) -> None:
+    def test_a_bouquet_version(self) -> None:
         b = self.cfg().bouquets[0]
-        self.post("/version/bump", table=f"bat:{b.bouquet_id:04x}", confirm="TANG")
-        after = next(x for x in self.cfg().bouquets if x.bouquet_id == b.bouquet_id)
-        self.assertEqual(after.version, (b.version + 1) % 32)
+        want = (b.version + 1) % 32
+        self.assertRedirectCarries(
+            self.set(f"bat:{b.bouquet_id:04x}", want), "note", "BAT")
+        after = next(x for x in self.cfg().bouquets
+                     if x.bouquet_id == b.bouquet_id)
+        self.assertEqual(after.version, want)
 
-    def test_unknown_table_is_refused(self) -> None:
-        r = self.post("/version/bump", table="pat", confirm="TANG")
-        self.assertRedirectCarries(r, "err", "pat")
+    def test_an_unknown_table_is_refused(self) -> None:
+        self.assertRedirectCarries(self.set("pat", 1), "err", "pat")
 
-    def test_saving_a_service_never_touches_a_version(self) -> None:
-        """Sua noi dung va tang version la hai quyet dinh khac nhau."""
-        before = (self.cfg().network.version,
-                  tuple(s.version for s in self.cfg().sdts))
-        self.add(4242, "KENH MOI")
-        self.assertEqual((self.cfg().network.version,
-                          tuple(s.version for s in self.cfg().sdts)), before)
+    def test_an_unknown_transport_stream_is_refused(self) -> None:
+        self.assertRedirectCarries(self.set("sdt:999", 1), "err", "999")
+
+    def test_saving_a_service_never_moves_a_version(self) -> None:
+        """Sua noi dung va tuyen bo co thay doi la hai quyet dinh khac nhau."""
+        before = (self.nit(), tuple(s.version for s in self.cfg().sdts))
+        self.post(f"/ts/{TS}/service/save", service_id=4242, name="KENH MOI",
+                  provider="VTC", service_type=1, creating="true")
+        self.assertEqual(
+            (self.nit(), tuple(s.version for s in self.cfg().sdts)), before)
 
 
 class TestSavingChangesNothingElse(WebCase):
@@ -300,10 +584,9 @@ class TestSavingChangesNothingElse(WebCase):
         svc = next(x for x in self.sdt().services if x.service_id == SID)
         data = dict(service_id=svc.service_id, name=svc.name, provider=svc.provider,
                     service_type=int(svc.service_type), creating="false")
-        if svc.eit_pf:
-            data["eit_pf"] = "true"
-        if svc.eit_schedule:
-            data["eit_schedule"] = "true"
+        # Mot cong tac EPG, khong con hai o rieng — xem `entities.set_epg`.
+        if svc.eit_pf or svc.eit_schedule:
+            data["epg"] = "true"
         if svc.free_ca_mode:
             data["free_ca_mode"] = "true"
         self.post(f"/ts/{TS}/service/save", **data)
@@ -319,3 +602,54 @@ class TestSavingChangesNothingElse(WebCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestEveryInputTypeIsStyled(unittest.TestCase):
+    """Mọi loại ô nhập chữ đều phải nằm trong luật CSS của ``base.html``.
+
+    Thiếu một loại thì ô đó rơi về bề rộng mặc định của trình duyệt và lệch
+    hẳn so với ô bên cạnh. Chuyện đã xảy ra thật: ``input[type=password]``
+    bị bỏ quên, nên ở màn đăng nhập ô "Mật khẩu" ngắn hơn ô "Tên đăng nhập"
+    — hai ô nằm ngay dưới nhau, và đó là màn hình đầu tiên người dùng thấy.
+
+    Bài này không đọc CSS thật sự; nó chỉ so **danh sách loại đang dùng**
+    với **danh sách loại được tạo kiểu**. Rẻ, và bắt đúng cái bẫy: thêm một
+    loại ô mới vào một mẫu nào đó mà quên sờ tới bảng kiểu.
+    """
+
+    #: Loại không cần bề rộng — có luật riêng hoặc không hiện ra.
+    MIEN = {"submit", "button", "hidden", "checkbox", "radio"}
+
+    MAU = Path(__file__).parent.parent / "src" / "vtcsi" / "web" / "templates"
+
+    def setUp(self) -> None:
+        if not self.MAU.is_dir():
+            self.skipTest("khong tim thay thu muc mau")
+        self.base = (self.MAU / "base.html").read_text(encoding="utf-8")
+
+    def dang_dung(self) -> set[str]:
+        found: set[str] = set()
+        for f in self.MAU.glob("*.html"):
+            found |= set(re.findall(r'<input[^>]*\btype="([a-z]+)"',
+                                    f.read_text(encoding="utf-8")))
+        return found - self.MIEN
+
+    def duoc_tao_kieu(self) -> set[str]:
+        khoi = re.search(r"((?:input\[type=[a-z]+\],?\s*)+)[^{]*\{[^}]*width:100%",
+                         self.base)
+        self.assertIsNotNone(khoi, "khong tim thay luat be rong o base.html")
+        return set(re.findall(r"input\[type=([a-z]+)\]", khoi.group(1)))
+
+    def test_no_type_is_left_out(self) -> None:
+        thieu = self.dang_dung() - self.duoc_tao_kieu()
+        self.assertEqual(thieu, set(),
+                         f"loai o nay dang dung ma chua duoc tao kieu: {thieu}")
+
+    def test_password_is_in_there(self) -> None:
+        """Ghim dung cai da tung quen."""
+        self.assertIn("password", self.duoc_tao_kieu())
+
+    def test_the_rule_is_not_stale(self) -> None:
+        """Luat khong duoc liet ke loai da khong con dung o dau ca."""
+        thua = self.duoc_tao_kieu() - self.dang_dung()
+        self.assertEqual(thua, set(), f"luat con liet ke loai khong dung: {thua}")

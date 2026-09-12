@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% block title %}Đầu ra — VTC-SI{% endblock %}
+{% block body %}
+
+<h1>Quản lý PSI/SI</h1>
+<p class="sub">Hai đầu của hệ: XML lịch đi <b>vào</b>, dòng TS đi <b>ra</b>.</p>
+
+{% set trang_con = 'ra' %}{% include "_tabs-psisi.html" %}
+
+<p class="sub">Địa chỉ multicast mà hệ này bắn dòng TS báo hiệu tới headend.
+Đây là <b>thứ duy nhất</b> trong cả hệ được phép khác nhau giữa hai máy dự
+phòng — nên nó nằm ngoài git, và kéo cấu hình từ máy kia về không đụng tới nó.</p>
+
+{% if chan %}
+<div class="msg err">
+  <b>Chưa phát được.</b> Còn {{ chan|length }} chỗ phải sửa:
+  <ul style="margin:6px 0 0;padding-left:20px">
+    {% for m in chan %}<li>{{ m }}</li>{% endfor %}
+  </ul>
+</div>
+{% elif dat %}
+<p class="msg ok">Đầu ra hợp lệ. <span class="m">{{ dat }}</span>{%
+  if out.mirror %} · sao chép sang <span class="m">{{ dat_sao }}</span>{% endif %}</p>
+{% endif %}
+
+{% for m in nhac %}<p class="msg warn">{{ m }}</p>{% endfor %}
+
+<form method="post" action="/dau-ra/luu">
+
+<h2>Đường chính</h2>
+<div class="card">
+  <div class="grid two">
+    <div>
+      <label for="dc1">Địa chỉ đích</label>
+      <input type="text" name="dia_chi" id="dc1" class="m" inputmode="decimal"
+             value="{{ out.primary.address }}" placeholder="236.30.239.1" required>
+      <span class="dim" style="font-size:12.5px">Nhóm multicast, dải
+      224.0.0.0 – 239.255.255.255.</span>
+    </div>
+    <div>
+      <label for="cg1">Cổng UDP</label>
+      <input type="number" name="cong" id="cg1" class="m" min="1" max="65535"
+             value="{{ out.primary.port or '' }}" placeholder="6000" required>
+    </div>
+  </div>
+  <label for="cm1">Card mạng phát ra</label>
+  <input type="text" name="card" id="cm1" class="m" inputmode="decimal"
+         value="{{ out.primary.interface }}" placeholder="10.10.30.230">
+  <span class="dim" style="font-size:12.5px">Địa chỉ IP của card, không phải
+  tên card — <span class="m">ip addr</span> trên máy phát sẽ cho biết.</span>
+</div>
+
+<h2>Đường sao chép</h2>
+<div class="card">
+  <p style="margin-top:0" class="dim">Không bắt buộc. Để trống địa chỉ là tắt.
+  Đây là bản sao <b>y hệt</b> của dòng chính, thường bắn qua card thứ hai —
+  chính chỗ đó mới là dự phòng: card hỏng thì headend vẫn còn một đường.</p>
+  <div class="grid two">
+    <div>
+      <label for="dc2">Địa chỉ đích</label>
+      <input type="text" name="sao_dia_chi" id="dc2" class="m" inputmode="decimal"
+             value="{{ out.mirror.address if out.mirror else '' }}"
+             placeholder="236.30.239.2">
+    </div>
+    <div>
+      <label for="cg2">Cổng UDP</label>
+      <input type="number" name="sao_cong" id="cg2" class="m" min="1" max="65535"
+             value="{{ (out.mirror.port or '') if out.mirror else '' }}"
+             placeholder="6000">
+    </div>
+  </div>
+  <label for="cm2">Card mạng phát ra</label>
+  <input type="text" name="sao_card" id="cm2" class="m" inputmode="decimal"
+         value="{{ out.mirror.interface if out.mirror else '' }}"
+         placeholder="10.10.31.230">
+</div>
+
+<h2>Chung cho cả hai đường</h2>
+<div class="card">
+  <label for="ttl">TTL</label>
+  <input type="number" name="ttl" id="ttl" class="m" min="1" max="255"
+         value="{{ out.ttl }}" required style="max-width:120px">
+  <span class="dim" style="font-size:12.5px">Số bộ định tuyến gói đi qua được.
+  Mặc định của hệ điều hành là 1 — chết ngay tại switch đầu tiên. {{ ttl_mac_dinh }}
+  là đủ cho một mạng truyền dẫn thường mà vẫn không rò ra ngoài.</span>
+
+  <div class="row"><button type="submit">Lưu đầu ra</button></div>
+</div>
+</form>
+
+<h2>Dòng lệnh sẽ chạy</h2>
+<div class="card">
+  {% if lenh %}
+  <p style="margin-top:0" class="dim">Đây là lệnh <span class="m">vtcsi run</span>
+  dựng từ đúng những ô ở trên. Đọc được nó là kiểm được cấu hình mà không cần
+  phát thử.</p>
+  <pre style="margin:0">{{ lenh }}</pre>
+  {% else %}
+  <p style="margin:0" class="dim">Sửa xong những chỗ bị chặn ở trên thì lệnh
+  hiện ra đây.</p>
+  {% endif %}
+</div>
+
+<h2>File trên đĩa</h2>
+<div class="card">
+  <div class="tw"><table>
+  <tr><th>Mục</th><th>Giá trị</th></tr>
+  <tr><td>File</td><td class="m" style="word-break:break-all">{{ file }}</td></tr>
+  <tr><td>Đã có trên đĩa</td><td>
+    {% if co_file %}<span class="pill ok">có</span>
+    {% else %}<span class="pill mute">chưa lưu lần nào</span>{% endif %}</td></tr>
+  <tr><td>Nằm ngoài git</td><td>
+    {% if ngoai_git is none %}<span class="pill mute">không hỏi được</span>
+    {% elif ngoai_git %}<span class="pill ok">có</span>
+    {% else %}<span class="pill crit">KHÔNG</span>{% endif %}</td></tr>
+  </table></div>
+
+  {% if ngoai_git is sameas false %}
+  <p class="msg err" style="margin-bottom:0"><b>File đầu ra đang trong tầm của
+  git.</b> Commit một lần rồi kéo sang máy kia là <b>hai máy cùng bắn một nhóm
+  multicast ra cùng một mạng</b> — đúng cái hỏng mà cặp máy dự phòng sinh ra để
+  tránh. Thêm dòng này vào <span class="m">.gitignore</span>:</p>
+  <pre style="margin:8px 0 0">config/{{ ten_file }}</pre>
+  {% endif %}
+</div>
+
+{% endblock %}

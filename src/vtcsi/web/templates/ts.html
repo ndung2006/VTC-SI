@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}TS {{ sdt.ts_id }} — vtcsi{% endblock %}
+{% block title %}TS {{ sdt.ts_id }} — VTC-SI{% endblock %}
 {% block body %}
 {% set POL = {0:'ngang (H)', 1:'dọc (V)', 2:'trái (L)', 3:'phải (R)'} %}
 {% set FEC = {1:'1/2', 2:'2/3', 3:'3/4', 4:'5/6', 5:'7/8', 6:'8/9', 7:'3/5', 8:'4/5', 9:'9/10'} %}
@@ -35,12 +35,14 @@
 <h2>Dịch vụ <a class="btn alt" style="float:right;margin-top:-4px"
    href="/ts/{{ sdt.ts_id }}/new">+ thêm dịch vụ</a></h2>
 
+<form method="post" action="/ts/{{ sdt.ts_id }}/eit">
 <div class="tw"><table>
 <tr>
   <th class="n">SID</th><th>Tên</th><th>Nhà cung cấp</th><th>Loại</th>
-  <th>Mã hoá</th><th>EIT</th><th>LCN</th><th></th>
+  <th>Mã hoá</th><th style="width:7em">EPG</th><th>LCN</th><th></th>
 </tr>
 {% for s in sdt.services %}
+{% set bat = s.eit_pf or s.eit_schedule %}
 <tr>
   <td class="n">{{ s.service_id }}</td>
   <td><a href="/ts/{{ sdt.ts_id }}/service/{{ s.service_id }}">{{ s.name }}</a></td>
@@ -48,7 +50,18 @@
   <td>{% if s.service_type.value == 1 %}TV{% else %}Radio{% endif %}</td>
   <td>{% if s.free_ca_mode %}<span class="pill warn">có khoá</span>
       {% else %}<span class="pill mute">free</span>{% endif %}</td>
-  <td class="m">{{ 'p/f' if s.eit_pf else '—' }} {{ 'lịch' if s.eit_schedule else '' }}</td>
+  <td>
+    <label class="cong-tac" title="Bật/tắt EPG của kênh {{ s.name }}">
+      <input type="checkbox" name="eit_{{ s.service_id }}" value="true"
+             {{ 'checked' if bat }}>
+      <span class="nut" aria-hidden="true"></span>
+      <span class="chu">{{ 'Bật' if bat else 'Tắt' }}</span>
+    </label>
+    {% if s.eit_pf != s.eit_schedule %}
+    <div><span class="pill warn"
+      title="p/f và lịch khai khác nhau — chỉ có thể do sửa YAML bằng tay">lệch</span></div>
+    {% endif %}
+  </td>
   <td class="m">
     {% for bname, n in lcn.get(s.service_id, []) %}
       {{ n }}<span class="dim" style="font-family:var(--sans)"> {{ bname }}</span>{% if not loop.last %}<br>{% endif %}
@@ -59,8 +72,52 @@
 </tr>
 {% endfor %}
 </table></div>
+<div class="row">
+  <button type="submit">Lưu cột EPG</button>
+  <button type="button" class="alt" id="bat-het">Bật hết</button>
+  <button type="button" class="alt" id="tat-het">Tắt hết</button>
+  <span class="dim">Gửi <b>cả cột</b> một lượt, giống bảng số kênh.</span>
+</div>
+</form>
 
-<p class="sub">Thêm hoặc xoá dịch vụ ở đây <b>đồng thời</b> dựng lại
+<div class="card" style="margin-top:16px">
+  <b>Công tắc này làm gì</b>
+  <p style="margin:8px 0 0"><b>Tắt</b> một kênh thì <span class="m">vtcsi epg</span>
+  <b>không sinh bảng EIT</b> cho kênh đó, và hạ cả hai cờ
+  <span class="m">EIT_present_following</span> cùng
+  <span class="m">EIT_schedule</span> trong SDT.</p>
+  <p style="margin:8px 0 0">Hai việc đó <b>luôn đi cùng nhau</b>, không tách ra
+  được ở bất kỳ màn hình nào. Cờ trong SDT chỉ là <i>lời khai</i> — đầu thu vẫn
+  hiện EPG nếu bảng có trên sóng. Hạ cờ mà vẫn phát bảng là khai một đằng phát
+  một nẻo, kiểu sai khó tìm nhất.</p>
+  <p style="margin:8px 0 0" class="dim">Nhãn <span class="pill warn">lệch</span>
+  chỉ xuất hiện khi ai đó sửa YAML bằng tay cho hai cờ khác nhau. Lưu lại kênh
+  đó ở màn hình dịch vụ sẽ đưa chúng về cùng một giá trị.</p>
+</div>
+
+<script>
+(function () {
+  var form = document.querySelector('form[action$="/eit"]');
+  if (!form) return;
+  function dat(v) {
+    form.querySelectorAll('input[name^="eit_"]').forEach(function (o) {
+      o.checked = v;
+      var chu = o.parentElement.querySelector(".chu");
+      if (chu) chu.textContent = v ? "Bật" : "Tắt";
+    });
+  }
+  var a = document.getElementById("bat-het"), b = document.getElementById("tat-het");
+  if (a) a.addEventListener("click", function () { dat(true); });
+  if (b) b.addEventListener("click", function () { dat(false); });
+  form.addEventListener("change", function (e) {
+    if (!e.target.name || e.target.name.indexOf("eit_") !== 0) return;
+    var chu = e.target.parentElement.querySelector(".chu");
+    if (chu) chu.textContent = e.target.checked ? "Bật" : "Tắt";
+  });
+})();
+</script>
+
+<p class="sub" style="margin-top:22px">Thêm hoặc xoá dịch vụ ở đây <b>đồng thời</b> dựng lại
 <span class="m">service_list</span> trong NIT — FR-3. Không làm bước đó là lỗi đã
 khiến 26 kênh không xuất hiện sau khi đầu thu dò lại. Sau khi sửa, cả
 <b>SDT lẫn NIT</b> đều cần tăng version.</p>

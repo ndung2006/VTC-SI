@@ -57,11 +57,11 @@ BLOCKING = frozenset({Verdict.SILENT_CHANGE, Verdict.UNEXPECTED_JUMP})
 def validate(value: int, what: str = "version") -> int:
     """Kiểm tra một giá trị nằm trong dải 5 bit."""
     if not isinstance(value, int) or isinstance(value, bool):
-        raise VersionError(f"{what}: phai la so nguyen, gap {value!r}")
+        raise VersionError(f"{what}: phải là số nguyên, gặp {value!r}")
     if not 0 <= value <= MAX:
         raise VersionError(
-            f"{what}: {value} ngoai dai 0..{MAX}. Truong nay rong {BITS} bit — "
-            f"sau {MAX} quay ve 0, khong phai tang toi {MODULUS}."
+            f"{what}: {value} ngoài dải 0…{MAX}. Trường này rộng {BITS} bit — "
+            f"sau {MAX} quay về 0, không phải tăng tới {MODULUS}."
         )
     return value
 
@@ -78,6 +78,29 @@ def next_version(value: int) -> int:
 def is_successor(candidate: int, current: int) -> bool:
     """``candidate`` có đúng là bước ngay sau ``current`` không."""
     return validate(candidate, "candidate") == next_version(current)
+
+
+def describe_move(current: int, wanted: int) -> str:
+    """Một câu cho người vận hành đọc trước khi bấm.
+
+    Đặt ở đây chứ không ở lớp web vì nó là **luật**, không phải cách trình bày:
+    ba loại bước có ba hệ quả khác nhau và người bấm cần biết mình đang làm
+    loại nào.
+
+    Lùi lại là **hợp lệ**. Đầu thu phát hiện version *đổi*, không phải version
+    *tăng* — trường 5 bit vốn quay vòng nên không có thứ tự tuyệt đối. Vì vậy
+    tăng nhầm thì đặt lại số cũ là cách sửa đúng, miễn là bảng chưa lên sóng ở
+    giá trị nhầm đó.
+    """
+    validate(current, "current")
+    validate(wanted, "wanted")
+    if wanted == current:
+        return f"giữ nguyên {current} — không có gì thay đổi"
+    if is_successor(wanted, current):
+        return f"{current} → {wanted}, bước kế tiếp bình thường"
+    if is_successor(current, wanted):
+        return f"{current} → {wanted}, lùi lại một bước"
+    return f"{current} → {wanted}, nhảy xa"
 
 
 def classify(*, config_version: int, air_version: int, content_same: bool) -> Verdict:

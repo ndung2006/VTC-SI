@@ -5,9 +5,9 @@ version: 26
 private_data_specifier: null
 linkages:
 - linkage_type: '0x05'
-  ts_id: 16
+  ts_id: 8
   original_network_id: 12901
-  service_id: 1639
+  service_id: 809
 transport_streams:
 - ts_id: 3
   original_network_id: 1
@@ -102,7 +102,6 @@ transport_streams:
   - 814
   - 862
   - 877
-  - 869
   - 843
   - 821
   - 832
@@ -312,9 +311,6 @@ transport_streams:
     visible: true
   - service_id: 868
     lcn: 407
-    visible: true
-  - service_id: 869
-    lcn: 408
     visible: true
   - service_id: 870
     lcn: 409

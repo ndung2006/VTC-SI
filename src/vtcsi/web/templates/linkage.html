@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}Linkage — VTC-SI{% endblock %}
+{% block body %}
+
+<h1>Linkage</h1>
+<p class="sub">
+  <span class="m">linkage_descriptor</span> 0x4A — con trỏ từ bảng này sang
+  dịch vụ khác. Phần lớn ở đây là đường <b>OTA nâng cấp phần mềm đầu thu</b>
+  của Irdeto và ViCAS.
+</p>
+
+<div class="card">
+  <b>Đọc trước khi sửa.</b>
+  <p style="margin:8px 0 0">Các loại từ <span class="m">0x80</span> trở lên là
+  <i>tự định nghĩa</i>. Khối <b>dữ liệu riêng</b> của chúng nói gì, <b>ta không
+  biết</b> — không có đặc tả của Irdeto cũng như ViCAS. Thứ biết chắc là đầu
+  thu ngoài mạng đang đọc chúng.</p>
+  <p style="margin:8px 0 0">Vì vậy dữ liệu riêng chỉ sửa được ở dạng
+  <b>hex thô</b>. Không có ô nào "thân thiện" hơn, vì không có đặc tả thì mọi
+  giao diện tử tế đều là bịa. Sửa một byte thường nhẹ hơn nhiều so với
+  <b>đổi độ dài</b> khối.</p>
+  <p style="margin:8px 0 0" class="dim">Thứ tự các mục giữ nguyên và sửa là sửa
+  tại chỗ. Bouquet 0x3622 đang phát <b>hai mục 0x80 giống hệt nhau</b> — đó là
+  thật, không phải lỗi hiển thị.</p>
+</div>
+
+{% if problems %}
+<h2>Soi linkage</h2>
+{% for p in problems %}
+<p class="msg {{ 'err' if p.blocking else 'warn' }}" style="margin-bottom:8px">
+  {% if p.blocking %}<b>Chặn</b> — {% endif %}{{ p.where }}[{{ p.index }}]: {{ p.message }}
+</p>
+{% endfor %}
+<p class="sub">Sáu mục trỏ vào TSID không tồn tại — <b>RO-8</b>. Cấu hình gieo
+từ sóng <b>giữ nguyên</b> chúng để khớp từng byte. Sửa là quyết định nghiệp vụ
+riêng, và kéo theo tăng version của bảng tương ứng. TS đang có:
+<span class="m">{{ ts_ids|join(', ') }}</span>.</p>
+{% endif %}
+
+{% for g in groups %}
+<h2>{{ g.title }}
+  <a class="btn alt" style="float:right;margin-top:-4px"
+     href="/linkage/{{ g.raw }}/moi">+ thêm</a></h2>
+
+{% if g["items"] %}
+<div class="tw"><table>
+<tr>
+  <th class="n" style="width:3em">#</th>
+  <th class="n">Loại</th><th>Nghĩa</th>
+  <th class="n">TSID</th><th class="n">ONID</th><th class="n">SID</th>
+  <th>Dữ liệu riêng</th><th></th>
+</tr>
+{% for k in g["items"] %}
+<tr>
+  <td class="n dim">{{ loop.index0 }}</td>
+  <td class="n">0x{{ '%02x' % k.linkage_type }}</td>
+  <td style="font-size:13px">{{ describe(k.linkage_type) }}</td>
+  <td class="n">{% if k.ts_id in ts_ids %}{{ k.ts_id }}
+      {% else %}<span class="pill warn">{{ k.ts_id }}</span>{% endif %}</td>
+  <td class="n">{{ k.original_network_id }}</td>
+  <td class="n">{{ k.service_id }}</td>
+  <td class="m" style="font-size:11.5px;max-width:20em;word-break:break-all">
+    {% if k.private_data %}{{ as_hex(k.private_data) }}
+      <span class="dim">({{ k.private_data|length }} B)</span>
+    {% else %}<span class="dim">—</span>{% endif %}
+  </td>
+  <td><a href="/linkage/{{ g.raw }}/{{ loop.index0 }}">sửa</a></td>
+</tr>
+{% endfor %}
+</table></div>
+{% else %}
+<p class="sub">Không có linkage nào.</p>
+{% endif %}
+{% endfor %}
+
+<p class="sub" style="margin-top:28px">Sửa ở đây <b>không</b> tăng version.
+Xong thì chạy <span class="m">vtcsi preflight</span>, rồi tăng version của
+NIT hoặc bouquet tương ứng ở <a href="/">trang tổng quan</a>.</p>
+
+{% endblock %}

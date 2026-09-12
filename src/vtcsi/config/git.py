@@ -69,6 +69,26 @@ def diff(root: Path, paths: list[str] | None = None) -> str:
     return ("file moi chua theo doi:\n" + untracked) if untracked else ""
 
 
+def is_ignored(root: Path, path: Path) -> bool | None:
+    """``path`` có nằm ngoài tầm git không. ``None`` nếu không hỏi được.
+
+    Dùng cho đúng một chỗ: file mật khẩu. Băm mật khẩu lọt vào git là nằm
+    trong lịch sử **mãi mãi**, kể cả sau khi xoá file đi — nên câu hỏi này
+    đáng được hỏi bằng chính git chứ không phải bằng niềm tin vào
+    ``.gitignore``.
+    """
+    try:
+        rel = str(path.relative_to(root))
+    except ValueError:
+        return True  # ngoai kho thi git khong dong toi duoc
+    r = _run(root, "check-ignore", "-q", "--", rel)
+    if r.returncode == 0:
+        return True
+    if r.returncode == 1:
+        return False
+    return None
+
+
 def commit(root: Path, message: str, author: str, paths: list[str]) -> tuple[bool, str]:
     """Đưa vào chỉ mục rồi commit. Trả về ``(thành công, thông báo)``.
 

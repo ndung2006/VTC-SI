@@ -14,14 +14,10 @@ transport_streams:
   - 820
   - 813
   - 806
-  - 801
   - 823
   - 803
   - 805
   lcn:
-  - service_id: 801
-    lcn: 5
-    visible: true
   - service_id: 803
     lcn: 6
     visible: true

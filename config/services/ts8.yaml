@@ -3,20 +3,20 @@ ts_id: 8
 services:
 - service_id: 801
   name: HA NOI 1
-  provider: ''
+  provider: VTC
   type: 1
   running_status: running
   free_ca_mode: false
-  eit_pf: true
-  eit_schedule: true
+  eit_pf: false
+  eit_schedule: false
 - service_id: 802
   name: ANTV
   provider: ''
   type: 1
   running_status: running
-  free_ca_mode: false
-  eit_pf: true
-  eit_schedule: true
+  free_ca_mode: true
+  eit_pf: false
+  eit_schedule: false
 - service_id: 803
   name: QPVN
   provider: ''
@@ -34,7 +34,7 @@ services:
   eit_pf: true
   eit_schedule: true
 - service_id: 805
-  name: QUANG NINH 1
+  name: QTV1
   provider: ''
   type: 1
   running_status: running
@@ -42,7 +42,7 @@ services:
   eit_pf: true
   eit_schedule: true
 - service_id: 806
-  name: QUANG NINH 3
+  name: QTV3
   provider: ''
   type: 1
   running_status: running
@@ -359,157 +359,149 @@ services:
   type: 2
   running_status: running
   free_ca_mode: false
-  eit_pf: true
-  eit_schedule: true
+  eit_pf: false
+  eit_schedule: false
 - service_id: 856
   name: VOV2
   provider: VTC
   type: 2
   running_status: running
   free_ca_mode: false
-  eit_pf: true
-  eit_schedule: true
+  eit_pf: false
+  eit_schedule: false
 - service_id: 857
   name: VOV3
   provider: VTC
   type: 2
   running_status: running
   free_ca_mode: false
-  eit_pf: true
-  eit_schedule: true
+  eit_pf: false
+  eit_schedule: false
 - service_id: 861
   name: PHU THO RADIO
   provider: VTC
   type: 2
   running_status: running
   free_ca_mode: false
-  eit_pf: true
-  eit_schedule: true
+  eit_pf: false
+  eit_schedule: false
 - service_id: 862
   name: QUANG NINH RADIO
   provider: VTC
   type: 2
   running_status: running
   free_ca_mode: false
-  eit_pf: true
-  eit_schedule: true
+  eit_pf: false
+  eit_schedule: false
 - service_id: 863
   name: QRN2 RADIO
   provider: VTC
   type: 2
   running_status: running
   free_ca_mode: false
-  eit_pf: true
-  eit_schedule: true
+  eit_pf: false
+  eit_schedule: false
 - service_id: 864
   name: BAC NINH RADIO
   provider: VTC
   type: 2
   running_status: running
   free_ca_mode: false
-  eit_pf: true
-  eit_schedule: true
+  eit_pf: false
+  eit_schedule: false
 - service_id: 865
   name: THAI NGUYEN RADIO
   provider: VTC
   type: 2
   running_status: running
   free_ca_mode: false
-  eit_pf: true
-  eit_schedule: true
+  eit_pf: false
+  eit_schedule: false
 - service_id: 866
   name: LAO CAI RADIO
   provider: VTC
   type: 2
   running_status: running
   free_ca_mode: false
-  eit_pf: true
-  eit_schedule: true
+  eit_pf: false
+  eit_schedule: false
 - service_id: 867
   name: LAO CAI DAN TOC RADIO
   provider: VTC
   type: 2
   running_status: running
   free_ca_mode: false
-  eit_pf: true
-  eit_schedule: true
+  eit_pf: false
+  eit_schedule: false
 - service_id: 868
   name: TUYEN QUANG RADIO
   provider: VTC
   type: 2
   running_status: running
   free_ca_mode: false
-  eit_pf: true
-  eit_schedule: true
-- service_id: 869
-  name: DAKLAK RADIO
-  provider: VTC
-  type: 2
-  running_status: running
-  free_ca_mode: false
-  eit_pf: true
-  eit_schedule: true
+  eit_pf: false
+  eit_schedule: false
 - service_id: 870
   name: LAM DONG RADIO
   provider: VTC
   type: 2
   running_status: running
   free_ca_mode: false
-  eit_pf: true
-  eit_schedule: true
+  eit_pf: false
+  eit_schedule: false
 - service_id: 871
   name: LAM DONG FM
   provider: VTC
   type: 2
   running_status: running
   free_ca_mode: false
-  eit_pf: true
-  eit_schedule: true
+  eit_pf: false
+  eit_schedule: false
 - service_id: 872
   name: SON LA RADIO
   provider: VTC
   type: 2
   running_status: running
   free_ca_mode: false
-  eit_pf: true
-  eit_schedule: true
+  eit_pf: false
+  eit_schedule: false
 - service_id: 873
   name: THANH HOA
   provider: V
   type: 2
   running_status: running
   free_ca_mode: false
-  eit_pf: true
-  eit_schedule: true
+  eit_pf: false
+  eit_schedule: false
 - service_id: 874
   name: NGHE AN RADIO
   provider: VTC
   type: 2
   running_status: running
   free_ca_mode: false
-  eit_pf: true
-  eit_schedule: true
+  eit_pf: false
+  eit_schedule: false
 - service_id: 875
   name: QUANG NGAI 2 RADIO
   provider: VTC
   type: 2
   running_status: running
   free_ca_mode: false
-  eit_pf: true
-  eit_schedule: true
+  eit_pf: false
+  eit_schedule: false
 - service_id: 876
   name: LAI CHAU RADIO
   provider: VTC
   type: 2
   running_status: running
   free_ca_mode: false
-  eit_pf: true
-  eit_schedule: true
+  eit_pf: false
+  eit_schedule: false
 - service_id: 877
   name: CAO BANG RADIO
   provider: VTC
   type: 2
   running_status: running
   free_ca_mode: false
-  eit_pf: true
-  eit_schedule: true
+  eit_pf: false
+  eit_schedule: false

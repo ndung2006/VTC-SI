@@ -1,0 +1,88 @@
+# Hai dịch vụ, hai mạng khác nhau — và đó là điểm chính của file này.
+#
+#   si    phát multicast  → bắt buộc network_mode: host
+#   web   nhập liệu       → bridge, để sau proxy của Coolify
+#
+# Chạy:
+#   docker compose up -d web        # nhập liệu, an toàn, không phát gì
+#   docker compose up -d si         # PHÁT SÓNG THẬT — xem cảnh báo dưới
+#
+# Trước khi bật `si` lần đầu, đọc `kiem-thu-thuc-te.md`. Bậc 0 và bậc 1 không
+# đụng tới mux và bắt được phần lớn lỗi; đừng nhảy thẳng lên đây.
+
+name: vtcsi
+
+x-common: &common
+  build: .
+  image: vtcsi:local
+  restart: unless-stopped
+  environment:
+    TZ: Asia/Ho_Chi_Minh
+  volumes:
+    # CẢ kho git, không phải riêng `config/`.
+    #
+    # Giao diện chạy `git diff` và `git commit`; hai lệnh đó cần thư mục `.git`
+    # nằm đúng chỗ của nó so với `config/`. Gắn riêng `config/` vào thì sửa vẫn
+    # được nhưng mất lịch sử — tức mất luôn cơ chế đồng bộ giữa hai hệ.
+    - .:/repo:rw
+    # Bảng XML sinh ra. Ổ riêng, không phải thư mục dự án: chúng là sản phẩm
+    # dựng lại được, và `.gitignore` đã loại chúng khỏi git.
+    - vtcsi-build:/build
+
+services:
+  si:
+    <<: *common
+    container_name: vtcsi-si
+
+    # Multicast KHÔNG đi ra đúng cách qua mạng bridge của Docker. Đây không
+    # phải chuyện tối ưu — đổi sang bridge là luồng biến mất khỏi mạng.
+    network_mode: host
+
+    command:
+      - vtcsi
+      - --config=/repo/config
+      - run
+      # Sửa hai dòng dưới cho đúng mạng của bạn. Địa chỉ này PHẢI là địa chỉ
+      # chưa ai dùng cho tới khi bậc 3 của kế hoạch kiểm thử đã xanh.
+      - --to=236.30.239.1:6000
+      - --local-address=10.10.30.240
+      - --ttl=8
+      - --build=/build
+      - --eit-dir=/build/eit
+      - --inbox=/repo/epg/inbox
+      - --refresh-every=3600
+
+    # KHÔNG đặt CPU quota.
+    #
+    # Throttling của cgroup chèn khựng vào đúng chỗ cần đều nhịp: mux phát
+    # hiện mất nguồn bằng cách đếm gói UDP, nên một khoảng lặng 100 ms do bị
+    # bóp CPU có thể bị đọc thành "nguồn chết". Giới hạn bộ nhớ thì vô hại.
+    mem_limit: 512m
+
+    stop_grace_period: 15s
+    logging:
+      driver: json-file
+      options: {max-size: "20m", max-file: "5"}
+
+  web:
+    <<: *common
+    container_name: vtcsi-web
+    command:
+      - vtcsi
+      - --config=/repo/config
+      - web
+      - --host=0.0.0.0
+      - --port=8080
+      - --repo=/repo
+    # Mat khau KHONG dat qua trinh duyet. Lan dau, vao container ma dat:
+    #   docker compose exec web vtcsi --config=/repo/config passwd --repo=/repo
+    # Cho toi luc do, giao dien chi hien huong dan va khong phuc vu gi khac.
+    ports:
+      - "8080:8080"
+    mem_limit: 256m
+    logging:
+      driver: json-file
+      options: {max-size: "10m", max-file: "3"}
+
+volumes:
+  vtcsi-build:

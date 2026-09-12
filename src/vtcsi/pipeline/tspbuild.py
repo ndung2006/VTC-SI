@@ -68,6 +68,13 @@ class Output:
     packet_burst: int = 7
     """Bảy gói TS một datagram — 1316 byte, vừa một khung Ethernet thường."""
 
+    mirror: str | None = None
+    """``dia-chi:cong`` của đường sao chép, hoặc ``None``."""
+
+    mirror_local_address: str | None = None
+    """Card mạng cho đường sao chép. Thường là card KHÁC — đó mới là lý do
+    có đường thứ hai."""
+
     enforce_burst: bool = True
     """Ép đúng số gói mỗi datagram. Mux đếm gói để phát hiện mất nguồn nên
     nhịp đều quan trọng hơn việc tiết kiệm vài byte."""
@@ -115,7 +122,18 @@ def build(plan: Plan, *, start_time: datetime) -> list[str]:
     if start_time.tzinfo is None:
         raise PipelineError("start_time phai co mui gio")
 
-    cmd: list[str] = ["tsp", "-I", "null"]
+    # `--bitrate` o muc tsp, TRUOC moi plugin.
+    #
+    # `-I null` khong khai bitrate nao ca, va `inject` can biet bitrate cua
+    # dong de tinh khoang cach goi. Neu chi dua bitrate cho `regulate` — nam
+    # CUOI chuoi — thi `inject` van khong biet gi, va `tsp` chet ngay khi khoi
+    # dong:
+    #
+    #     Error: inject: input bitrate unknown or too low, specify --inter-packet
+    #
+    # Lan chay toan trinh dau tien bat duoc. Truoc do lenh nay chua bao gio
+    # duoc chay that — no chi duoc so chuoi trong cac bai kiem.
+    cmd: list[str] = ["tsp", "--bitrate", str(plan.total_bitrate), "-I", "null"]
     cmd += _pid_args(PID_NIT, plan.bitrate_nit, (plan.nit,))
     cmd += _pid_args(PID_SDT_BAT, plan.bitrate_sdt_bat, plan.sdt_bat)
 
@@ -127,6 +145,22 @@ def build(plan: Plan, *, start_time: datetime) -> list[str]:
         "--ts-id", str(plan.ts_id),
         "--time", start_time.astimezone(timezone.utc).strftime(TIME_FORMAT),
         "--actual",
+        # Ep mot bang ma duy nhat cho ten su kien.
+        #
+        # Khong dat thi TSDuck chon bang ma **cho tung chuoi**, lay cai gon
+        # nhat ma chuoi do vua: phan lon ra 0x15 UTF-8, nhung mot so ten lai
+        # ra ISO-8859-15 (0x0B) hoac ISO-8859-2 (0x10 0x0002). Ca hai deu hop
+        # chuan va giai dung — nhung lan chay toan trinh dau tien, khi do byte
+        # voi ban thu song that, cho thay Barrowa **chua bao gio** phat hai
+        # bang ma do: no chi dung 0x15 khi co dau va de tran khi thuan ASCII.
+        #
+        # Day la he du phong cho Barrowa, nen tieu chuan la nhung gi Barrowa
+        # dang lam. Dua len song mot bang ma ma ca dan dau thu chua tung gap
+        # la mot rui ro khong can thiet, va la kieu chi lo ra o nha khan gia.
+        #
+        # SDT va BAT khong can tuy chon nay: ten dich vu va ten bouquet deu
+        # thuan ASCII nen da de tran, trung khop tung byte voi song that.
+        "--default-charset", "UTF-8",
         "--bitrate", str(plan.bitrate_eit),
         "--poll-interval", str(plan.eit_poll_ms),
         "--wait-first-batch",
@@ -135,6 +169,28 @@ def build(plan: Plan, *, start_time: datetime) -> list[str]:
     cmd += ["-P", "regulate", "--bitrate", str(plan.total_bitrate)]
 
     out = plan.output
+
+    # Đường sao chép: một `tsp` con, nhận dòng qua ống.
+    #
+    # `-O ip` chỉ nhận MỘT đích, và `tsp` chỉ có một plugin đầu ra. Nên bản
+    # sao phải là một tiến trình riêng: `fork` đẩy y nguyên dòng gói sang
+    # stdin của nó, và nó tự bắn ra nhóm thứ hai.
+    #
+    # Đặt TRƯỚC `-O ip` là cố ý: `fork` là một plugin xử lý, nó phải nằm
+    # trong chuỗi. Đặt sau thì không còn chỗ nào để đặt.
+    #
+    # Nhánh con KHÔNG có `regulate`: nhịp đã do nhánh cha giữ, và hai bộ
+    # điều nhịp trên cùng một dòng thì đánh nhau.
+    if out.mirror:
+        con = ["tsp", "-I", "file", "-", "-O", "ip",
+               "--packet-burst", str(out.packet_burst)]
+        if out.enforce_burst:
+            con += ["--enforce-burst"]
+        if out.mirror_local_address:
+            con += ["--local-address", out.mirror_local_address]
+        con += ["--ttl", str(out.ttl), out.mirror]
+        cmd += ["-P", "fork", shell(con)]
+
     cmd += ["-O", "ip", "--packet-burst", str(out.packet_burst)]
     if out.enforce_burst:
         cmd += ["--enforce-burst"]
@@ -158,7 +214,8 @@ def shell(cmd: list[str]) -> str:
 USED_OPTIONS = {
     "inject": ["--pid", "--bitrate", "--poll-files"],
     "eitinject": ["--pid", "--files", "--ts-id", "--time", "--actual",
-                  "--bitrate", "--poll-interval", "--wait-first-batch"],
+                  "--default-charset", "--bitrate", "--poll-interval",
+                  "--wait-first-batch"],
     "regulate": ["--bitrate"],
 }
 USED_OUTPUT_OPTIONS = {
@@ -177,32 +234,55 @@ def plan_from_config(
     eit_dir: str,
     ts_id: int,
     other_ts_ids: tuple[int, ...],
+    bouquet_ids: tuple[int, ...],
     destination: str,
     local_address: str | None = None,
+    mirror: str | None = None,
+    mirror_local_address: str | None = None,
     ttl: int = 8,
     repetition_ms: dict[str, int] | None = None,
 ) -> Plan:
     """Kế hoạch mặc định khớp bố cục thư mục mà ``vtcsi build`` sinh ra.
 
-    Các TS khác phải liệt kê tường minh chứ **không dùng ký tự đại diện**:
-    ``sdt-ts*.xml`` sẽ khớp cả file actual, và file đó bị nạp hai lần với hai
-    chu kỳ khác nhau — một lỗi im lặng, chỉ lộ ra khi đo bitrate PID 17.
+    **Không một đường dẫn nào ở tuyến ``inject`` được mang ký tự đại diện.**
+    Hai lý do khác nhau, và cả hai đều hỏng lặng lẽ:
+
+    * ``sdt-ts*.xml`` khớp cả file actual, nên file đó bị nạp hai lần với hai
+      chu kỳ khác nhau — chỉ lộ ra khi đo bitrate PID 17.
+    * ``bat-*.xml`` thì tệ hơn: plugin ``inject`` của TSDuck **không nở ký tự
+      đại diện**. Nó nhận nguyên chuỗi ``bat-*.xml`` làm tên file, không tìm
+      thấy, và **không báo lỗi**. ``tsp`` chạy bình thường, PID 17 vẫn có
+      bitrate, NIT và SDT vẫn lên sóng — chỉ toàn bộ BAT là biến mất. Lần chạy
+      toàn trình đầu tiên bắt được đúng chỗ này.
+
+    ``eitinject --files`` thì ngược lại, **có** nở ký tự đại diện; đó là lý do
+    ``eit_files`` vẫn giữ ``*.xml``. Hai plugin, hai luật — nên phải ghi ra.
     """
     rate = {"nit": 2000, "sdt_actual": 1000, "sdt_other": 5000, "bat": 5000}
     rate.update(repetition_ms or {})
     if ts_id in other_ts_ids:
         raise PipelineError(
             f"TS {ts_id} vua la actual vua nam trong danh sach other")
-    b = PurePosixPath(build_dir)
+    # Chuan hoa dau phan cach truoc khi ghep.
+    #
+    # `PurePosixPath` coi mot duong dan Windows la MOT doan, nen ghep xong ra
+    # `C:\\build\\eit/*.xml` — tron hai kieu. Tren Linux thi khong xay ra,
+    # nhung dong lenh in ra de doc va de dan la mot phan cua cong cu, va mot
+    # dong lenh trong tai lieu van hanh ma dan vao khong chay duoc thi te hon
+    # la khong co.
+    b = PurePosixPath(str(build_dir).replace(chr(92), "/"))
     return Plan(
         nit=Injection(str(b / "nit.xml"), rate["nit"]),
         sdt_bat=(
             (Injection(str(b / f"sdt-ts{ts_id}.xml"), rate["sdt_actual"]),)
             + tuple(Injection(str(b / f"sdt-ts{t}.xml"), rate["sdt_other"])
                     for t in sorted(other_ts_ids))
-            + (Injection(str(b / "bat-*.xml"), rate["bat"]),)
+            + tuple(Injection(str(b / f"bat-{q:04x}.xml"), rate["bat"])
+                    for q in sorted(bouquet_ids))
         ),
-        eit_files=str(PurePosixPath(eit_dir) / "*.xml"),
+        eit_files=str(PurePosixPath(str(eit_dir).replace(chr(92), "/")) / "*.xml"),
         ts_id=ts_id,
-        output=Output(destination=destination, local_address=local_address, ttl=ttl),
+        output=Output(destination=destination, local_address=local_address,
+                      mirror=mirror, mirror_local_address=mirror_local_address,
+                      ttl=ttl),
     )

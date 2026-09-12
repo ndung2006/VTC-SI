@@ -9,3 +9,12 @@ __pycache__/
 # hinh: thu lai duoc bang `tsp -O file`. Ban dump XML moi la chuan vang, va
 # chung o lai trong git.
 Bang mau/*.ts
+
+# File dang nhap cua giao dien. Bam mat khau vao git la nam trong lich su
+# MAI MAI, ke ca sau khi xoa file di.
+.vtcsi-auth.json
+
+# Dia chi multicast dau ra. MOI MAY MOT DIA CHI: hai may du phong ma cung ban
+# mot nhom ra cung mot mang thi hong dung cai ma cap may sinh ra de tranh. Cau
+# hinh bao hieu vao git vi giong nhau la muc dich; dia chi dau ra thi nguoc lai.
+config/dau-ra.yaml

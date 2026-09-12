@@ -1,0 +1,9 @@
+{# Thanh trang con cua "Quan ly PSI/SI".
+
+   De rieng mot file, `include` tu ca hai trang: them mot trang con nua ma chi
+   sua mot cho. Hai ban sao thi som muon lech nhau, va cai lech do khong ai
+   thay cho toi luc mot trang mat duong quay ve trang kia. #}
+<div class="tabs">
+  <a href="/epg"{% if trang_con == 'vao' %} class="day"{% endif %}>Đầu vào</a>
+  <a href="/dau-ra"{% if trang_con == 'ra' %} class="day"{% endif %}>Đầu ra</a>
+</div>

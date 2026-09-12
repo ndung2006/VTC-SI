@@ -57,7 +57,7 @@ def _int(v, what: str) -> int:
             return int(t, 16) if t.lower().startswith("0x") else int(t)
         except ValueError:
             pass
-    raise ConfigError(f"{what}: khong phai so nguyen: {v!r}")
+    raise ConfigError(f"{what}: không phải số nguyên: {v!r}")
 
 
 def _bytes(v) -> bytes:
@@ -90,7 +90,7 @@ def _pds_in(v):
 
 def _need(d: dict, key: str, where: str):
     if key not in d:
-        raise ConfigError(f"{where}: thieu truong '{key}'")
+        raise ConfigError(f"{where}: thiếu trường '{key}'")
     return d[key]
 
 
@@ -156,7 +156,7 @@ def _delivery_in(d: dict, where: str) -> SatelliteDelivery:
     def pick(table, key, default=None):
         raw = d.get(key, default)
         if raw not in table:
-            raise ConfigError(f"{where}.{key}: gia tri la {raw!r}")
+            raise ConfigError(f"{where}.{key}: giá trị lạ {raw!r}")
         return table[raw]
 
     return SatelliteDelivery(
@@ -181,7 +181,7 @@ def to_plain(cfg: Config) -> dict:
     for loop in cfg.network.ts_loops:
         sdt = sdt_by_ts.get(loop.ts_id)
         if sdt is None:
-            raise ConfigError(f"TS {loop.ts_id} co trong NIT nhung khong co SDT")
+            raise ConfigError(f"TS {loop.ts_id} có trong NIT nhưng không có SDT")
         streams.append({
             "ts_id": loop.ts_id,
             "original_network_id": loop.original_network_id,
@@ -298,7 +298,7 @@ def from_plain(data: dict) -> Config:
                 sid = _int(sid_raw, where + ".services")
                 if (ts_id, sid) not in types:
                     raise ConfigError(
-                        f"{where}: dich vu {sid} khong co trong TS {ts_id}")
+                        f"{where}: dịch vụ {sid} không có trong TS {ts_id}")
                 refs.append(ServiceRef(sid, types[(ts_id, sid)]))
             ts_loops.append(BatTsLoop(
                 ts_id=ts_id,

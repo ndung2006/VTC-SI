@@ -21,8 +21,15 @@ mỗi lần thêm kênh.
 ```bash
 git init && git add . && git commit -m "gieo cau hinh tu song"   # LAM TRUOC
 pip install -e ".[web]"
+vtcsi passwd                   # dat mat khau — BAT BUOC, chi lam tu terminal
 vtcsi web                      # http://127.0.0.1:8080
 ```
+
+Không có mật khẩu thì giao diện **không phục vụ gì**, chỉ hiện hướng dẫn. Cũng
+không có trang "tạo tài khoản lần đầu" trên web: trang đó nghĩa là *ai chạm tới
+cổng trước thì người đó làm chủ*. Quyền shell trên máy phát mới là ranh giới thật.
+
+Quên mật khẩu thì `vtcsi passwd --force`. Không có đường phục hồi qua trình duyệt.
 
 `git init` **trước**, không phải sau. Bản gieo từ sóng là thứ duy nhất ta biết
 chắc là đúng; chưa commit nó thì không còn chỗ nào để quay về.
@@ -57,6 +64,17 @@ sudo apt install tsduck        # hoặc build tu nguon, xem muc B10 spec.md
 pytest
 ```
 
+**Đã đạt — 11/09/2026.** Mười bài đó nay xanh: `562 passed, 0 skipped`.
+NIT, ba SDT và sáu BAT sinh từ cấu hình **giống từng byte** với bảng bóc từ
+sóng. Đó là AC-1 và AC-2, chứng minh ở mức byte chứ không phải mức XML.
+
+**Bài học đắt nhất của bước này:** TSDuck đã cài sẵn từ đầu, nhưng
+`shutil.which("tstabcomp")` không thấy vì nó nằm ngoài `PATH` của Git Bash —
+PowerShell thì thấy. Bảy bài quan trọng nhất đã **ngủ yên nhiều phiên** vì thế,
+và trong báo cáo pytest chúng in ra chữ `s` xám y hệt như khi chưa cài gì.
+Nay `tests/tsduck_path.py` tự tìm ở những chỗ TSDuck thường nằm, và khi không
+thấy thì nói rõ đã tìm ở đâu.
+
 **Đạt khi:** 10 bài đang `skipped` chuyển thành `passed`. Bảy bài so **byte thật**
 giữa bảng ta sinh và bảng bóc từ sóng; ba bài kiểm mọi tuỳ chọn dòng lệnh tôi
 đã ghim có tồn tại thật trong `tsp` hay không.
@@ -84,6 +102,24 @@ vtcsi epg --inbox epg/inbox --out build/eit/eit.xml
 **Đạt khi:** ra đúng số bảng bằng số kênh có lịch trong file. Chú ý dòng cảnh báo
 cuối — với một file một ngày thì cả 44 kênh đều dưới ngưỡng 120 giờ, và đó là
 đúng.
+
+### 0.35 Để `vtcsi run` dựng dòng lệnh thay bạn
+
+```bash
+vtcsi refresh --out build --inbox epg/inbox --eit-out build/eit/eit.xml
+vtcsi run --to 236.30.239.1:6000 --local-address 10.10.30.240 --dry-run
+```
+
+`--dry-run` **in dòng lệnh rồi thoát**, không mở socket nào. Số TS actual, danh
+sách TS khác và chu kỳ lặp đều lấy từ cấu hình, nên không còn chỗ để gõ nhầm.
+
+**Đạt khi:** dòng lệnh in ra có `sdt-ts8.xml=1000` (actual, 1 s) và
+`sdt-ts3.xml=5000` cùng `sdt-ts1000.xml=5000` (các TS khác, 5 s), và **không**
+có `sdt-ts*` ở đâu cả — ký tự đại diện đó sẽ nuốt luôn file actual và nạp nó
+hai lần.
+
+Nếu thiếu file bảng, lệnh báo `THIEU: …` và thoát mã 1 thay vì dựng `tsp` để
+nó chết.
 
 ### 0.4 Chạy pipeline ra **file**, không ra mạng
 
@@ -254,7 +290,39 @@ phát sóng — bản thứ năm sẽ tìm ra lỗi thứ tư.
 
 ---
 
-## Ba điều đã biết trước sẽ gặp
+## Chạy thật bằng `vtcsi run`
+
+Từ bậc 1 trở đi, đừng gõ `tsp` bằng tay nữa — dùng `vtcsi run` không có
+`--dry-run`. Nó dựng `tsp`, trông chừng, và dựng lại khi chết.
+
+**Ba điều cần biết trước khi giao cho nó:**
+
+**Sửa nội dung không làm nó khởi động lại.** Đổi tên kênh, đổi số kênh, nạp
+lịch mới — `tsp` tự đọc lại file XML. Chỉ khi *dòng lệnh* đổi (thêm TS, đổi
+địa chỉ phát) mới phải dựng lại, và lúc đó phải làm bằng tay. Đây là điểm
+quan trọng nhất: một lần dựng lại là một lần chớp nguồn, và mux sẽ nhảy sang
+hệ kia.
+
+**Nó tự chạy `vtcsi refresh` mỗi giờ.** Không có bước này thì cửa sổ EIT 8 ngày
+cạn dần rồi hết sạch. Tắt bằng `--no-refresh` nếu bạn muốn tự lo bằng cron.
+
+**Nó không bao giờ bỏ cuộc.** Giãn cách tăng 1 → 2 → 4 → 8 → 16 → 30 giây rồi
+dừng ở đó mãi. Sau 5 lần chết-khi-khởi-động liên tiếp, log đổi giọng thành
+`CHET LAP` nhưng **vẫn thử tiếp**. Một thiết bị dự phòng ngừng thử tệ hơn một
+thiết bị thử chậm.
+
+**Kiểm tra log sau một đêm:**
+
+```bash
+docker logs vtcsi-si 2>&1 | grep -E "dung tsp|ket thuc|CHET LAP|CANH BAO"
+```
+
+**Đạt khi:** đúng **một** dòng `dung tsp` từ lúc khởi động, không dòng nào
+khác. Mỗi cặp `ket thuc` + `dung tsp` là một lần chớp nguồn.
+
+---
+
+## Bốn điều đã biết trước sẽ gặp
 
 Ghi ở đây để lúc gặp thì không hoảng.
 
@@ -265,6 +333,10 @@ StreamXpert đã báo *"No services found"* với luồng Barrowa suốt bao nă
 **Dịch vụ 838 có một sự kiện `duration = 48:00:01`** khi hết lịch — RO-22. Hệ
 mới **loại nó ra kèm cảnh báo** chứ không tái tạo. Nếu thấy kênh đó thiếu một
 mục trong EPG, đó là chủ ý.
+
+**Dịch vụ 877 `CAO BANG RADIO` không có số kênh** — RO-23. Mười chín kênh phát
+thanh kia liền mạch 397…415; chỗ trống đúng bằng 416. Bản gieo **giữ nguyên** để
+khớp byte. Sửa được ngay ở màn hình bouquet, nhưng nhớ tăng version BAT 0x6510.
 
 **Ba linkage trỏ vào TSID không tồn tại** — RO-8: TSID 16 ba lần gồm cả kênh
 barker, TSID 9 một lần, và `0x3265` một lần do đặt nhầm `network_id` vào ô

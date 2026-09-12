@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{% block title %}vtcsi{% endblock %}</title>
+<title>{% block title %}VTC-SI{% endblock %}</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%22-1%20-1%2070%2038%22%20fill%3D%22none%22%20stroke-width%3D%224%22%3E%3Cg%20stroke%3D%22%230e1618%22%3E%3Cpath%20d%3D%22M3.5%201H42.5%22%2F%3E%3Cpath%20d%3D%22M45%203.5V7.5%22%2F%3E%3Cpath%20d%3D%22M47.5%2010H64.5%22%2F%3E%3Cpath%20d%3D%22M64.5%2035H25.5%22%2F%3E%3Cpath%20d%3D%22M23%2032.5V28.5%22%2F%3E%3Cpath%20d%3D%22M20.5%2026H3.5%22%2F%3E%3C%2Fg%3E%3Cg%20stroke%3D%22%23c8641e%22%3E%3Cpath%20d%3D%22M1%203.5V12%22%2F%3E%3Cpath%20d%3D%22M1%2015V23.5%22%2F%3E%3C%2Fg%3E%3Cpath%20stroke%3D%22%23c23f74%22%20d%3D%22M67%2012.5V21%22%2F%3E%3Cpath%20stroke%3D%22%232f86cc%22%20d%3D%22M67%2024V32.5%22%2F%3E%3C%2Fsvg%3E">
 <style>
 :root{
   --ground:#f1f4f5; --surface:#fff; --surface-2:#e8eef0;
@@ -25,12 +26,35 @@ a{color:var(--accent)}
 .wrap{max-width:1040px;margin:0 auto;padding:0 20px 60px}
 header{border-bottom:2px solid var(--ink);margin-bottom:22px}
 .head{max-width:1040px;margin:0 auto;padding:14px 20px;display:flex;gap:18px;align-items:baseline;flex-wrap:wrap}
-.brand{font-weight:700;font-size:19px;letter-spacing:-.01em}
-.brand span{color:var(--muted);font-weight:400;font-size:13px;margin-left:8px}
+.brand{font-weight:700;font-size:19px;letter-spacing:-.01em;
+  display:flex;align-items:center;gap:9px}
+/* Dau chi ve VIEN, khong co chu.
+   Ban day du co chu EPG ben trong, nhung o 20px thi ba chu cai do thanh
+   vet mo — ma mot logo co chu khong doc duoc thi te hon logo khong chu.
+   Xem thuong-hieu/logo.svg cho ban dung o co lon. */
+/* Net 3 chu khong phai 2: o 26px thi net 2 chi ra 1,1px — mot vien da
+   dut doan ma mong the nua thi nhin ra nhieu chu khong ra hinh.
+   Kich thuoc dat THANG tren the svg, khong de `width:auto`.
+   SVG khong co width/height noi tai chi mang mot TI LE. Lam mot flex item
+   thi be rong co so phai suy ra tu ti le do, va day la cho trinh duyet hay
+   hut — o co so bang 0 thi dau bien mat, ma khong mot dong loi nao. */
+.brand svg{display:block;flex:0 0 auto;overflow:visible}
+.brand .ten{color:var(--ink);font-weight:700;font-size:19px}
+.brand span:not(.ten){color:var(--muted);font-weight:400;font-size:13px}
 nav{display:flex;gap:16px;margin-left:auto;font-size:14px}
 h1{font-size:24px;margin:0 0 4px;letter-spacing:-.01em}
 h2{font-size:17px;margin:26px 0 8px;border-bottom:1px solid var(--rule);padding-bottom:5px}
 .sub{color:var(--muted);font-size:13.5px;margin:0 0 18px}
+
+/* Thanh trang con. Khac `nav` tren cung o cho no noi "ban dang o dau TRONG
+   muc nay" — nen trang dang mo phai khac han, khong chi dam hon mot chut. */
+.tabs{display:flex;gap:2px;margin:0 0 18px;border-bottom:1px solid var(--rule)}
+.tabs a{padding:7px 15px;font-size:14px;text-decoration:none;color:var(--muted);
+  border:1px solid transparent;border-bottom:none;border-radius:3px 3px 0 0;
+  margin-bottom:-1px}
+.tabs a:hover{color:var(--ink)}
+.tabs a.day{color:var(--ink);font-weight:600;background:var(--surface);
+  border-color:var(--rule);border-bottom-color:var(--surface)}
 .m,code{font-family:var(--mono);font-size:.9em;font-variant-numeric:tabular-nums}
 
 .msg{padding:9px 14px;border-radius:3px;margin:0 0 16px;font-size:14px}
@@ -51,7 +75,13 @@ td.n,th.n{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-
 @media(min-width:720px){.grid.two{grid-template-columns:1fr 1fr}}
 
 label{display:block;font-size:13px;color:var(--ink-2);margin:12px 0 3px}
-input[type=text],input[type=number],select,textarea{
+/* Liet ke DU moi loai o nhap chu.
+   Thieu mot loai thi o do roi ve be rong mac dinh cua trinh duyet va lech
+   hAn so voi o ben canh — `password` tung bi bo quen dung kieu do, ngay o
+   man dang nhap. Bai `TestEveryInputTypeIsStyled` giu danh sach nay khop
+   voi thuc te trong cac mau. */
+input[type=text],input[type=password],input[type=number],input[type=date],
+input[type=file],select,textarea{
   width:100%;padding:7px 9px;font:14px var(--sans);color:var(--ink);
   background:var(--ground);border:1px solid var(--rule);border-radius:3px}
 input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:1px}
@@ -78,20 +108,63 @@ pre{background:var(--surface);border:1px solid var(--rule);padding:14px;overflow
 .dim{color:var(--muted)}
 footer{margin-top:40px;border-top:1px solid var(--rule);padding-top:14px;
   font-size:12.5px;color:var(--muted)}
+
+.cong-tac{display:inline-flex;align-items:center;gap:7px;cursor:pointer;margin:0}
+.cong-tac input{position:absolute;opacity:0;width:0;height:0}
+.cong-tac .nut{width:34px;height:19px;border-radius:19px;background:var(--rule);
+  position:relative;transition:background .12s;flex:none}
+.cong-tac .nut::after{content:"";position:absolute;top:2px;left:2px;width:15px;height:15px;
+  border-radius:50%;background:var(--surface);transition:transform .12s;
+  box-shadow:0 1px 2px rgba(0,0,0,.3)}
+.cong-tac input:checked + .nut{background:var(--ok)}
+.cong-tac input:checked + .nut::after{transform:translateX(15px)}
+.cong-tac input:focus-visible + .nut{outline:2px solid var(--accent);outline-offset:2px}
+.cong-tac .chu{font-size:12.5px;color:var(--ink-2);min-width:1.8em}
+
+dialog{background:var(--surface);color:var(--ink);border:1px solid var(--rule);
+  border-radius:4px;padding:20px 22px;max-width:26em;box-shadow:0 8px 32px rgba(0,0,0,.28)}
+dialog::backdrop{background:rgba(0,0,0,.45)}
 </style>
 </head>
 <body>
 <header><div class="head">
-  <div class="brand">vtcsi <span>báo hiệu PSI/SI</span></div>
+  <div class="brand"><svg viewBox="-.5 -.5 69 37" width="48" height="26" fill="none"
+         stroke-width="3" aria-hidden="true">
+      <g stroke="currentColor"><path d="M3.5 1H42.5"/><path d="M45 3.5V7.5"/>
+      <path d="M47.5 10H64.5"/><path d="M64.5 35H25.5"/><path d="M23 32.5V28.5"/>
+      <path d="M20.5 26H3.5"/></g>
+      <g stroke="#c8641e"><path d="M1 3.5V12"/><path d="M1 15V23.5"/></g>
+      <path stroke="#c23f74" d="M67 12.5V21"/>
+      <path stroke="#2f86cc" d="M67 24V32.5"/>
+    </svg><span class="ten">VTC-SI</span><span>báo hiệu PSI/SI</span></div>
   <nav>
     <a href="/">Tổng quan</a>
+    <a href="/linkage">Linkage</a>
     <a href="/thay-doi">Thay đổi{% if git.dirty %} ({{ git.dirty|length }}){% endif %}</a>
+    {% if nguoi_dung %}<a href="/giam-sat">Giám sát</a>
+    <a href="/epg">Quản lý PSI/SI</a>
+    <a href="/quan-tri">Quản trị</a>
+      <span class="dim" style="font-size:13px">{{ nguoi_dung }}</span>{% endif %}
   </nav>
 </div></header>
 
 <div class="wrap">
 {% if note %}<p class="msg ok">{{ note }}</p>{% endif %}
 {% if err %}<p class="msg err">{{ err }}</p>{% endif %}
+{% if not can_dang_nhap %}
+<p class="msg err"><b>Đang chạy không yêu cầu đăng nhập.</b>
+  Ai mở được cổng này là sửa được cấu hình đang phát sóng. Chỉ dùng khi chạy
+  thử trên máy của mình; bỏ <code>--no-auth</code> để bật lại.</p>
+{% endif %}
+{% if cho_len_song %}
+<form method="post" action="/ap-dung" class="msg warn"
+      style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">
+  <span style="flex:1"><b>Có thay đổi chưa lên sóng.</b>
+    Cấu hình đã sửa nhưng bảng XML chưa sinh lại, nên <span class="m">tsp</span>
+    vẫn đang phát bản cũ.</span>
+  <button type="submit">Áp dụng ngay</button>
+</form>
+{% endif %}
 {% if not git.is_repo %}
 <p class="msg warn"><b>Thư mục này chưa phải kho git.</b>
   File vẫn ghi được, nhưng không có lịch sử: không xem được diff, không quay lui được,

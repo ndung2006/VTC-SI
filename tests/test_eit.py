@@ -7,11 +7,14 @@ không cần chờ bản thu EIT schedule.
 
 from __future__ import annotations
 
+import subprocess
+import tempfile
 import unittest
 import xml.etree.ElementTree as ET
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
+import tsduck_path
 from vtcsi.epg.transform import eventid as EID
 from vtcsi.epg.transform import parse as P
 from vtcsi.epg.transform import window as W
@@ -249,3 +252,60 @@ class TestRejectOverlong(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+class TestTsduckActuallyAcceptsIt(unittest.TestCase):
+    """Bài học đắt nhất của cả module này.
+
+    ``TABLE_SCHEDULE`` từng là chuỗi ``"schedule"``. Mọi bài kiểm ở trên vẫn
+    xanh, vì chúng đọc lại XML bằng ``ElementTree`` — thứ vui vẻ chấp nhận bất
+    kỳ chuỗi nào. Chỉ khi đưa cho ``eitinject`` thật thì TSDuck mới từ chối, và
+    nó từ chối **cả bảng**: EPG mất sạch trong khi NIT, SDT, BAT vẫn lên sóng
+    bình thường.
+
+    Nên bài này không đọc lại XML. Nó gọi TSDuck.
+    """
+
+    def setUp(self) -> None:
+        self.tstabcomp = tsduck_path.require("tstabcomp")
+        self._tmp = tempfile.TemporaryDirectory()
+        self.tmp = Path(self._tmp.name)
+
+    def tearDown(self) -> None:
+        self._tmp.cleanup()
+
+    def bien_dich(self, table_type: str) -> bytes:
+        """Một EIT một sự kiện qua ``tstabcomp``, trả về byte bảng."""
+        ev = Event(service_id=801,
+                   start_utc=datetime(2026, 9, 12, 4, 30, tzinfo=timezone.utc),
+                   duration=timedelta(minutes=30), name="Thử",
+                   encoding=E.ENCODING_UTF8, event_id=1)
+        doc = E.to_document(E.write_all(
+            [ev], ts_id=8, original_network_id=12901, table_type=table_type))
+        src = self.tmp / "eit.xml"
+        ET.indent(doc, space="  ")
+        src.write_text('<?xml version="1.0" encoding="UTF-8"?>\n'
+                       + ET.tostring(doc, encoding="unicode"), encoding="utf-8")
+        out = src.with_suffix(".bin")
+        r = subprocess.run([self.tstabcomp, "--compile", str(src),
+                            "--output", str(out)],
+                           capture_output=True, text=True, timeout=60,
+                           env=tsduck_path.on_path())
+        if r.returncode != 0 or not out.exists():
+            raise AssertionError(f"tstabcomp tu choi type={table_type!r}:\n"
+                                 f"{r.stdout}\n{r.stderr}")
+        return out.read_bytes()
+
+    def test_the_schedule_type_compiles(self) -> None:
+        self.assertTrue(self.bien_dich(E.TABLE_SCHEDULE))
+
+    def test_the_schedule_type_means_table_id_0x50(self) -> None:
+        """EIT schedule actual: 0x50–0x5F, moi bang phu bon ngay."""
+        self.assertEqual(self.bien_dich(E.TABLE_SCHEDULE)[0], 0x50)
+
+    def test_the_pf_type_means_table_id_0x4e(self) -> None:
+        self.assertEqual(self.bien_dich(E.TABLE_PF)[0], 0x4E)
+
+    def test_the_word_schedule_is_not_a_valid_type(self) -> None:
+        """Ghim chinh cai bay: chu 'schedule' doc xuoi tai, va TSDuck tu choi."""
+        with self.assertRaises(AssertionError):
+            self.bien_dich("schedule")

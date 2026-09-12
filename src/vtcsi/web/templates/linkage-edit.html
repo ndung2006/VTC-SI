@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block title %}Linkage {{ title }} — VTC-SI{% endblock %}
+{% block body %}
+
+<p class="sub"><a href="/linkage">← mọi linkage</a></p>
+<h1>{% if new %}Linkage mới{% else %}Linkage thứ {{ index }}{% endif %}</h1>
+<p class="sub">{{ title }}{% if not new %} ·
+  loại hiện tại <span class="m">0x{{ '%02x' % k.linkage_type }}</span> —
+  {{ describe(k.linkage_type) }}{% endif %}</p>
+
+{% if not new and is_opaque(k.linkage_type) %}
+<p class="msg warn"><b>Đây là linkage tự định nghĩa của Irdeto hoặc ViCAS.</b>
+  Nhiều khả năng nó là đường OTA nâng cấp phần mềm đầu thu. Ta không có đặc tả
+  cho khối dữ liệu riêng, nên <b>đừng đoán</b>: sửa khi biết chắc mình đang làm
+  gì, còn không thì để nguyên.</p>
+{% endif %}
+
+<div class="card">
+<form method="post" action="/linkage/{{ raw }}/save">
+  <input type="hidden" name="index" value="{{ index }}">
+
+  <div class="grid two">
+    <div>
+      <label for="linkage_type">Loại linkage</label>
+      <input type="text" name="linkage_type" id="linkage_type" required
+             list="loai" autocomplete="off"
+             value="0x{{ '%02x' % k.linkage_type }}">
+      <datalist id="loai">
+        {% for value, name in known %}
+        <option value="0x{{ '%02x' % value }}">{{ name }}</option>
+        {% endfor %}
+        <option value="0x80">tự định nghĩa — Irdeto/ViCAS</option>
+        <option value="0x82">tự định nghĩa — Irdeto/ViCAS</option>
+        <option value="0x90">tự định nghĩa — Irdeto/ViCAS</option>
+        <option value="0x92">tự định nghĩa — Irdeto/ViCAS</option>
+      </datalist>
+      <span class="dim" style="font-size:12.5px">Một byte. Viết
+      <span class="m">0x92</span> hoặc <span class="m">146</span> đều được.
+      <span class="m">0x00</span> và <span class="m">0xFF</span> bị chuẩn dành
+      riêng nên hệ từ chối.</span>
+    </div>
+    <div>
+      <label for="ts_id">transport_stream_id</label>
+      <input type="number" name="ts_id" id="ts_id" min="0" max="65535" required
+             value="{{ k.ts_id }}">
+      <span class="dim" style="font-size:12.5px">TS đang có trong cấu hình:
+      <span class="m">{{ ts_ids|join(', ') }}</span>. Số khác vẫn lưu được
+      nhưng sẽ bị soi báo — xem RO-8.</span>
+    </div>
+  </div>
+
+  <div class="grid two">
+    <div>
+      <label for="original_network_id">original_network_id</label>
+      <input type="number" name="original_network_id" id="original_network_id"
+             min="0" max="65535" required value="{{ k.original_network_id }}">
+      <span class="dim" style="font-size:12.5px">Ở VTC: TS 8 mang
+      <span class="m">12901</span>, TS 3 và TS 1000 mang <span class="m">1</span>.
+      Đây <b>không</b> suy ra được từ TSID.</span>
+    </div>
+    <div>
+      <label for="service_id">service_id</label>
+      <input type="number" name="service_id" id="service_id" min="0" max="65535"
+             required value="{{ k.service_id }}">
+    </div>
+  </div>
+
+  <label for="private_data">Dữ liệu riêng — hex thô</label>
+  <textarea name="private_data" id="private_data" rows="4"
+            class="m" style="font-family:var(--mono);font-size:12.5px"
+            placeholder="FF 04 FF 04 …  (để trống nếu không có)">{{ as_hex(k.private_data) }}</textarea>
+  <span class="dim" style="font-size:12.5px">
+    Hiện <b>{{ k.private_data|length }} byte</b>. Nhận cả
+    <span class="m">FF 04 FF</span> lẫn <span class="m">ff04ff</span>.
+    <b>Đổi độ dài nguy hiểm hơn đổi giá trị</b> — bên kia thường dùng độ dài để
+    phân giải cấu trúc.
+  </span>
+
+  <div class="row">
+    <button type="submit">{{ 'Thêm linkage' if new else 'Lưu' }}</button>
+    <a class="btn alt" href="/linkage">Huỷ</a>
+    <span class="dim">Lưu <b>không</b> tăng version.</span>
+  </div>
+</form>
+</div>
+
+{% if not new %}
+<h2>Xoá linkage này</h2>
+<div class="card">
+  <p style="margin-top:0">Xoá mục thứ <b>{{ index }}</b> khỏi {{ title }}.
+  {% if is_opaque(k.linkage_type) %}Nếu đây là đường OTA thì xoá nó là
+  <b>cắt đường nâng cấp phần mềm của cả mạng đầu thu</b> — và không ai phát
+  hiện ra cho tới lần nâng cấp kế tiếp.{% endif %}</p>
+  <form method="post" action="/linkage/{{ raw }}/{{ index }}/delete">
+    <label for="confirm">Gõ lại loại linkage
+      (<span class="m">0x{{ '%02x' % k.linkage_type }}</span>) để xác nhận</label>
+    <input type="text" name="confirm" id="confirm" autocomplete="off"
+           placeholder="0x{{ '%02x' % k.linkage_type }}">
+    <div class="row"><button type="submit" class="danger">Xoá linkage thứ {{ index }}</button></div>
+  </form>
+</div>
+{% endif %}
+
+{% endblock %}

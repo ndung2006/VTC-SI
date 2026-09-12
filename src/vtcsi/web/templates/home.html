@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}vtcsi — tổng quan{% endblock %}
+{% block title %}VTC-SI — tổng quan{% endblock %}
 {% block body %}
 {% set POL = {0:'H', 1:'V', 2:'L', 3:'R'} %}
 
@@ -49,48 +49,158 @@
 {% set nlcn = b.ts_loops|map(attribute='lcn')|map('length')|sum %}
 <tr>
   <td class="n">0x{{ '%04x' % b.bouquet_id }}</td>
-  <td>{{ b.name }}</td>
+  <td><a href="/bouquet/{{ '%04x' % b.bouquet_id }}">{{ b.name }}</a></td>
   <td class="n">{{ b.ts_loops|length }}</td>
-  <td class="n">{% if nsvc == 0 %}<span class="pill crit">rỗng</span>{% else %}{{ nsvc }}{% endif %}</td>
-  <td class="n">{{ nlcn }}</td>
+  <td class="n">
+    {% if nsvc %}{{ nsvc }}
+    {% elif b.linkages %}<a class="pill ok" style="text-decoration:none"
+        href="/linkage/{{ '%04x' % b.bouquet_id }}/0"
+        title="{{ b.linkages|length }} linkage, không có dịch vụ nào">linkage</a>
+    {% else %}<span class="pill crit">rỗng</span>{% endif %}
+  </td>
+  <td class="n">{% if nlcn == 0 %}<span class="dim">nhóm</span>{% else %}{{ nlcn }}{% endif %}</td>
   <td class="n">{{ b.version }}</td>
 </tr>
 {% endfor %}
 </table></div>
-<p class="sub">Bouquet rỗng vẫn phát ra sóng — xem RO-15. Sửa bằng cách nhập YAML
-trực tiếp; màn hình bouquet chưa dựng.</p>
+<p class="sub">Cột <b>Dịch vụ</b> nói bouquet đó thực sự là gì.
+<span class="pill ok">linkage</span> nghĩa là nó không mang kênh nào mà chỉ mang
+con trỏ — thường là đường OTA nâng cấp đầu thu; đó là cách dùng hợp lệ.
+<span class="pill crit">rỗng</span> thì khác hẳn: không kênh, không linkage, tức
+<b>không nói gì cả</b> mà vẫn phát ra sóng dưới dạng bảng BAT trống — đó là
+RO-15. Cột <b>LCN</b> ghi <span class="dim">nhóm</span> nghĩa là bouquet không
+đánh số kênh: 0x6550 gom 48 kênh chỉ để khoá mã.</p>
 
-<h2>Tăng version — thao tác nguy hiểm</h2>
+<h2>Soi số kênh</h2>
+{% if problems %}
+{% for p in problems %}
+<p class="msg {{ 'err' if p.blocking else 'warn' }}" style="margin-bottom:8px">
+  {% if p.blocking %}<b>Chặn</b> — {% endif %}
+  <a href="/bouquet/{{ '%04x' % p.bouquet_id }}">bouquet 0x{{ '%04x' % p.bouquet_id }}</a>:
+  {{ p.message }}</p>
+{% endfor %}
+<p class="sub">Hai kênh cùng một số là <b>chặn</b>: đầu thu chỉ giữ một, và
+khách hàng bấm số đó ra nhầm kênh. Thiếu số kênh chỉ là <b>báo</b> — có thể là
+chủ ý.</p>
+{% else %}
+<p class="msg ok">Không có gì đáng nói: không kênh nào trùng số, không số nào
+trỏ vào hư không.</p>
+{% endif %}
+
+<h2>Đổi version — thao tác nguy hiểm</h2>
 <div class="card">
-  <p style="margin-top:0">Version là thứ đầu thu dùng để biết có phải đọc lại bảng
-  hay không. Tăng nhầm thì cả mạng dò lại kênh; <b>không tăng</b> khi đã đổi nội
-  dung thì đầu thu giữ dữ liệu cũ mãi — đó là ca <span class="m">đổi ngầm</span>
-  mà <span class="m">vtcsi preflight</span> chặn.</p>
-  <p>Sửa dữ liệu ở đây <b>không</b> tự tăng version. Sửa xong thì chạy
-  <span class="m">vtcsi preflight</span> để biết bảng nào cần tăng, rồi quay lại đây.</p>
+  <p style="margin-top:0">Version là thứ đầu thu dùng để biết có phải đọc lại
+  bảng hay không. Đổi nhầm thì cả mạng dò lại kênh; <b>không đổi</b> khi đã sửa
+  nội dung thì đầu thu giữ dữ liệu cũ mãi — đó là ca <span class="m">đổi
+  ngầm</span> mà <span class="m">vtcsi preflight</span> chặn.</p>
 
-  <form method="post" action="/version/bump">
+  <p>Sửa dữ liệu ở các trang khác <b>không</b> tự đổi version. Sửa xong thì chạy
+  <span class="m">vtcsi preflight</span> để biết bảng nào cần đổi, rồi quay lại đây.</p>
+
+  <p><b>Nhập tay, và lùi lại được.</b> Đầu thu phát hiện version <i>đổi</i> chứ
+  không phải <i>tăng</i> — trường này rộng 5 bit và quay vòng nên không có thứ
+  tự tuyệt đối. Vì vậy đặt nhầm thì <b>gõ lại số cũ là sửa xong</b>, miễn là
+  bảng chưa lên sóng ở giá trị nhầm đó. Nếu chỉ cho tăng thì cách duy nhất để
+  về chỗ cũ là bấm thêm 31 lần.</p>
+
+  <form method="post" action="/version/set" id="doi-version">
     <div class="grid two">
       <div>
         <label for="table">Bảng</label>
         <select name="table" id="table">
-          <option value="nit">NIT — {{ cfg.network.name }} (đang ở {{ cfg.network.version }})</option>
+          <option value="nit" data-now="{{ cfg.network.version }}"
+            >NIT — {{ cfg.network.name }} (đang ở {{ cfg.network.version }})</option>
           {% for s in cfg.sdts %}
-          <option value="sdt:{{ s.ts_id }}">SDT ts{{ s.ts_id }} (đang ở {{ s.version }})</option>
+          <option value="sdt:{{ s.ts_id }}" data-now="{{ s.version }}"
+            >SDT ts{{ s.ts_id }} (đang ở {{ s.version }})</option>
           {% endfor %}
           {% for b in cfg.bouquets %}
-          <option value="bat:{{ '%04x' % b.bouquet_id }}">BAT {{ b.name }} (đang ở {{ b.version }})</option>
+          <option value="bat:{{ '%04x' % b.bouquet_id }}" data-now="{{ b.version }}"
+            >BAT {{ b.name }} (đang ở {{ b.version }})</option>
           {% endfor %}
         </select>
       </div>
       <div>
-        <label for="confirm">Gõ <span class="m">TANG</span> để xác nhận</label>
-        <input type="text" name="confirm" id="confirm" autocomplete="off" placeholder="TANG">
+        <label for="version">Version mới</label>
+        <input type="number" name="version" id="version" min="0" max="31"
+               required value="{{ (cfg.network.version + 1) % 32 }}">
+        <span class="dim" style="font-size:12.5px">0…31. Sau 31 quay về 0 —
+        đó là hợp lệ, không phải tràn số.</span>
       </div>
     </div>
-    <div class="row"><button type="submit">Tăng version</button>
-      <span class="dim">version là 5 bit: 31 → 0, và đó là hợp lệ.</span></div>
+
+    <label for="confirm">Gõ lại đúng con số đó để xác nhận</label>
+    <input type="text" name="confirm" id="confirm" autocomplete="off"
+           inputmode="numeric" placeholder="gõ lại số ở ô bên trên"
+           style="max-width:22em">
+    <span class="dim" style="font-size:12.5px">Cùng ý với việc gõ lại tên kênh
+    để xoá: buộc mắt phải nhìn vào giá trị chứ không bấm quen tay.</span>
+
+    <div class="row">
+      <button type="submit" class="danger">Đổi version</button>
+      <span class="dim">Đổi xong chạy lại <span class="m">vtcsi preflight</span>
+      để kiểm.</span>
+    </div>
   </form>
 </div>
+
+<dialog id="hoi-version">
+  <h3 style="margin:0 0 10px;font-size:17px">Đổi version?</h3>
+  <p style="margin:0 0 4px"><b id="hoi-bang"></b></p>
+  <p style="margin:0 0 4px">Bước: <b id="hoi-buoc"></b></p>
+  <p class="dim" style="margin:0 0 14px;font-size:13.5px">
+    Đầu thu sẽ đọc lại bảng này. Nếu nội dung <b>không</b> đổi thì cả mạng dò
+    lại kênh mà không nhận được gì mới.</p>
+  <div class="row" style="margin-top:0">
+    <button type="button" id="hoi-co" class="danger">Đổi</button>
+    <button type="button" id="hoi-khong" class="alt">Không đổi</button>
+  </div>
+</dialog>
+
+<script>
+(function () {
+  var form = document.getElementById("doi-version");
+  if (!form) return;
+  var bang = form.table, so = form.version, xac = form.confirm;
+
+  function dang_o() {
+    var o = bang.options[bang.selectedIndex];
+    return o ? parseInt(o.getAttribute("data-now"), 10) : NaN;
+  }
+  // Doi bang thi goi y buoc ke tiep cua CHINH bang do, va xoa o xac nhan —
+  // giu lai so cu la cach de bam nham nhat.
+  bang.addEventListener("change", function () {
+    var n = dang_o();
+    if (!isNaN(n)) so.value = (n + 1) % 32;
+    xac.value = "";
+  });
+
+  var hoi = document.getElementById("hoi-version");
+  if (!hoi || typeof hoi.showModal !== "function") return;
+
+  var dong_y = false;
+  form.addEventListener("submit", function (e) {
+    if (dong_y) return;
+    // Chua go dung con so thi de may chu tu choi — hoi o day chi lam phien.
+    if (xac.value.trim() !== so.value.trim()) return;
+    e.preventDefault();
+    var o = bang.options[bang.selectedIndex];
+    document.getElementById("hoi-bang").textContent = o ? o.text : "";
+    var n = dang_o(), m = parseInt(so.value, 10);
+    document.getElementById("hoi-buoc").textContent =
+      isNaN(n) ? m : (n + " → " + m +
+        (m === (n + 1) % 32 ? "  (bước kế tiếp)"
+         : n === (m + 1) % 32 ? "  (lùi lại một bước)"
+         : m === n ? "  (không đổi gì)" : "  (nhảy xa)"));
+    hoi.showModal();
+  });
+  document.getElementById("hoi-co").addEventListener("click", function () {
+    dong_y = true; hoi.close(); form.submit();
+  });
+  document.getElementById("hoi-khong").addEventListener("click", function () {
+    hoi.close();
+  });
+})();
+</script>
 
 {% endblock %}

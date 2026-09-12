@@ -11,7 +11,7 @@ canh chừng luật đó.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import datetime, timedelta
 from enum import IntEnum
 
@@ -166,6 +166,34 @@ class Service:
     free_ca_mode: bool = False
     eit_pf: bool = True
     eit_schedule: bool = True
+
+
+def set_epg(service: Service, on: bool) -> Service:
+    """Bật hoặc tắt EPG của một dịch vụ — **cả hai cờ cùng lúc**.
+
+    SDT thật sự có hai bit riêng, ``EIT_present_following_flag`` và
+    ``EIT_schedule_flag``, nên mô hình giữ đúng hai trường. Nhưng **giao diện
+    không cho tách chúng ra**, và đó là quyết định có lý do:
+
+    Công tắc này để **tắt nhanh EPG một kênh khi có sự cố**. Lúc đó người trực
+    cần một câu hỏi có hai câu trả lời, không phải hai ô để cân nhắc. Và hai cờ
+    lệch nhau chỉ sinh ra những trạng thái không ai muốn: khai có lịch dài mà
+    không khai now/next thì đầu thu biết đường nào mà lần.
+
+    Hai cờ chỉ có thể lệch nhau nếu ai đó sửa YAML bằng tay. Khi đó ``lcn`` và
+    giao diện vẫn **báo ra** chứ không lặng lẽ làm tròn — xem ``epg_mismatch``.
+    """
+    return replace(service, eit_pf=on, eit_schedule=on)
+
+
+def epg_on(service: Service) -> bool:
+    """Dịch vụ này có được lên EPG không."""
+    return service.eit_pf or service.eit_schedule
+
+
+def epg_mismatch(service: Service) -> bool:
+    """Hai cờ đang khai khác nhau — chỉ xảy ra khi sửa YAML bằng tay."""
+    return service.eit_pf != service.eit_schedule
 
 
 @dataclass(frozen=True, slots=True)
