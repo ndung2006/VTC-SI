@@ -322,6 +322,84 @@ khác. Mỗi cặp `ket thuc` + `dung tsp` là một lần chớp nguồn.
 
 ---
 
+## Dựng trên Ubuntu 24.04 với Coolify
+
+Bản phân phối của máy chủ **không liên quan** tới TSDuck: ảnh container mang
+userland riêng (nền `debian:trixie`, vì TSDuck 3.44 chỉ phát hành gói
+`debian13`). Thứ duy nhất dùng chung với máy chủ là nhân Linux, và multicast
+UDP là tính năng của nhân.
+
+**Không cần cài TSDuck lên máy chủ.** Hệ này không đụng phần cứng nào — đầu
+vào là `-I null`, đầu ra là một socket UDP. Không card DVB, không `/dev/dvb`,
+không `--privileged`. Chỉ cài lên máy chủ nếu muốn dùng `tsp -I ip` để soi
+luồng do máy *khác* phát, mà việc đó `docker compose exec si tsp …` cũng làm
+được.
+
+**Phiên bản TSDuck phải ghim, và ghim giống nhau ở cả hai máy.** Hai nguồn
+ngang hàng chỉ có nghĩa khi chúng sinh ra cùng byte. Một máy chạy TSDuck trong
+ảnh còn máy kia chạy bản từ `apt` là phép so byte hết đúng — im lặng, cho tới
+lúc mux chuyển nguồn.
+
+### Ba chỗ phải đúng, không thì hỏng lặng
+
+**`network_mode: host` cho dịch vụ `si`.** Multicast không đi ra đúng cách qua
+mạng bridge của Docker: NAT không xử lý multicast, và `--local-address` — thứ
+chọn card nguồn — trong bridge chỉ thấy veth của container chứ không thấy card
+thật của máy. Đổi sang bridge thì luồng biến mất khỏi mạng **trong khi
+container vẫn xanh và log vẫn sạch**.
+
+**Kho cấu hình phải nằm NGOÀI thư mục Coolify tự quản.** Coolify clone kho vào
+thư mục của nó và `reset --hard` mỗi lần triển khai lại; giao diện thì commit
+vào chính kho ấy. Để mặc định nghĩa là mỗi lần bấm Redeploy là xoá việc người
+trực vừa làm. Đặt biến `VTCSI_REPO` trỏ ra một clone do bạn làm chủ.
+
+**`web` và `si` phải trỏ cùng thư mục.** `vtcsi web` nhận `--build` và
+`--inbox` mặc định *tương đối*, giải theo `WORKDIR`. Lệch thì giao diện ghi
+file lịch vào một chỗ mà `vtcsi run` không bao giờ đọc: trình duyệt báo *đã
+nhận*, màn giám sát trống trơn, EPG không lên sóng, không lỗi nào được ném.
+`tests/test_docker.py` canh chỗ này.
+
+### Các bước
+
+```bash
+# Kho cấu hình — do BẠN làm chủ
+sudo git clone https://github.com/ndung2006/VTC-SI /srv/vtcsi/repo
+cd /srv/vtcsi/repo && git fetch --tags      # the `gieo` la moc so byte
+
+# IP card mang se phat ra — lat nua dien vao giao dien
+ip -4 addr show | grep inet
+```
+
+Trong Coolify: **New Resource → Docker Compose**, nguồn trỏ vào kho GitHub,
+thêm biến môi trường `VTCSI_REPO=/srv/vtcsi/repo`.
+
+Triển khai **chỉ `web` trước** — nó không phát gì. Đặt mật khẩu (không có
+đường đặt qua trình duyệt, cố ý):
+
+```bash
+docker compose exec web vtcsi --config=/repo/config passwd --repo=/repo
+```
+
+Mở giao diện → **Quản lý PSI/SI → Đầu ra** → điền địa chỉ multicast và IP card
+mạng **của chính máy này**. Ghi vào `config/dau-ra.yaml`, nằm ngoài git, nên
+máy kia không bị đụng.
+
+Chỉ bật `si` sau khi **bậc 0 và bậc 1 ở trên đã xanh**.
+
+### Xác nhận ngay sau lần triển khai đầu
+
+```bash
+docker inspect vtcsi-si --format '{{.HostConfig.NetworkMode}}'   # phai la: host
+docker compose exec si tsp --version                             # phai la: 3.44-4676
+docker compose exec si ls /repo/config/dau-ra.yaml               # phai co
+```
+
+Vài bản Coolify tự chèn cấu hình mạng vào compose. Dòng đầu **không** trả về
+`host` thì luồng sẽ không tới được mux, và đó là thứ phải sửa trước mọi việc
+khác — chứ không phải đi dò xem mux hỏng ở đâu.
+
+---
+
 ## Bốn điều đã biết trước sẽ gặp
 
 Ghi ở đây để lúc gặp thì không hoảng.

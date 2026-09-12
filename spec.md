@@ -8,7 +8,7 @@
 | **Phạm vi truyền dẫn** | Thuần vệ tinh, DVB-S2, Vinasat-1 132,0°E |
 | **Đích ghép** | Harmonic ProStream 9100, một multicast UDP |
 | **Nhân lực** | Một người |
-| **Phiên bản đặc tả** | 2.4 — 2026-09-12 |
+| **Phiên bản đặc tả** | 2.5 — 2026-09-13 |
 
 > Tài liệu này nói **xây cái gì**. Phần khảo sát hiện trạng, lý do lựa chọn và phân tích rủi ro nằm ở tài liệu thiết kế riêng.
 
@@ -20,6 +20,8 @@
 | `B1` | **TDT/TOT thành tuỳ chọn** thay vì loại hẳn. Thêm FR-33, kèm điều kiện bật. |
 | `E3` | **Sửa số liệu dịch vụ.** VTC sở hữu 64 kênh trên TSID 8; 24 kênh còn lại thuộc ONID 1. Xem A.2. |
 | `R10` | **Phát hiện lỗi tồn đọng**: linkage kênh barker trỏ vào đích không còn tồn tại. Xem RO-8. |
+
+**Thay đổi ở 2.5** — **triển khai container, và một bài học về chuẩn vàng.** Thêm FR-89…91. Commit thật đầu tiên của người vận hành làm đỏ 15 bài, trong đó có cả bảy bài so byte — không phải vì có lỗi, mà vì mốc đối chiếu của chúng là HEAD, thứ vừa thôi không còn là bản gieo. Ghim bằng thẻ `gieo`. Cùng lúc, đọc lại `docker-compose.yml` tìm ra hai lỗi im lặng: `web` trỏ nhầm thư mục nên XML nạp qua trình duyệt không bao giờ lên sóng, và `--to` ghim sẵn trong compose làm tắt vĩnh viễn đường sao chép.
 
 **Thay đổi ở 2.4** — **quản lý đầu ra.** Thêm FR-86…88, trang con *Đầu ra*, lõi thuần `model.output` và file `config/dau-ra.yaml`. Đây là mẩu cấu hình **duy nhất** cố ý nằm ngoài git: mọi thứ khác giống nhau giữa hai máy là cơ chế đồng bộ, riêng địa chỉ đầu ra thì phải khác — hai máy cùng bắn một nhóm multicast ra cùng một mạng là đúng cái hỏng mà cặp máy sinh ra để tránh. Kèm theo là đường sao chép: một `tsp` con sau `-P fork`, đã chứng minh bằng phép chạy thật trùng từng byte trên 7 520 000 byte.
 
@@ -315,6 +317,9 @@ Bảng hệ quả của từng thao tác:
 | **FR-86** | **Địa chỉ multicast đầu ra nằm ngoài `Config` và ngoài git.** Nó không phải báo hiệu: không một byte nào trong NIT, SDT, BAT hay EIT phụ thuộc vào nó. Quan trọng hơn, nó là **thứ duy nhất trong cả hệ được phép khác nhau giữa hai máy** — cấu hình báo hiệu giống nhau chính là cơ chế đồng bộ, còn hai máy cùng bắn một nhóm multicast ra cùng một mạng là đúng cái hỏng mà cặp máy dự phòng sinh ra để tránh. File riêng `config/dau-ra.yaml`, có trong `.gitignore`, sửa trên trang **Đầu ra** của giao diện. |
 | **FR-87** | **Địa chỉ đầu ra hỏng thì không được ghi xuống đĩa.** Khác mọi trang cấu hình khác, nơi một bản nháp sai nằm yên trong git cho tới lúc bấm áp dụng: file này `vtcsi run` đọc thẳng lúc khởi động. Ghi một địa chỉ hỏng vào đây là để sẵn một quả mìn cho lần dựng lại dịch vụ kế tiếp — mà lần đó thường xảy ra lúc nửa đêm và vì một lý do khác. Từ chối thì file cũ phải còn **nguyên vẹn**. |
 | **FR-88** | **Đường sao chép là một tiến trình `tsp` con, không phải đích thứ hai.** `-O ip` chỉ nhận một đích và `tsp` chỉ có một plugin đầu ra, nên bản sao đi qua `-P fork` — đặt **trước** `-O ip` vì `fork` là plugin xử lý. Nhánh con **không có `regulate`**: nhịp đã do nhánh cha giữ, hai bộ điều nhịp trên một dòng thì đánh nhau. Sao chép trùng hoàn toàn đường chính (cùng địa chỉ, cùng cổng, cùng card) bị **chặn**: đó là gói trùng, không phải dự phòng. |
+| **FR-89** | **Mốc đối chiếu của các bài so byte là một THẺ GIT, không phải HEAD.** AC-1 và AC-2 hỏi: *bộ sinh có dựng lại đúng từng byte các bảng bóc từ sóng, từ chính cấu hình đọc ra từ sóng không?* Câu trả lời không được phép đổi, nên mốc phải đứng yên — thẻ `gieo`. Lấy HEAD làm mốc thì commit thay đổi vận hành đầu tiên (tăng version, tắt EPG một kênh) sẽ làm đỏ **15 bài cùng lúc, kể cả bảy bài so byte**, mà không bài nào tìm ra lỗi gì. Thiếu thẻ thì phải **đỏ**, không được bỏ qua: một bài bỏ qua vì môi trường trông y hệt một bài bỏ qua vì chưa cài gì. |
+| **FR-90** | **Hai nửa của bộ container phải trỏ cùng thư mục.** `vtcsi web` nhận `--build` và `--inbox` mặc định **tương đối**, giải theo `WORKDIR`. Bỏ trống trong `docker-compose.yml` thì giao diện ghi file lịch vào `/app/epg/inbox` còn `vtcsi run` đọc `/repo/epg/inbox`: trình duyệt báo *đã nhận*, màn giám sát trống trơn, EPG **không bao giờ lên sóng**, và không có lỗi nào được ném. Ghim bằng `tests/test_docker.py`. |
+| **FR-91** | **Dịch vụ phát PHẢI chạy `network_mode: host`.** Multicast không đi ra đúng cách qua mạng bridge của Docker: NAT không xử lý multicast, và `--local-address` trong bridge chỉ thấy veth của container chứ không thấy card thật. Đổi sang bridge thì luồng biến mất khỏi mạng trong khi container vẫn xanh và log vẫn sạch. Cũng vì vậy **không đặt hạn ngạch CPU**: cgroup throttling chèn khựng vào đúng chỗ cần đều nhịp, và mux đọc khoảng lặng thành *mất nguồn*. |
 | **FR-53** | **Tiêu thụ mọi dịch vụ có trong file lịch**, không cần khai báo từng cái. Đây là điểm khác Barrowa: ở đó phải gán nguồn thủ công cho từng dịch vụ, và 26 kênh bị bỏ quên vì thế (RO-19). Muốn loại một dịch vụ thì phải ghi tường minh vào danh sách loại trừ. |
 
 ---

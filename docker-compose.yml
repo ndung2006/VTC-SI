@@ -21,10 +21,17 @@ x-common: &common
   volumes:
     # CẢ kho git, không phải riêng `config/`.
     #
+    # `VTCSI_REPO` mặc định là thư mục hiện tại, đúng cho lúc chạy tay. Dưới
+    # **Coolify thì phải đặt nó trỏ ra ngoài**, ví dụ `/srv/vtcsi/repo`:
+    # Coolify tự clone kho vào thư mục nó quản lý và `reset --hard` mỗi lần
+    # triển khai lại. Mà giao diện thì **commit vào chính kho đó**. Để nguyên
+    # mặc định dưới Coolify nghĩa là mỗi lần bấm Redeploy là xoá sạch những gì
+    # người trực đã sửa — và xoá lặng lẽ.
+    #
     # Giao diện chạy `git diff` và `git commit`; hai lệnh đó cần thư mục `.git`
     # nằm đúng chỗ của nó so với `config/`. Gắn riêng `config/` vào thì sửa vẫn
     # được nhưng mất lịch sử — tức mất luôn cơ chế đồng bộ giữa hai hệ.
-    - .:/repo:rw
+    - ${VTCSI_REPO:-.}:/repo:rw
     # Bảng XML sinh ra. Ổ riêng, không phải thư mục dự án: chúng là sản phẩm
     # dựng lại được, và `.gitignore` đã loại chúng khỏi git.
     - vtcsi-build:/build
@@ -42,11 +49,14 @@ services:
       - vtcsi
       - --config=/repo/config
       - run
-      # Sửa hai dòng dưới cho đúng mạng của bạn. Địa chỉ này PHẢI là địa chỉ
-      # chưa ai dùng cho tới khi bậc 3 của kế hoạch kiểm thử đã xanh.
-      - --to=236.30.239.1:6000
-      - --local-address=10.10.30.240
-      - --ttl=8
+      # KHÔNG truyền `--to` ở đây. Địa chỉ đầu ra đọc từ
+      # `config/dau-ra.yaml`, đặt trên trang **Đầu ra** của giao diện (FR-86).
+      #
+      # Lý do không phải cho gọn: `--to` trên dòng lệnh **tắt luôn đường sao
+      # chép**, vì nó là tham số dành cho một lần chạy thử tới đích khác. Ghim
+      # nó vào compose nghĩa là dịch vụ chạy thật vĩnh viễn chỉ còn một đường
+      # ra, mà giao diện thì vẫn hiện hai — sai lệch không ai thấy cho tới hôm
+      # card mạng hỏng.
       - --build=/build
       - --eit-dir=/build/eit
       - --inbox=/repo/epg/inbox
@@ -74,6 +84,18 @@ services:
       - --host=0.0.0.0
       - --port=8080
       - --repo=/repo
+      # Ba dòng này PHẢI trùng với `si` ở trên.
+      #
+      # Mặc định của `vtcsi web` là đường dẫn **tương đối**, giải theo
+      # `WORKDIR /app`. Bỏ trống thì giao diện ghi file lịch vào
+      # `/app/epg/inbox` còn `si` đọc `/repo/epg/inbox`: nạp XML qua trình
+      # duyệt báo "đã nhận" nhưng **không bao giờ lên sóng**, màn giám sát thì
+      # trống trơn. Không có thông báo lỗi nào cả.
+      #
+      # `tests/test_docker.py` canh cho ba dòng này khớp với `si`.
+      - --build=/build
+      - --eit-dir=/build/eit
+      - --inbox=/repo/epg/inbox
     # Mat khau KHONG dat qua trinh duyet. Lan dau, vao container ma dat:
     #   docker compose exec web vtcsi --config=/repo/config passwd --repo=/repo
     # Cho toi luc do, giao dien chi hien huong dan va khong phuc vu gi khac.
