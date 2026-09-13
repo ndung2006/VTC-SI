@@ -322,7 +322,40 @@ khác. Mỗi cặp `ket thuc` + `dung tsp` là một lần chớp nguồn.
 
 ---
 
-## Dựng trên Ubuntu 24.04 với Coolify
+## Chạy thẳng trên Ubuntu hay qua Coolify?
+
+**Dùng Docker, nhưng để Coolify ngoài vòng đời của dịch vụ phát.** Cụ thể:
+`docker compose` chạy từ `/srv/vtcsi/repo`, systemd lo việc lên sau khi khởi
+động máy. Coolify vẫn chạy song song quản các dịch vụ khác trên cùng máy.
+
+**Vì sao Docker chứ không cài thẳng lên host.** Hai máy ngang hàng phải sinh
+ra cùng byte, mà điều đó đòi **cùng một phiên bản TSDuck**. Ảnh container ghim
+`3.44-4676` là cách chắc chắn nhất để hai máy không lệch; cài thẳng lên host
+cũng ghim được, nhưng một lần `apt upgrade` vô ý trên một máy là hỏng phép so
+byte — im lặng, và chỉ lộ ra đúng lúc mux chuyển nguồn.
+
+Docker còn chữa một cái bẫy đã gặp thật: **sửa mã `.py` mà không dựng lại tiến
+trình thì code cũ vẫn chạy**, và triệu chứng trông y hệt "tính năng chưa làm".
+`docker compose up -d --build` luôn dựng lại.
+
+**Vì sao không giao vòng đời cho Coolify.** Coolify sinh ra cho ứng dụng web
+theo mô hình *đẩy code là triển khai lại*. Hệ này ngược hẳn: nó là một nguồn
+tín hiệu chạy 24/7, và **mỗi lần dựng lại là một lần chớp nguồn** khiến mux
+nhảy sang máy kia. Nút Redeploy nằm sẵn đó là một cú bấm nhầm chờ xảy ra.
+
+Thêm nữa Coolify tự clone kho và `reset --hard` mỗi lần triển khai, trong khi
+giao diện thì **commit vào chính kho đó**. Hai mô hình đánh nhau trực tiếp.
+
+Với dịch vụ `si`, Coolify gần như không thêm gì: `restart: unless-stopped` đã
+tự dựng lại, `docker logs` đã xem được log. Thứ nó thêm chủ yếu là rủi ro.
+
+Nếu vẫn muốn dùng giao diện Coolify để xem log và bật tắt, thêm nó dưới dạng
+**Docker Compose resource với tự động triển khai TẮT**, và đừng nối webhook
+của kho.
+
+---
+
+## Dựng trên Ubuntu 24.04
 
 Bản phân phối của máy chủ **không liên quan** tới TSDuck: ảnh container mang
 userland riêng (nền `debian:trixie`, vì TSDuck 3.44 chỉ phát hành gói
@@ -361,30 +394,115 @@ nhận*, màn giám sát trống trơn, EPG không lên sóng, không lỗi nào
 
 ### Các bước
 
-```bash
-# Kho cấu hình — do BẠN làm chủ
-sudo git clone https://github.com/ndung2006/VTC-SI /srv/vtcsi/repo
-cd /srv/vtcsi/repo && git fetch --tags      # the `gieo` la moc so byte
+**1. Kho cấu hình — do bạn làm chủ, ngoài tầm Coolify**
 
-# IP card mang se phat ra — lat nua dien vao giao dien
-ip -4 addr show | grep inet
+```bash
+sudo mkdir -p /srv/vtcsi
+sudo git clone https://github.com/ndung2006/VTC-SI /srv/vtcsi/repo
+cd /srv/vtcsi/repo
+git fetch --tags          # the `gieo` la moc so byte; clone thuong da keo san
+git tag -l                # phai thay: gieo
 ```
 
-Trong Coolify: **New Resource → Docker Compose**, nguồn trỏ vào kho GitHub,
-thêm biến môi trường `VTCSI_REPO=/srv/vtcsi/repo`.
+**2. Ghim tuyến multicast vào netplan**
 
-Triển khai **chỉ `web` trước** — nó không phát gì. Đặt mật khẩu (không có
-đường đặt qua trình duyệt, cố ý):
+`ip route add` chỉ sống trong bộ nhớ. Không ghim thì sau một lần khởi động
+lại, báo hiệu lặng lẽ đi ra card quản trị và mux không thấy gì.
+
+Sửa `/etc/netplan/*.yaml`, thêm vào giao diện phát:
+
+```yaml
+    eno1:
+      addresses: [192.168.20.200/24]
+      routes:
+        - to: 224.0.0.0/4
+          scope: link
+```
+
+```bash
+sudo netplan try                   # tu lui lai sau 120 giay neu mat ket noi
+ip route get 236.30.239.1          # phai thay: dev eno1 src 192.168.20.200
+```
+
+**3. Dựng ảnh và bật GIAO DIỆN trước — chưa phát gì**
+
+```bash
+cd /srv/vtcsi/repo
+export VTCSI_REPO=/srv/vtcsi/repo
+docker compose build
+docker compose up -d web           # CHI `web`. Khong phai `si`.
+docker compose ps
+```
+
+**4. Đặt mật khẩu**
+
+Không có đường đặt qua trình duyệt, và đó là chủ ý: quyền quản trị trên máy
+phát mới là ranh giới thật.
 
 ```bash
 docker compose exec web vtcsi --config=/repo/config passwd --repo=/repo
 ```
 
-Mở giao diện → **Quản lý PSI/SI → Đầu ra** → điền địa chỉ multicast và IP card
-mạng **của chính máy này**. Ghi vào `config/dau-ra.yaml`, nằm ngoài git, nên
-máy kia không bị đụng.
+**5. Khai địa chỉ đầu ra**
 
-Chỉ bật `si` sau khi **bậc 0 và bậc 1 ở trên đã xanh**.
+Mở `http://192.168.90.10:8080/` → **Quản lý PSI/SI → Đầu ra**:
+
+| Ô | Giá trị cho máy này |
+|---|---|
+| Địa chỉ đích | nhóm multicast headend cấp, ví dụ `236.30.239.1` |
+| Cổng UDP | ví dụ `6000` |
+| Card mạng phát ra | `192.168.20.200` |
+| TTL | `8` |
+
+Ghi vào `config/dau-ra.yaml`, **nằm ngoài git** — máy kia không bị đụng, và
+đó là điểm mấu chốt của cặp máy dự phòng.
+
+**6. Bậc 0 và bậc 1 — trước khi phát thật**
+
+Xem hai mục đầu của tài liệu này. Đừng nhảy thẳng xuống bước 7.
+
+**7. Bật dịch vụ phát**
+
+```bash
+docker compose up -d si
+docker compose logs -f si
+```
+
+**8. Cho systemd lo việc lên sau khi khởi động máy**
+
+`restart: unless-stopped` chỉ dựng lại container khi Docker đang chạy; nó
+không tự bật stack sau khi máy khởi động lại nếu stack chưa từng được `up`.
+Tạo `/etc/systemd/system/vtcsi.service`:
+
+```ini
+[Unit]
+Description=VTC-SI — nguon bao hieu PSI/SI
+Requires=docker.service
+After=docker.service network-online.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory=/srv/vtcsi/repo
+Environment=VTCSI_REPO=/srv/vtcsi/repo
+ExecStart=/usr/bin/docker compose up -d
+ExecStop=/usr/bin/docker compose stop
+
+[Install]
+WantedBy=multi-user.target
+```
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable --now vtcsi
+```
+
+**9. Máy thứ hai**
+
+Làm lại từ bước 1, **chỉ khác đúng một chỗ**: địa chỉ đầu ra ở bước 5. Cấu
+hình báo hiệu đồng bộ qua `git pull`; địa chỉ đầu ra thì không, vì nó nằm
+ngoài git. Hai máy cùng phát một nhóm multicast ra cùng một mạng là đúng cái
+hỏng mà cặp máy sinh ra để tránh.
 
 ### Xác nhận ngay sau lần triển khai đầu
 
