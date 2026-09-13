@@ -32,8 +32,9 @@ class Endpoint:
     address: str = ""
     port: int = 0
     interface: str = ""
-    """Địa chỉ IP của card mạng dùng để phát. Để trống thì hệ điều hành tự
-    chọn — xem ``warnings``: trên máy nhiều card, tự chọn là xổ số."""
+    """Địa chỉ IP của card mạng dùng để phát. Bỏ trống thì hệ điều hành tự
+    chọn theo bảng định tuyến — xem ``warnings``: trên máy có nhiều giao diện
+    mạng, kết quả không xác định."""
 
     @property
     def empty(self) -> bool:
@@ -58,14 +59,15 @@ def parse_ip(text: str) -> tuple[int, int, int, int]:
         raise OutputError("để trống")
     parts = raw.split(".")
     if len(parts) != 4:
-        raise OutputError(f"{raw!r} không phải địa chỉ IPv4 — cần bốn nhóm số")
+        raise OutputError(f"{raw!r} không đúng định dạng IPv4: cần bốn nhóm số "
+                          "phân cách bằng dấu chấm")
     out = []
     for p in parts:
         if not p.isdigit() or (len(p) > 1 and p[0] == "0"):
-            raise OutputError(f"{raw!r}: {p!r} không phải số hợp lệ")
+            raise OutputError(f"{raw!r}: nhóm {p!r} không phải số hợp lệ")
         n = int(p)
         if n > 255:
-            raise OutputError(f"{raw!r}: {n} vượt 255")
+            raise OutputError(f"{raw!r}: giá trị {n} vượt giới hạn 255 của một octet")
         out.append(n)
     return tuple(out)  # type: ignore[return-value]
 
@@ -105,7 +107,8 @@ def _check_endpoint(e: Endpoint, ten: str) -> list[str]:
     except OutputError as exc:
         ra.append(f"{ten}: địa chỉ đích {exc}")
     if not 1 <= e.port <= CONG_TOI_DA:
-        ra.append(f"{ten}: cổng {e.port} ngoài khoảng 1–{CONG_TOI_DA}")
+        ra.append(f"{ten}: cổng {e.port} nằm ngoài khoảng hợp lệ "
+                  f"1–{CONG_TOI_DA}")
     if e.interface.strip():
         try:
             parse_ip(e.interface)
@@ -119,7 +122,7 @@ def check(out: Output) -> tuple[str, ...]:
     ra = _check_endpoint(out.primary, "Đường chính")
 
     if not 1 <= out.ttl <= 255:
-        ra.append(f"TTL {out.ttl} ngoài khoảng 1–255")
+        ra.append(f"TTL {out.ttl} nằm ngoài khoảng hợp lệ 1–255")
 
     if out.mirror is not None and not out.mirror.empty:
         ra += _check_endpoint(out.mirror, "Đường sao chép")
@@ -127,11 +130,11 @@ def check(out: Output) -> tuple[str, ...]:
                          and out.mirror.port == out.primary.port)
         if trung_dia_chi and same_wire(out.mirror, out.primary):
             ra.append(
-                "Đường sao chép trùng hoàn toàn đường chính — cùng địa chỉ, "
-                "cùng cổng, cùng card mạng. Như vậy là bắn mỗi gói hai lần "
-                "ra cùng một sợi dây: headend nhận gói trùng và bản tin hỏng, "
-                "chứ không phải có dự phòng. Đổi card mạng, hoặc đổi nhóm "
-                "multicast.")
+                "Đường sao chép trùng hoàn toàn đường chính: cùng địa chỉ "
+                "nhóm, cùng cổng, cùng card mạng. Cấu hình này phát mỗi gói "
+                "hai lần trên cùng một giao diện; thiết bị đầu xa sẽ nhận gói "
+                "trùng lặp và bản tin lỗi, chứ không có thêm đường dự phòng "
+                "nào. Cần đổi card mạng phát hoặc chọn địa chỉ nhóm khác.")
     return tuple(ra)
 
 
@@ -147,29 +150,33 @@ def warnings(out: Output) -> tuple[str, ...]:
 
     if out.primary.address.strip() and not is_multicast(out.primary.address):
         ra.append(
-            f"{out.primary.address} không nằm trong dải multicast "
-            "(224.0.0.0 – 239.255.255.255). Bắn thẳng tới một máy vẫn chạy, "
-            "nhưng headend thường nhận theo nhóm multicast — kiểm lại địa chỉ.")
+            f"{out.primary.address} không thuộc dải địa chỉ multicast "
+            "(224.0.0.0 – 239.255.255.255). Phát đơn hướng tới một máy đích "
+            "vẫn hoạt động, nhưng thiết bị tại trung tâm phát sóng thường thu "
+            "theo nhóm multicast. Đề nghị kiểm tra lại địa chỉ.")
 
     if not out.primary.interface.strip():
         ra.append(
-            "Đường chính chưa chỉ card mạng, nên hệ điều hành tự chọn. "
-            "Trên máy có nhiều card thì đó là xổ số: hôm nay đúng, mai cắm "
-            "thêm một dây là sai, mà không ai được báo.")
+            "Đường chính chưa chỉ định card mạng phát; hệ điều hành sẽ tự "
+            "chọn theo bảng định tuyến. Trên máy có nhiều giao diện mạng, kết "
+            "quả không xác định và có thể thay đổi sau mỗi lần điều chỉnh hạ "
+            "tầng mạng, mà không phát sinh cảnh báo nào.")
 
     if out.ttl == 1:
         ra.append(
-            "TTL 1 nghĩa là gói không qua nổi một bộ định tuyến nào. Chỉ đúng "
-            "khi headend nằm cùng một mạng phẳng với máy này.")
+            "TTL 1 giới hạn gói trong phạm vi một phân đoạn mạng: gói không "
+            "vượt qua được bộ định tuyến nào. Chỉ phù hợp khi thiết bị thu nằm "
+            "cùng miền quảng bá với máy này.")
 
     if out.mirror is None or out.mirror.empty:
         ra.append(
-            "Chưa có đường sao chép. Một đường nghĩa là một card mạng hỏng "
-            "là mất báo hiệu — trong khi máy vẫn chạy và không báo gì.")
+            "Chưa cấu hình đường sao chép. Hệ hiện chỉ có một đường phát: sự "
+            "cố trên card mạng đó sẽ làm gián đoạn toàn bộ báo hiệu, trong khi "
+            "tiến trình vẫn hoạt động bình thường và không phát cảnh báo.")
     elif same_wire(out.mirror, out.primary):
         ra.append(
-            "Hai đường cùng đi ra một card mạng. Nhóm multicast thì khác "
-            "nhau, nhưng card hỏng là mất cả hai — nên đây chưa phải dự phòng "
-            "đường truyền.")
+            "Hai đường phát dùng chung một card mạng. Địa chỉ nhóm khác "
+            "nhau, nhưng sự cố phần cứng trên card sẽ làm mất đồng thời cả hai "
+            "đường; cấu hình này chưa cấu thành dự phòng đường truyền.")
 
     return tuple(ra)

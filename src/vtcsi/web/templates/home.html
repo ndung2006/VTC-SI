@@ -13,7 +13,7 @@
   {{ counts.lcn }} mục LCN
 </p>
 
-<h2>Transport stream</h2>
+<h2>Dòng truyền tải (Transport Stream)</h2>
 <div class="tw"><table>
 <tr>
   <th class="n">TSID</th><th class="n">ONID</th><th>Truyền dẫn</th>
@@ -40,7 +40,7 @@
 {% endfor %}
 </table></div>
 
-<h2>Bouquet</h2>
+<h2>Bảng nhóm kênh (Bouquet)</h2>
 <div class="tw"><table>
 <tr><th class="n">ID</th><th>Tên</th><th class="n">TS</th>
     <th class="n">Dịch vụ</th><th class="n">LCN</th><th class="n">Ver</th></tr>
@@ -67,11 +67,11 @@
 <span class="pill ok">linkage</span> nghĩa là nó không mang kênh nào mà chỉ mang
 con trỏ — thường là đường OTA nâng cấp đầu thu; đó là cách dùng hợp lệ.
 <span class="pill crit">rỗng</span> thì khác hẳn: không kênh, không linkage, tức
-<b>không nói gì cả</b> mà vẫn phát ra sóng dưới dạng bảng BAT trống — đó là
-RO-15. Cột <b>LCN</b> ghi <span class="dim">nhóm</span> nghĩa là bouquet không
+<b>không mang nội dung nào</b> mà vẫn được phát lên sóng dưới dạng bảng BAT
+rỗng — đó là RO-15. Cột <b>LCN</b> ghi <span class="dim">nhóm</span> nghĩa là bouquet không
 đánh số kênh: 0x6550 gom 48 kênh chỉ để khoá mã.</p>
 
-<h2>Soi số kênh</h2>
+<h2>Kiểm tra các kênh</h2>
 {% if problems %}
 {% for p in problems %}
 <p class="msg {{ 'err' if p.blocking else 'warn' }}" style="margin-bottom:8px">
@@ -80,14 +80,14 @@ RO-15. Cột <b>LCN</b> ghi <span class="dim">nhóm</span> nghĩa là bouquet kh
   {{ p.message }}</p>
 {% endfor %}
 <p class="sub">Hai kênh cùng một số là <b>chặn</b>: đầu thu chỉ giữ một, và
-khách hàng bấm số đó ra nhầm kênh. Thiếu số kênh chỉ là <b>báo</b> — có thể là
-chủ ý.</p>
+thuê bao bấm số đó sẽ vào nhầm kênh. Thiếu số kênh chỉ ở mức <b>lưu ý</b>
+— có thể là chủ ý.</p>
 {% else %}
-<p class="msg ok">Không có gì đáng nói: không kênh nào trùng số, không số nào
-trỏ vào hư không.</p>
+<p class="msg ok">Không có cảnh báo: không kênh nào trùng số, không số nào
+trỏ vào kênh null.</p>
 {% endif %}
 
-<h2>Đổi version — thao tác nguy hiểm</h2>
+<h2>Đổi version bảng (NIT · SDT · BAT) — thao tác nguy hiểm</h2>
 <div class="card">
   <p style="margin-top:0">Version là thứ đầu thu dùng để biết có phải đọc lại
   bảng hay không. Đổi nhầm thì cả mạng dò lại kênh; <b>không đổi</b> khi đã sửa
@@ -133,8 +133,9 @@ trỏ vào hư không.</p>
     <input type="text" name="confirm" id="confirm" autocomplete="off"
            inputmode="numeric" placeholder="gõ lại số ở ô bên trên"
            style="max-width:22em">
-    <span class="dim" style="font-size:12.5px">Cùng ý với việc gõ lại tên kênh
-    để xoá: buộc mắt phải nhìn vào giá trị chứ không bấm quen tay.</span>
+    <span class="dim" style="font-size:12.5px">Cùng nguyên tắc với việc gõ
+    lại tên kênh khi xoá: buộc người thao tác đọc và xác nhận giá trị, thay vì
+    thao tác theo thói quen.</span>
 
     <div class="row">
       <button type="submit" class="danger">Đổi version</button>

@@ -104,7 +104,13 @@ class TestOpeningThePage(DauRaCase):
         self.assertEqual(r.status_code, 200)
 
     def test_an_unset_output_says_it_cannot_go_on_air(self) -> None:
-        self.assertIn("Chưa phát được", self.c.get("/dau-ra").text)
+        """Nói rõ là CHƯA PHÁT ĐƯỢC, không chỉ là thiếu vài ô.
+
+        Một máy chưa đặt đầu ra mà giao diện trông như bình thường là cách để
+        người trực tưởng hệ đã sẵn sàng.
+        """
+        self.assertIn("Chưa đủ điều kiện phát sóng",
+                      self.c.get("/dau-ra").text)
 
     def test_it_shows_what_is_on_disk(self) -> None:
         CO.save(Output(primary=Endpoint("236.30.239.7", 6100, "10.10.30.230"),

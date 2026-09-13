@@ -5,7 +5,7 @@
 {% set FEC = {1:'1/2', 2:'2/3', 3:'3/4', 4:'5/6', 5:'7/8', 6:'8/9', 7:'3/5', 8:'4/5', 9:'9/10'} %}
 
 <p class="sub"><a href="/">← tổng quan</a></p>
-<h1>Transport stream {{ sdt.ts_id }}</h1>
+<h1>Dòng truyền tải (Transport Stream) {{ sdt.ts_id }}</h1>
 <p class="sub">
   original_network_id <span class="m">{{ sdt.original_network_id }}</span> ·
   SDT version <span class="m">{{ sdt.version }}</span> ·
@@ -88,8 +88,8 @@
   <span class="m">EIT_schedule</span> trong SDT.</p>
   <p style="margin:8px 0 0">Hai việc đó <b>luôn đi cùng nhau</b>, không tách ra
   được ở bất kỳ màn hình nào. Cờ trong SDT chỉ là <i>lời khai</i> — đầu thu vẫn
-  hiện EPG nếu bảng có trên sóng. Hạ cờ mà vẫn phát bảng là khai một đằng phát
-  một nẻo, kiểu sai khó tìm nhất.</p>
+  hiện EPG nếu bảng có trên sóng. Hạ cờ mà vẫn phát bảng là khai báo trong
+  SDT không khớp với nội dung thực phát — dạng sai lệch khó phát hiện nhất.</p>
   <p style="margin:8px 0 0" class="dim">Nhãn <span class="pill warn">lệch</span>
   chỉ xuất hiện khi ai đó sửa YAML bằng tay cho hai cờ khác nhau. Lưu lại kênh
   đó ở màn hình dịch vụ sẽ đưa chúng về cùng một giá trị.</p>

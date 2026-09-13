@@ -512,7 +512,7 @@ def create_app(config_dir: Path, repo_root: Path | None = None, *,
 
         Hàng rào là **gõ lại đúng con số muốn đặt**. Cùng ý với việc gõ lại tên
         kênh để xoá: buộc mắt phải nhìn vào giá trị, không phải bấm vào một cái
-        nút quen tay.
+        nút theo thói quen.
         """
         cfg = load()
         from dataclasses import replace
@@ -891,7 +891,8 @@ def create_app(config_dir: Path, repo_root: Path | None = None, *,
         stream này, và bỏ hẳn nó đi thì người trực không còn cách nào thấy nó
         tồn tại — màn giám sát mà giấu bớt kênh là một màn giám sát phải tin
         chứ không kiểm được. Nhưng dòng đó **rỗng**: kênh tắt không có bảng
-        EIT nào, nên vẽ chương trình lên đó sẽ là nói dối. Việc bỏ sự kiện
+        EIT nào, nên hiển thị chương trình cho chúng là thông tin sai lệch so với
+        nội dung thực phát. Việc bỏ sự kiện
         nằm trong ``timeline.build``, không phải ở đây — một luật, một chỗ.
 
         Trả về **một hình dạng duy nhất** cho mọi nhánh. Hàm trả tuple dài ngắn
@@ -1027,7 +1028,8 @@ def create_app(config_dir: Path, repo_root: Path | None = None, *,
         có file hỏng trên đĩa.
 
         Tên file mặc định lấy theo **ngày của sự kiện sớm nhất**. Nhờ vậy gửi
-        lại cùng một ngày là ghi đè đúng file cũ — không đẻ ra bản trùng. Và
+        lại cùng một ngày là ghi đè đúng file cũ — không phát sinh bản trùng
+        lặp. Và
         ``load_all`` sắp theo tên nên thứ tự ngày cũng là thứ tự nạp.
         """
         from vtcsi.epg.transform import parse as _p
@@ -1072,7 +1074,7 @@ def create_app(config_dir: Path, repo_root: Path | None = None, *,
 
         Thân yêu cầu là **chính nội dung XML**, không bọc JSON. Bên gửi đã có
         sẵn file; bắt họ mã hoá base64 rồi nhét vào một trường JSON chỉ thêm
-        một bước để sai.
+        một khâu có thể phát sinh lỗi.
 
         Tên file đặt bằng ``?ten=``, hoặc để trống thì suy từ ngày của sự kiện
         sớm nhất trong file.

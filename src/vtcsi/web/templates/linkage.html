@@ -2,7 +2,7 @@
 {% block title %}Linkage — VTC-SI{% endblock %}
 {% block body %}
 
-<h1>Linkage</h1>
+<h1>Liên kết (Linkage)</h1>
 <p class="sub">
   <span class="m">linkage_descriptor</span> 0x4A — con trỏ từ bảng này sang
   dịch vụ khác. Phần lớn ở đây là đường <b>OTA nâng cấp phần mềm đầu thu</b>
@@ -16,16 +16,16 @@
   biết</b> — không có đặc tả của Irdeto cũng như ViCAS. Thứ biết chắc là đầu
   thu ngoài mạng đang đọc chúng.</p>
   <p style="margin:8px 0 0">Vì vậy dữ liệu riêng chỉ sửa được ở dạng
-  <b>hex thô</b>. Không có ô nào "thân thiện" hơn, vì không có đặc tả thì mọi
-  giao diện tử tế đều là bịa. Sửa một byte thường nhẹ hơn nhiều so với
-  <b>đổi độ dài</b> khối.</p>
+  <b>hex thô</b>. Hệ thống không cung cấp biểu mẫu diễn giải, vì khi chưa có
+  đặc tả thì mọi cách trình bày "thân thiện" đều là suy diễn. Hiệu chỉnh một
+  byte có mức rủi ro thấp hơn đáng kể so với <b>thay đổi độ dài</b> khối.</p>
   <p style="margin:8px 0 0" class="dim">Thứ tự các mục giữ nguyên và sửa là sửa
   tại chỗ. Bouquet 0x3622 đang phát <b>hai mục 0x80 giống hệt nhau</b> — đó là
   thật, không phải lỗi hiển thị.</p>
 </div>
 
 {% if problems %}
-<h2>Soi linkage</h2>
+<h2>Kiểm tra liên kết (Linkage)</h2>
 {% for p in problems %}
 <p class="msg {{ 'err' if p.blocking else 'warn' }}" style="margin-bottom:8px">
   {% if p.blocking %}<b>Chặn</b> — {% endif %}{{ p.where }}[{{ p.index }}]: {{ p.message }}

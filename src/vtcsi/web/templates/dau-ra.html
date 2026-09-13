@@ -3,23 +3,25 @@
 {% block body %}
 
 <h1>Quản lý PSI/SI</h1>
-<p class="sub">Hai đầu của hệ: XML lịch đi <b>vào</b>, dòng TS đi <b>ra</b>.</p>
+<p class="sub">Hai đầu của hệ thống: lịch phát sóng dạng XML đi <b>vào</b>,
+luồng truyền tải báo hiệu đi <b>ra</b>.</p>
 
 {% set trang_con = 'ra' %}{% include "_tabs-psisi.html" %}
 
-<p class="sub">Địa chỉ multicast mà hệ này bắn dòng TS báo hiệu tới headend.
-Đây là <b>thứ duy nhất</b> trong cả hệ được phép khác nhau giữa hai máy dự
-phòng — nên nó nằm ngoài git, và kéo cấu hình từ máy kia về không đụng tới nó.</p>
+<p class="sub">Địa chỉ multicast mà hệ thống phát luồng truyền tải báo hiệu
+tới trung tâm phát sóng. Đây là tham số <b>duy nhất</b> được phép khác nhau
+giữa hai máy dự phòng, nên nó nằm ngoài phạm vi quản lý phiên bản: đồng bộ cấu
+hình từ máy còn lại không làm thay đổi giá trị này.</p>
 
 {% if chan %}
 <div class="msg err">
-  <b>Chưa phát được.</b> Còn {{ chan|length }} chỗ phải sửa:
+  <b>Chưa đủ điều kiện phát sóng.</b> Còn {{ chan|length }} mục cần khắc phục:
   <ul style="margin:6px 0 0;padding-left:20px">
     {% for m in chan %}<li>{{ m }}</li>{% endfor %}
   </ul>
 </div>
 {% elif dat %}
-<p class="msg ok">Đầu ra hợp lệ. <span class="m">{{ dat }}</span>{%
+<p class="msg ok">Cấu hình đầu ra hợp lệ. <span class="m">{{ dat }}</span>{%
   if out.mirror %} · sao chép sang <span class="m">{{ dat_sao }}</span>{% endif %}</p>
 {% endif %}
 
@@ -34,8 +36,8 @@ phòng — nên nó nằm ngoài git, và kéo cấu hình từ máy kia về kh
       <label for="dc1">Địa chỉ đích</label>
       <input type="text" name="dia_chi" id="dc1" class="m" inputmode="decimal"
              value="{{ out.primary.address }}" placeholder="236.30.239.1" required>
-      <span class="dim" style="font-size:12.5px">Nhóm multicast, dải
-      224.0.0.0 – 239.255.255.255.</span>
+      <span class="dim" style="font-size:12.5px">Địa chỉ nhóm multicast,
+      thuộc dải 224.0.0.0 – 239.255.255.255.</span>
     </div>
     <div>
       <label for="cg1">Cổng UDP</label>
@@ -46,15 +48,18 @@ phòng — nên nó nằm ngoài git, và kéo cấu hình từ máy kia về kh
   <label for="cm1">Card mạng phát ra</label>
   <input type="text" name="card" id="cm1" class="m" inputmode="decimal"
          value="{{ out.primary.interface }}" placeholder="10.10.30.230">
-  <span class="dim" style="font-size:12.5px">Địa chỉ IP của card, không phải
-  tên card — <span class="m">ip addr</span> trên máy phát sẽ cho biết.</span>
+  <span class="dim" style="font-size:12.5px">Nhập địa chỉ IP của card, không
+  phải tên giao diện. Lệnh <span class="m">ip addr</span> trên máy phát cho biết
+  giá trị này. Bỏ trống thì hệ điều hành tự chọn theo bảng định tuyến — không
+  khuyến nghị trên máy có nhiều giao diện mạng.</span>
 </div>
 
 <h2>Đường sao chép</h2>
 <div class="card">
-  <p style="margin-top:0" class="dim">Không bắt buộc. Để trống địa chỉ là tắt.
-  Đây là bản sao <b>y hệt</b> của dòng chính, thường bắn qua card thứ hai —
-  chính chỗ đó mới là dự phòng: card hỏng thì headend vẫn còn một đường.</p>
+  <p style="margin-top:0" class="dim">Không bắt buộc; bỏ trống địa chỉ là
+  không sử dụng. Đường sao chép phát <b>bản sao nguyên vẹn</b> của luồng chính,
+  thông thường qua một card mạng thứ hai. Chính việc tách card mới tạo ra dự
+  phòng: khi một card gặp sự cố, thiết bị đầu xa vẫn còn một đường thu.</p>
   <div class="grid two">
     <div>
       <label for="dc2">Địa chỉ đích</label>
@@ -80,9 +85,10 @@ phòng — nên nó nằm ngoài git, và kéo cấu hình từ máy kia về kh
   <label for="ttl">TTL</label>
   <input type="number" name="ttl" id="ttl" class="m" min="1" max="255"
          value="{{ out.ttl }}" required style="max-width:120px">
-  <span class="dim" style="font-size:12.5px">Số bộ định tuyến gói đi qua được.
-  Mặc định của hệ điều hành là 1 — chết ngay tại switch đầu tiên. {{ ttl_mac_dinh }}
-  là đủ cho một mạng truyền dẫn thường mà vẫn không rò ra ngoài.</span>
+  <span class="dim" style="font-size:12.5px">Số chặng định tuyến tối đa mà gói
+  đi qua được. Giá trị mặc định của hệ điều hành là 1, khiến gói bị loại ngay
+  tại thiết bị định tuyến đầu tiên. Giá trị {{ ttl_mac_dinh }} đủ cho một mạng
+  truyền dẫn thông thường mà không lan ra ngoài phạm vi quản lý.</span>
 
   <div class="row"><button type="submit">Lưu đầu ra</button></div>
 </div>
@@ -91,13 +97,13 @@ phòng — nên nó nằm ngoài git, và kéo cấu hình từ máy kia về kh
 <h2>Dòng lệnh sẽ chạy</h2>
 <div class="card">
   {% if lenh %}
-  <p style="margin-top:0" class="dim">Đây là lệnh <span class="m">vtcsi run</span>
-  dựng từ đúng những ô ở trên. Đọc được nó là kiểm được cấu hình mà không cần
-  phát thử.</p>
+  <p style="margin-top:0" class="dim">Lệnh <span class="m">vtcsi run</span>
+  được sinh từ đúng các tham số phía trên. Đối chiếu nội dung lệnh cho phép
+  kiểm tra cấu hình mà không cần phát thử lên mạng.</p>
   <pre style="margin:0">{{ lenh }}</pre>
   {% else %}
-  <p style="margin:0" class="dim">Sửa xong những chỗ bị chặn ở trên thì lệnh
-  hiện ra đây.</p>
+  <p style="margin:0" class="dim">Lệnh sẽ hiển thị tại đây sau khi các mục
+  cần khắc phục phía trên được xử lý xong.</p>
   {% endif %}
 </div>
 
@@ -116,10 +122,11 @@ phòng — nên nó nằm ngoài git, và kéo cấu hình từ máy kia về kh
   </table></div>
 
   {% if ngoai_git is sameas false %}
-  <p class="msg err" style="margin-bottom:0"><b>File đầu ra đang trong tầm của
-  git.</b> Commit một lần rồi kéo sang máy kia là <b>hai máy cùng bắn một nhóm
-  multicast ra cùng một mạng</b> — đúng cái hỏng mà cặp máy dự phòng sinh ra để
-  tránh. Thêm dòng này vào <span class="m">.gitignore</span>:</p>
+  <p class="msg err" style="margin-bottom:0"><b>Tệp cấu hình đầu ra đang nằm
+  trong tầm quản lý của git.</b> Nếu tệp được ghi nhận và đồng bộ sang máy còn
+  lại, <b>cả hai máy sẽ cùng phát một địa chỉ nhóm multicast trên cùng một
+  mạng</b> — đúng tình huống hỏng mà cấu hình hai máy dự phòng sinh ra để
+  tránh. Bổ sung dòng sau vào <span class="m">.gitignore</span>:</p>
   <pre style="margin:8px 0 0">config/{{ ten_file }}</pre>
   {% endif %}
 </div>

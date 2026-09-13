@@ -23,9 +23,9 @@
 {% endif %}
 
 {% if not b.ts_loops and not b.linkages %}
-<p class="msg err"><b>Bouquet này không nói gì cả.</b>
-  Không vòng transport, không linkage — nó vẫn được phát ra sóng dưới dạng một
-  bảng BAT trống. Đây là <b>RO-15</b>. Thêm vòng transport ở cuối trang.</p>
+<p class="msg err"><b>Bouquet này không mang nội dung nào.</b>
+  Không có vòng transport, không có linkage, nhưng vẫn được phát lên sóng dưới
+  dạng một bảng BAT rỗng. Đây là <b>RO-15</b>. Thêm vòng transport ở cuối trang.</p>
 {% elif not b.ts_loops %}
 <p class="msg warn"><b>Bouquet này chỉ mang linkage, không có vòng transport.</b>
   Đó là cách dùng hợp lệ: nó là nhóm con trỏ OTA chứ không phải danh sách kênh.
@@ -33,7 +33,7 @@
 {% endif %}
 
 {% if problems %}
-<h2>Soi số kênh</h2>
+<h2>Kiểm tra các kênh</h2>
 {% for p in problems %}
 <p class="msg {{ 'err' if p.blocking else 'warn' }}" style="margin-bottom:8px">
   {% if p.blocking %}<b>Chặn:</b>{% endif %} {{ p.message }}</p>
@@ -83,7 +83,8 @@
 <div class="card" style="margin-top:16px">
   <b>Bỏ một kênh khỏi bouquet</b>
   <p class="dim" style="font-size:13px;margin:6px 0 0">Kênh vẫn còn trong SDT và
-  vẫn phát; nó chỉ thôi thuộc gói này, và mất số kênh trong gói này.</p>
+  vẫn phát; kênh chỉ không còn thuộc gói này và mất số kênh trong phạm vi
+  gói này.</p>
   <form method="post"
         action="/bouquet/{{ '%04x' % b.bouquet_id }}/ts/{{ t.ts_id }}/remove">
     <label for="rm{{ t.ts_id }}">Dịch vụ</label>
@@ -121,8 +122,8 @@
                placeholder="để trống nếu chưa gán">
         {% if numbered and suggestion %}
         <span class="dim" style="font-size:12.5px">Gợi ý {{ suggestion }} — ngay
-          sau số cao nhất đang dùng. Lỗ hổng ở giữa thường là chỗ để dành, nên
-          không tự lấp.</span>
+          sau số cao nhất đang dùng. Các khoảng trống ở giữa thường là dải số
+          dành sẵn, nên hệ thống không tự điền vào.</span>
         {% endif %}
       </div>
     </div>
@@ -172,7 +173,7 @@ chúng được giữ nguyên từng byte. Đọc kỹ cảnh báo ở
 <p class="sub">Bouquet này không mang linkage nào.</p>
 {% endif %}
 
-<h2>Vòng transport</h2>
+<h2>Vòng truyền tải (transport loop)</h2>
 
 {% if spare %}
 <div class="card">

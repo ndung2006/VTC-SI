@@ -3,18 +3,20 @@
 {% block body %}
 
 <h1>Quản lý PSI/SI</h1>
-<p class="sub">Hai đầu của hệ: XML lịch đi <b>vào</b>, dòng TS đi <b>ra</b>.</p>
+<p class="sub">Hai đầu của hệ thống: lịch phát sóng dạng XML đi <b>vào</b>,
+luồng truyền tải báo hiệu đi <b>ra</b>.</p>
 
 {% set trang_con = 'vao' %}{% include "_tabs-psisi.html" %}
 
-<p class="sub">Hộp thư lịch — nơi hệ lập lịch bên ngoài bàn giao file XML. Có
-file mới là <b>sinh lại EIT ngay</b>, không chờ chu kỳ.</p>
+<p class="sub">Hộp thư lịch phát sóng — nơi hệ thống lập lịch bên ngoài bàn
+giao tệp XML. Mỗi tệp tiếp nhận thành công đều <b>kích hoạt sinh lại bảng EIT
+ngay</b>, không chờ đến chu kỳ định sẵn.</p>
 
 <h2>Đường đi của một file</h2>
 <div class="card">
 <figure style="margin:0">
 <svg viewBox="0 0 900 132" role="img" width="100%" style="height:auto"
-     aria-label="Hệ lập lịch bên ngoài gửi XML qua HTTPS tới VTC-SI, VTC-SI sinh bảng và phát UDP multicast tới headend">
+     aria-label="Hệ lập lịch bên ngoài gửi XML qua HTTPS tới VTC-SI, VTC-SI sinh bảng và phát UDP multicast tới trung tâm phát sóng">
   <defs>
     <marker id="mui" viewBox="0 0 10 10" refX="9" refY="5"
             markerWidth="6" markerHeight="6" orient="auto-start-reverse">
@@ -37,7 +39,8 @@ file mới là <b>sinh lại EIT ngay</b>, không chờ chu kỳ.</p>
     <text x="380" y="70">kiểm, ghi, sinh lại</text>
     <text x="666" y="54">tsp → UDP multicast</text>
     <text x="666" y="70">PID 16, 17, 18</text>
-    <text x="848" y="62">Headend</text>
+    <text x="848" y="58">Trung tâm</text>
+    <text x="848" y="72">phát sóng</text>
   </g>
   <g fill="var(--muted)" font-size="11" text-anchor="middle">
     <text x="234" y="50">HTTPS</text>
@@ -85,11 +88,11 @@ file mới là <b>sinh lại EIT ngay</b>, không chờ chu kỳ.</p>
 </table></div>
 <p class="sub">Thứ tự tên file là thứ tự nạp, và <b>file nạp sau thắng</b> khi
 trùng khoá. Vì vậy tên theo ngày là đủ để "bản sửa gửi sau" hoạt động đúng —
-gửi lại cùng một ngày thì ghi đè, không đẻ ra bản trùng.</p>
+gửi lại cùng một ngày thì ghi đè, không phát sinh bản trùng lặp.</p>
 {% else %}
 <p class="msg warn"><b>Hộp thư trống.</b> Chưa có file lịch nào, nên EIT không
-sinh được. Các bảng NIT, SDT và BAT vẫn phát bình thường — mất EPG khó chịu,
-mất NIT mới là mất kênh.</p>
+sinh được. Các bảng NIT, SDT và BAT vẫn phát bình thường: mất EPG làm giảm
+chất lượng dịch vụ, còn mất NIT mới là mất kênh.</p>
 {% endif %}
 
 <h2>Nạp file bằng tay</h2>
@@ -109,7 +112,7 @@ mất NIT mới là mất kênh.</p>
 <div class="card">
   <p style="margin-top:0">Một tuyến, một vé. Thân yêu cầu là <b>chính nội dung
   XML</b>, không bọc JSON — bên gửi đã có sẵn file, bắt họ mã hoá base64 rồi
-  nhét vào một trường JSON chỉ thêm một bước để sai.</p>
+  đưa vào một trường JSON chỉ thêm một khâu có thể phát sinh lỗi.</p>
 
   <pre>curl -X POST https://&lt;máy-chủ&gt;/api/epg \
      -H "Authorization: Bearer {{ token or '&lt;vé&gt;' }}" \
@@ -129,8 +132,8 @@ mất NIT mới là mất kênh.</p>
          style="font-family:var(--mono);font-size:12.5px">
   <span class="dim" style="font-size:12.5px">Bấm vào để chọn rồi sao chép.
   Vé này <b>không</b> đổi khi bạn đổi mật khẩu — hai thứ có vòng đời khác nhau,
-  và bắt hệ bên ngoài cấu hình lại mỗi lần đổi mật khẩu là cách chắc chắn để có
-  người tắt xác thực cho đỡ phiền.</span>
+  và buộc hệ thống bên ngoài cấu hình lại sau mỗi lần đổi mật khẩu sẽ dẫn
+  tới việc xác thực bị vô hiệu hoá vì lý do thuận tiện.</span>
   {% else %}
   <p class="msg err">Chưa có vé. Cấp một cái bên dưới.</p>
   {% endif %}

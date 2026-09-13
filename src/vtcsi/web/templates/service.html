@@ -62,7 +62,8 @@
     <span class="m">EIT_present_following</span> lẫn
     <span class="m">EIT_schedule</span> trong SDT, <b>và</b>
     <span class="m">vtcsi epg</span> không sinh bảng EIT cho kênh này. Hai việc
-    đó luôn đi cùng nhau — hạ cờ mà vẫn phát bảng là khai một đằng phát một nẻo.
+    đó luôn đi cùng nhau: hạ cờ mà vẫn phát bảng là khai báo trong SDT không
+    khớp với nội dung thực phát.
   </span>
 
   {% if svc.eit_pf != svc.eit_schedule %}
@@ -87,7 +88,8 @@
 <div class="card">
   <p style="margin-top:0">Xoá <b>{{ svc.name }}</b> khỏi SDT của TS {{ sdt.ts_id }},
   khỏi <span class="m">service_list</span> trong NIT, và khỏi mọi bouquet đang
-  chứa nó. Sau lần dò kế tiếp, kênh này biến mất khỏi đầu thu của khách hàng.</p>
+  chứa nó. Sau lần dò kênh kế tiếp, kênh này sẽ không còn trên đầu thu của
+  thuê bao.</p>
   <form method="post" action="/ts/{{ sdt.ts_id }}/service/{{ svc.service_id }}/delete">
     <label for="confirm_name">Gõ lại đúng tên kênh để xác nhận</label>
     <input type="text" name="confirm_name" id="confirm_name" autocomplete="off"
