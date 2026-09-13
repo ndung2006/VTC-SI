@@ -1,7 +1,7 @@
 # Mindmap phần mềm — `vtcsi`
 
 > Bản đồ **mã nguồn**. Toàn cảnh hệ thống ở [`mindmap.md`](mindmap.md); đặc tả ở [`spec.md`](spec.md) phiên bản **2.3**.
-> Trạng thái: **783 test xanh, 0 bỏ qua** — kể cả bảy bài so byte. Lõi và đường ra sóng không phụ thuộc gói ngoài nào
+> Trạng thái: **809 test xanh, 0 bỏ qua** — kể cả bảy bài so byte. Lõi và đường ra sóng không phụ thuộc gói ngoài nào
 > ngoài `pyyaml`; giao diện web là nhóm phụ thuộc tuỳ chọn `[web]`.
 
 ---
@@ -283,6 +283,7 @@ Container `vtcsi run` **không đặt CPU quota** — throttling của cgroup ch
 | `pipeline.supervise` | Giãn cách, chết lặp, đổi nội dung không dựng lại | NFR-2 | ✓ 41 bài |
 | `vtcsi refresh` · `run` | EIT rỗng không ghi đè; `--dry-run` dựng đúng lệnh; địa chỉ ra lấy từ file, `--to` đè lên | AC-6, FR-86 | ✓ 34 bài |
 | `model.output` · `config.output` | Đọc IP, dải multicast, luật chặn và lời nhắc, vòng tròn ra đĩa | FR-86, FR-87 | ✓ 41 bài |
+| Tăng version tự động | SDT và BAT tăng theo nội dung so với bản commit; NIT bằng tay; hai máy ra cùng số | FR-92 | ✓ 26 bài |
 | Bộ container | `web` và `si` trỏ cùng thư mục; `si` chạy host network; không ghim địa chỉ vào ảnh | FR-90, FR-91 | ✓ 13 bài |
 | Màn hình đầu ra | Địa chỉ hỏng không chạm đĩa; file cũ còn nguyên; nhánh `fork` hiện trong lệnh xem trước | FR-86…88 | ✓ 31 bài |
 | `model.linkage` · `topology` | Hex, trần 248 byte, trùng lặp và thứ tự | FR-59…61, RO-8 | ✓ 51 bài |

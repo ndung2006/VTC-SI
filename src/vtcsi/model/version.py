@@ -130,3 +130,34 @@ def explain(verdict: Verdict, *, config_version: int, air_version: int) -> str:
                 f"dau thu se giu du lieu cu ma khong bao gi. Tang len {next_version(a)}.")
     return (f"version tren song la {a}, cau hinh la {v} — khong phai buoc ke tiep "
             f"({next_version(a)}). Kiem tra lai truoc khi phat.")
+
+
+# ------------------------------------------------------ tăng tự động
+
+def auto_next(*, on_disk: int, committed: int, content_same: bool) -> int | None:
+    """Version mới cho một bảng, hoặc ``None`` nếu không đụng tới.
+
+    Mốc so là **bản đã commit**, không phải lần lưu trước. Chính chỗ đó làm
+    nên hai tính chất mà cách "cộng một mỗi lần bấm Lưu" không có:
+
+    * **Một lần tăng cho mỗi chu kỳ commit.** Lần lưu đầu thấy version còn
+      bằng bản commit nên tăng; những lần lưu sau thấy version đã khác nên
+      thôi. Không cần đếm, không cần nhớ trạng thái giữa các lượt.
+    * **Hai máy ra cùng một số.** Cùng một commit gốc và cùng một nội dung
+      cuối thì kết quả như nhau, dù một bên sửa một lần còn bên kia sửa mười
+      lần. Đây là điều kiện sống còn: hai máy ngang hàng mà cùng version lại
+      khác nội dung thì đầu thu giữ nguyên bảng cũ và không ai biết.
+
+    Chỉ động vào **đúng một ô** trong bảng phán quyết — nội dung đã đổi mà
+    version còn nguyên, tức ``SILENT_CHANGE``. Mọi ô khác trả ``None``:
+
+    * Nội dung không đổi thì không tăng, kể cả khi người ta đã tự đặt version
+      khác. Đó là đường sửa một lần bấm nhầm, và tự động không được xoá nó.
+    * Nội dung đổi mà version cũng đã đổi thì người ta đã quyết rồi. Tôn
+      trọng con số họ đặt, kể cả khi nó không phải bước kế tiếp.
+    """
+    if content_same:
+        return None
+    if on_disk != committed:
+        return None
+    return next_version(committed)

@@ -34,6 +34,7 @@ from vtcsi.model import output as OUT
 from vtcsi.model import linkage as K
 from vtcsi.model import topology as TOPO
 from vtcsi.model import version as V
+from vtcsi.version import autobump
 from vtcsi.model.entities import (
     Config,
     Linkage,
@@ -384,12 +385,43 @@ def create_app(config_dir: Path, repo_root: Path | None = None, *,
         nằm trên đĩa, và dải cảnh báo "chưa lên sóng" sẽ hiện ra kèm nút bấm
         lại. Mất bảng mới khó chịu; mất cả thay đổi vừa gõ thì tệ hơn.
         """
-        written = loader.save(cfg, config_dir)
+        cfg, tang = _tu_tang(cfg)
+        loader.save(cfg, config_dir)
         try:
             _apply()
         except Exception:  # noqa: BLE001 — dai canh bao se hien ra
             pass
-        return [str(p.relative_to(root)) for p in written]
+        return tang
+
+    def _tu_tang(cfg: Config) -> tuple[Config, str]:
+        """Tăng version SDT và BAT nếu nội dung đã rời khỏi bản đã commit.
+
+        Mốc so là **HEAD**, không phải lần lưu trước — xem ``version.autobump``.
+        Nhờ đó một chu kỳ commit chỉ tăng đúng một lần, và hai máy ngang hàng
+        ra cùng một số dù số lần bấm Lưu khác nhau.
+
+        Không đọc được HEAD thì **không tăng gì cả**. Không có mốc mà vẫn tăng
+        là tăng dựa trên một con số tưởng tượng, tệ hơn là không tăng: nó tạo
+        ra chênh lệch giữa hai máy mà không ai thấy.
+        """
+        td = git.config_at_head(root)
+        if td is None:
+            return cfg, ""
+        try:
+            truoc = loader.load(Path(td.name) / "config")
+        except (ConfigError, OSError):
+            return cfg, ""
+        finally:
+            td.cleanup()
+        ke = autobump.plan(cfg, truoc)
+        return autobump.apply(cfg, ke), autobump.describe(ke)
+
+    def _kem(note: str, tang: str) -> str:
+        """Ghép lời báo tăng version vào thông báo của thao tác vừa rồi.
+
+        Version đổi mà không nói ra thì đúng là thứ hệ này sinh ra để chống.
+        """
+        return f"{note} · {tang}" if tang else note
 
     @app.post("/ts/{ts_id}/service/save")
     def save_service(
@@ -432,11 +464,12 @@ def create_app(config_dir: Path, repo_root: Path | None = None, *,
         cfg = replace(cfg, sdts=tuple(
             replace(s, services=services) if s.ts_id == ts_id else s for s in cfg.sdts))
         try:
-            _save(_rebuild_nit(cfg))
+            tang = _save(_rebuild_nit(cfg))
         except ConfigError as exc:
             return back(f"/ts/{ts_id}", err=str(exc))
         verb = "thêm" if creating else "sửa"
-        return back(f"/ts/{ts_id}", note=f"đã {verb} dịch vụ {service_id}")
+        return back(f"/ts/{ts_id}",
+                    note=_kem(f"đã {verb} dịch vụ {service_id}", tang))
 
     @app.post("/ts/{ts_id}/eit")
     async def save_eit_flags(request: Request, ts_id: int):
@@ -468,10 +501,11 @@ def create_app(config_dir: Path, repo_root: Path | None = None, *,
         cfg = replace(cfg, sdts=tuple(
             replace(s, services=services) if s.ts_id == ts_id else s
             for s in cfg.sdts))
-        _save(cfg)
+        tang = _save(cfg)
         tat = len(services) - len(bat)
         return back(f"/ts/{ts_id}",
-                    note=f"đã đổi EPG của {doi} kênh — {len(bat)} bật, {tat} tắt")
+                    note=_kem(f"đã đổi EPG của {doi} kênh — {len(bat)} bật, "
+                              f"{tat} tắt", tang))
 
     @app.post("/ts/{ts_id}/service/{service_id}/delete")
     def delete_service(ts_id: int, service_id: int, confirm_name: str = Form("")):
@@ -493,9 +527,10 @@ def create_app(config_dir: Path, repo_root: Path | None = None, *,
         # nào cũng tạo ra đúng lỗi mà ``lcn.check`` bắt.
         cfg = L.forget_service(cfg, ts_id, service_id)
 
-        _save(_rebuild_nit(cfg))
+        tang = _save(_rebuild_nit(cfg))
         return back(f"/ts/{ts_id}",
-                    note=f"đã xoá dịch vụ {service_id} '{svc.name}' khỏi TS và mọi bouquet")
+                    note=_kem(f"đã xoá dịch vụ {service_id} '{svc.name}' "
+                              f"khỏi TS và mọi bouquet", tang))
 
     # ------------------------------------------------------------- version
 
@@ -555,7 +590,7 @@ def create_app(config_dir: Path, repo_root: Path | None = None, *,
         if now == version:
             return back("/", err=f"bảng đó đang ở version {version} rồi")
         _save(cfg)
-        return back("/", note=f"đã đặt version {what}")
+        return back("/", note=f"đã đặt version {what}")   # dat tay thi khong tu tang
 
     # ------------------------------------------------------------ bouquet
 
@@ -653,9 +688,9 @@ def create_app(config_dir: Path, repo_root: Path | None = None, *,
             made = L.set_numbers(b, ts_id, numbers, visible)
         except L.LcnError as exc:
             return back(f"/bouquet/{raw}", err=str(exc))
-        _save(_swap(cfg, made))
+        tang = _save(_swap(cfg, made))
         return back(f"/bouquet/{raw}",
-                    note=f"đã lưu {len(numbers)} số kênh ở TS {ts_id}")
+                    note=_kem(f"đã lưu {len(numbers)} số kênh ở TS {ts_id}", tang))
 
     @app.post("/bouquet/{raw}/ts/{ts_id}/add")
     def add_to_bouquet(raw: str, ts_id: int,
@@ -682,9 +717,10 @@ def create_app(config_dir: Path, repo_root: Path | None = None, *,
                 b, ts_id, ServiceRef(service_id, int(svc.service_type)), want)
         except L.LcnError as exc:
             return back(f"/bouquet/{raw}", err=str(exc))
-        _save(_swap(cfg, made))
+        tang = _save(_swap(cfg, made))
         what = f" với số kênh {want}" if want else " (chưa có số kênh)"
-        return back(f"/bouquet/{raw}", note=f"đã thêm '{svc.name}'{what}")
+        return back(f"/bouquet/{raw}",
+                    note=_kem(f"đã thêm '{svc.name}'{what}", tang))
 
     @app.post("/bouquet/{raw}/ts/{ts_id}/remove")
     def remove_from_bouquet(raw: str, ts_id: int, service_id: int = Form(...)):
@@ -696,9 +732,9 @@ def create_app(config_dir: Path, repo_root: Path | None = None, *,
             made = L.remove_member(b, ts_id, service_id)
         except L.LcnError as exc:
             return back(f"/bouquet/{raw}", err=str(exc))
-        _save(_swap(cfg, made))
+        tang = _save(_swap(cfg, made))
         return back(f"/bouquet/{raw}",
-                    note=f"đã bỏ dịch vụ {service_id} khỏi bouquet")
+                    note=_kem(f"đã bỏ dịch vụ {service_id} khỏi bouquet", tang))
 
     # ------------------------------------------------- vòng transport
 
@@ -714,9 +750,9 @@ def create_app(config_dir: Path, repo_root: Path | None = None, *,
                                  pds.strip() or None)
         except TOPO.TopologyError as exc:
             return back(f"/bouquet/{raw}", err=str(exc))
-        _save(_swap(cfg, made))
+        tang = _save(_swap(cfg, made))
         return back(f"/bouquet/{raw}",
-                    note=f"đã thêm vòng TS {ts_id} (chưa có kênh nào)")
+                    note=_kem(f"đã thêm vòng TS {ts_id} (chưa có kênh nào)", tang))
 
     @app.post("/bouquet/{raw}/ts/drop")
     def drop_loop(raw: str, ts_id: int = Form(...), confirm: str = Form("")):
@@ -744,8 +780,9 @@ def create_app(config_dir: Path, repo_root: Path | None = None, *,
             made = TOPO.remove_loop(b, ts_id, force=force)
         except TOPO.TopologyError as exc:
             return back(f"/bouquet/{raw}", err=str(exc))
-        _save(_swap(cfg, made))
-        return back(f"/bouquet/{raw}", note=f"đã bỏ cả vòng TS {ts_id}")
+        tang = _save(_swap(cfg, made))
+        return back(f"/bouquet/{raw}",
+                    note=_kem(f"đã bỏ cả vòng TS {ts_id}", tang))
 
     # ------------------------------------------------------------ linkage
 
@@ -837,9 +874,10 @@ def create_app(config_dir: Path, repo_root: Path | None = None, *,
         except K.LinkageError as exc:
             return back(where, err=str(exc))
 
-        _save(_put_linkages(cfg, b, items))
+        tang = _save(_put_linkages(cfg, b, items))
         verb = "thêm" if index < 0 else "sửa"
-        return back("/linkage", note=f"đã {verb} linkage {kind:#04x} ở {title}")
+        return back("/linkage",
+                    note=_kem(f"đã {verb} linkage {kind:#04x} ở {title}", tang))
 
     @app.post("/linkage/{raw}/{index}/delete")
     def delete_linkage(raw: str, index: int, confirm: str = Form("")):
@@ -857,9 +895,10 @@ def create_app(config_dir: Path, repo_root: Path | None = None, *,
                                            f"{k.linkage_type:02x}".lower()):
             return back(f"/linkage/{raw}/{index}",
                         err=f"gõ đúng loại linkage ({k.linkage_type:#04x}) để xác nhận")
-        _save(_put_linkages(cfg, b, K.remove_at(items, index)))
+        tang = _save(_put_linkages(cfg, b, K.remove_at(items, index)))
         return back("/linkage",
-                    note=f"đã xoá linkage {k.linkage_type:#04x} thứ {index} ở {title}")
+                    note=_kem(f"đã xoá linkage {k.linkage_type:#04x} thứ "
+                              f"{index} ở {title}", tang))
 
     # --------------------------------------------------------- áp dụng
 

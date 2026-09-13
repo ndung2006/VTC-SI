@@ -125,3 +125,37 @@ def init(root: Path) -> tuple[bool, str]:
         return False, "da la kho git roi"
     r = _run(root, "init")
     return (r.returncode == 0), (r.stdout or r.stderr).strip()
+
+
+def config_at_head(root: Path, sub: str = "config"):
+    """Bung ``config/`` tại HEAD ra thư mục tạm, trả về đường dẫn.
+
+    Trả ``None`` khi chưa phải kho git, chưa có commit nào, hoặc HEAD không có
+    thư mục đó — nghĩa là **không có mốc để so**. Nơi gọi phải xử lý ``None``
+    bằng cách không làm gì, chứ không phải bằng cách đoán: tăng version dựa
+    trên một mốc tưởng tượng còn tệ hơn không tăng.
+
+    Nơi gọi giữ đối tượng trả về cho tới khi dùng xong; thư mục tạm bị xoá khi
+    nó bị thu hồi.
+    """
+    import io as _io
+    import tarfile
+    import tempfile
+
+    # KHONG dung `_run`: no giai ma text, ma tar la nhi phan — giai ma xong
+    # la hong file, va hong mot cach im lang chu khong bao loi.
+    r = subprocess.run(["git", "archive", "--format=tar", "HEAD", sub],
+                       cwd=str(root), capture_output=True, timeout=30)
+    if r.returncode != 0:
+        return None
+    td = tempfile.TemporaryDirectory()
+    try:
+        with tarfile.open(fileobj=_io.BytesIO(r.stdout)) as tar:
+            tar.extractall(td.name, filter="data")
+    except (tarfile.TarError, ValueError):
+        td.cleanup()
+        return None
+    if not (Path(td.name) / sub).is_dir():
+        td.cleanup()
+        return None
+    return td
