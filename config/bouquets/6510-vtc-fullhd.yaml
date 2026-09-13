@@ -1,7 +1,7 @@
 # Sinh bởi vtcsi. Sửa tay thoải mái — đây là nguồn sự thật.
 bouquet_id: '0x6510'
 name: VTC_FULLHD
-version: 26
+version: 27
 private_data_specifier: null
 linkages:
 - linkage_type: '0x05'
@@ -332,4 +332,7 @@ transport_streams:
     visible: true
   - service_id: 876
     lcn: 415
+    visible: true
+  - service_id: 877
+    lcn: 416
     visible: true
