@@ -48,7 +48,7 @@ network:
   - ts_id: 8
     original_network_id: 12901
     actual: true
-    sdt_version: 9
+    sdt_version: 10
     delivery:
       system: DVB-S2
       modulation: 8PSK

@@ -10,7 +10,7 @@ services:
   eit_pf: false
   eit_schedule: false
 - service_id: 802
-  name: ANTV
+  name: AN NINH TV
   provider: ''
   type: 1
   running_status: running
