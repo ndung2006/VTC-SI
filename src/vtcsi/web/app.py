@@ -376,10 +376,18 @@ def create_app(config_dir: Path, repo_root: Path | None = None, *,
         """Ghi cấu hình **và sinh lại bảng ngay**.
 
         Sinh lại ngay chứ không chờ chu kỳ, vì công tắc EPG là để tắt nhanh khi
-        có sự cố — sửa xong mà chờ tới một giờ thì không còn là "nhanh". Cả lượt
-        tốn khoảng nửa giây, và ``tsp`` đọc lại file trong khoảng nửa giây nữa
-        nhờ ``--poll-files``; **không** phải dựng lại tiến trình nào, nên không
-        có lần chớp nguồn nào.
+        có sự cố — sửa xong mà chờ tới một giờ thì không còn là "nhanh".
+
+        **Hai chặng, hai tốc độ rất khác nhau.** Ghi YAML rồi sinh lại XML mất
+        **1–2,5 giây** (đo trên máy phát thật). Nhưng ``tsp`` nhận ra file đổi
+        thì chậm hơn nhiều: đo được **67 giây** với plugin ``inject``, tức
+        NIT/SDT/BAT. TSDuck không cho chỉnh nhịp poll của ``inject`` — nó không
+        có tuỳ chọn nào tương đương ``--poll-interval`` mà ``eitinject`` có.
+
+        Con số đó phải nói đúng. Người trực thấy "nửa giây" trong tài liệu rồi
+        chờ mãi không thấy đổi sẽ tưởng hệ hỏng, đi bấm lại, rồi dựng lại dịch
+        vụ — mà **mỗi lần dựng lại là một lần chớp nguồn thật**, trong khi bản
+        thân việc sửa nội dung thì không gây chớp nguồn nào.
 
         Sinh lại hỏng thì **không** làm hỏng việc ghi cấu hình: file YAML đã
         nằm trên đĩa, và dải cảnh báo "chưa lên sóng" sẽ hiện ra kèm nút bấm
@@ -913,8 +921,8 @@ def create_app(config_dir: Path, repo_root: Path | None = None, *,
         ket_qua = _apply()
         if ket_qua.startswith("sinh lại thất bại"):
             return back("/", err=ket_qua)
-        return back("/", note=f"đã áp dụng: {ket_qua} — tsp đọc lại trong "
-                              f"khoảng nửa giây")
+        return back("/", note=f"đã áp dụng: {ket_qua} — bảng mới lên sóng "
+                              f"sau khoảng một phút")
 
     # ---------------------------------------------------------- giám sát
 
