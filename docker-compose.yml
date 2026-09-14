@@ -77,6 +77,13 @@ services:
   web:
     <<: *common
     container_name: vtcsi-web
+    # Vào cả mạng nội bộ của dự án LẪN mạng 'coolify'. Nhờ mạng 'coolify',
+    # container EPG (nhập liệu, do Coolify quản) gọi thẳng được vtcsi-web bằng
+    # tên: http://vtcsi-web:8080/api/epg — luồng local, không ra Internet.
+    # (si giữ network_mode: host, không đụng.)
+    networks:
+      - default
+      - coolify
     command:
       - vtcsi
       - --config=/repo/config
@@ -112,6 +119,14 @@ services:
     logging:
       driver: json-file
       options: {max-size: "10m", max-file: "3"}
+
+networks:
+  # Mạng nội bộ mặc định của dự án (vtcsi_default) — giữ nguyên như cũ.
+  default:
+  # Mạng của Coolify, đã tạo sẵn. external = dùng lại, compose không tự tạo.
+  # Cho vtcsi-web nối vào để container EPG bên Coolify gọi được bằng tên.
+  coolify:
+    external: true
 
 volumes:
   vtcsi-build:
