@@ -5,11 +5,13 @@
 # Anh chi can `pyproject.toml` va `src/`. Cau hinh, lich EPG va ban dump deu
 # gan vao luc CHAY, khong nam trong anh.
 
-Bang mau/
-refs/
-build/
-epg/
-config/
+# Neo vao goc, cung ly do nhu .gitignore: `epg/` khong neo se loai ca
+# `src/vtcsi/epg/` ra khoi boi canh build.
+/Bang mau/
+/refs/
+/build/
+/epg/
+/config/
 .git/
 .venv/
 __pycache__/

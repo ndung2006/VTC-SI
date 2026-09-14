@@ -1,5 +1,9 @@
-build/
-epg/
+# DAU / O DAU LA CO Y. Mau khong co dau / thi git khop o MOI CAP, va
+# `epg/` da tung nuot ca `src/vtcsi/epg/` — toan bo goi EPG khong vao git,
+# chi lo ra o lan clone dau tien tren may khac. Neo vao goc de chi loai dung
+# hop thu lich va thu muc dung o goc du an.
+/build/
+/epg/
 __pycache__/
 *.pyc
 .venv/
