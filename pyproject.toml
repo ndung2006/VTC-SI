@@ -9,6 +9,16 @@ dependencies = ["pyyaml>=6"]
 # Giao diện web là tuỳ chọn: `vtcsi build` và `vtcsi epg`, tức đường ra sóng,
 # chạy được khi không cài nhóm `web`. Đó là chủ ý — máy phát không cần web.
 
+# Lenh dong lenh. THIEU MUC NAY thi `pip install` khong tao ra file thuc thi
+# nao ca, va moi thu goi `vtcsi` deu chet voi "No such file or directory".
+#
+# Tren may lap trinh khong ai thay, vi o do luon chay `python -m vtcsi.cli`.
+# No chi lo ra o lan trien khai container dau tien, khi Dockerfile goi `vtcsi`
+# — va luc do trieu chung la container restart lien tuc, khong phai mot loi
+# cai dat. `tests/test_docker.py` canh cho chuyen do khong lap lai.
+[project.scripts]
+vtcsi = "vtcsi.cli:main"
+
 [project.optional-dependencies]
 web = [
   "fastapi>=0.115",

@@ -124,6 +124,70 @@ class TestTheRepoMountCanPointOutside(ComposeCase):
         self.assertIn("${VTCSI_REPO:-.}", COMPOSE.read_text(encoding="utf-8"))
 
 
+class TestEveryCommandTheImageRunsExists(unittest.TestCase):
+    """Lệnh mà Dockerfile và compose gọi phải là console script có thật.
+
+    Bài học phải trả giá mới có. ``pyproject.toml`` thiếu ``[project.scripts]``
+    suốt từ đầu, nên ``pip install`` không tạo ra file thực thi nào. Trên máy
+    lập trình không ai thấy, vì ở đó luôn chạy ``python -m vtcsi.cli``. Nó chỉ
+    lộ ra ở lần triển khai container **đầu tiên**, và lộ dưới dạng khó đọc
+    nhất: container restart liên tục với ``exec vtcsi failed: No such file or
+    directory`` — trông như hỏng Docker chứ không như thiếu một khai báo gói.
+    """
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        import tomllib
+        pp = ROOT / "pyproject.toml"
+        if not pp.exists():
+            raise unittest.SkipTest("khong co pyproject.toml")
+        cls.scripts = tomllib.loads(
+            pp.read_text(encoding="utf-8")).get("project", {}).get("scripts", {})
+
+    def _lenh_duoc_goi(self) -> set[str]:
+        """Tên chương trình mà ảnh thực sự chạy, lấy từ Dockerfile và compose."""
+        ra: set[str] = set()
+        if DOCKERFILE.exists():
+            for dong in DOCKERFILE.read_text(encoding="utf-8").splitlines():
+                d = dong.strip()
+                if d.startswith("CMD ["):
+                    ra.add(d.split('"')[1])
+                elif d.startswith("CMD ") and "||" in d:      # HEALTHCHECK CMD
+                    ra.add(d.split()[1])
+        if COMPOSE.exists():
+            for sv in _compose()["services"].values():
+                lenh = sv.get("command")
+                if isinstance(lenh, list) and lenh:
+                    ra.add(str(lenh[0]))
+                elif isinstance(lenh, str) and lenh:
+                    ra.add(lenh.split()[0])
+        return ra
+
+    def test_the_package_declares_a_console_script(self) -> None:
+        self.assertTrue(self.scripts,
+                        "pyproject.toml thieu [project.scripts] — pip install "
+                        "se khong tao ra file thuc thi nao")
+
+    def test_every_invoked_command_is_declared(self) -> None:
+        goi = self._lenh_duoc_goi()
+        self.assertTrue(goi, "khong tim thay lenh nao duoc goi")
+        for ten in sorted(goi):
+            with self.subTest(command=ten):
+                self.assertIn(ten, self.scripts,
+                              f"anh goi {ten!r} nhung pyproject khong khai no")
+
+    def test_the_entry_point_actually_resolves(self) -> None:
+        """Khai đúng tên chưa đủ — đích của nó phải import và gọi được."""
+        import importlib
+        for ten, dich in self.scripts.items():
+            with self.subTest(command=ten):
+                mod, _, ham = dich.partition(":")
+                self.assertTrue(ham, f"{dich!r} thieu phan ':ham'")
+                doi_tuong = getattr(importlib.import_module(mod), ham, None)
+                self.assertIsNotNone(doi_tuong, f"{dich!r} khong ton tai")
+                self.assertTrue(callable(doi_tuong), f"{dich!r} khong goi duoc")
+
+
 class TestTheImageDoesNotBroadcastByAccident(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
