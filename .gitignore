@@ -18,3 +18,6 @@ Bang mau/*.ts
 # mot nhom ra cung mot mang thi hong dung cai ma cap may sinh ra de tranh. Cau
 # hinh bao hieu vao git vi giong nhau la muc dich; dia chi dau ra thi nguoc lai.
 config/dau-ra.yaml
+
+# Cong web va duong dan kho — moi may mot khac, giong config/dau-ra.yaml.
+.env

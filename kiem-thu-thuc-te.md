@@ -434,6 +434,18 @@ docker compose up -d web           # CHI `web`. Khong phai `si`.
 docker compose ps
 ```
 
+**Cổng 8080 bận thì đổi cổng phía máy.** Trên máy đã chạy Coolify, 8080 thường
+đã có chủ. Cổng bên trong container giữ nguyên; chỉ cổng phía máy đổi:
+
+```bash
+ss -ltnp | grep ':8080'            # xem ai dang giu
+echo "VTCSI_PORT=8090" >> /srv/vtcsi/repo/.env
+docker compose up -d web
+```
+
+`.env` nằm cạnh `docker-compose.yml` và đã có trong `.gitignore`, nên mỗi máy
+tự giữ cổng của mình — giống cách `config/dau-ra.yaml` hoạt động.
+
 **4. Đặt mật khẩu**
 
 Không có đường đặt qua trình duyệt, và đó là chủ ý: quyền quản trị trên máy

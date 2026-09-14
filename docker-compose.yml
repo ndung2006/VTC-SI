@@ -100,7 +100,14 @@ services:
     #   docker compose exec web vtcsi --config=/repo/config passwd --repo=/repo
     # Cho toi luc do, giao dien chi hien huong dan va khong phuc vu gi khac.
     ports:
-      - "8080:8080"
+      # Cong PHIA MAY dat duoc tu ngoai, vi may thuc te thuong da co thu khac
+      # chiem 8080 — Coolify va cac dich vu no quan la truong hop dien hinh.
+      # Cong ben trong container giu nguyen 8080, khong can doi.
+      #
+      #   VTCSI_PORT=8090 docker compose up -d web
+      #
+      # Dat trong .env canh docker-compose.yml thi khoi go lai moi lan.
+      - "${VTCSI_PORT:-8080}:8080"
     mem_limit: 256m
     logging:
       driver: json-file
