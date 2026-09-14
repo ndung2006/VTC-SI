@@ -7,16 +7,16 @@ services:
   type: 1
   running_status: running
   free_ca_mode: false
-  eit_pf: false
-  eit_schedule: false
+  eit_pf: true
+  eit_schedule: true
 - service_id: 802
   name: ANTV
   provider: ''
   type: 1
   running_status: running
   free_ca_mode: true
-  eit_pf: false
-  eit_schedule: false
+  eit_pf: true
+  eit_schedule: true
 - service_id: 803
   name: QPVN
   provider: ''
