@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import shutil
 import tempfile
+import re
 import unittest
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
@@ -318,6 +319,42 @@ class TestThePage(EpgCase):
         r = self.c.post("/epg/xoa", data={"ten": "../config/network.yaml"})
         self.assertIn("không có file", self.said(r))
         self.assertTrue((self.dir / "network.yaml").exists())
+
+class TestTheTokenIsHiddenByDefault(EpgCase):
+    """Vé phải ẩn sẵn khi mở trang.
+
+    Màn hình này hay được mở trong phòng máy, chiếu lên màn lớn, hoặc chia sẻ
+    màn hình khi gọi hỗ trợ. Một cái vé hiện sẵn là một cái vé đã lộ — và lộ
+    theo kiểu không ai nhận ra, vì không để lại dấu vết nào.
+
+    Ranh giới của biện pháp này: nó chống **phơi bày tình cờ**, không chống
+    người đã mở được trang. Vé vẫn nằm trong mã nguồn HTML, ai xem source cũng
+    thấy. Muốn chặn tới mức đó thì phải không gửi vé xuống trình duyệt chút
+    nào — một thiết kế khác hẳn và đắt hơn nhiều.
+    """
+
+    def trang(self) -> str:
+        self.dang_nhap()
+        return self.c.get("/epg").text
+
+    def test_the_input_is_masked(self) -> None:
+        o = re.search(r'<input[^>]*id="ve"[^>]*>', self.trang())
+        self.assertIsNotNone(o, "khong tim thay o ve")
+        self.assertIn('type="password"', o.group(0))
+
+    def test_no_input_shows_the_token_as_plain_text(self) -> None:
+        """Chặn đúng cách hỏng: đổi lại thành ô chữ thường."""
+        for o in re.findall(r"<input[^>]*>", self.trang()):
+            if self.ve in o:
+                self.assertNotIn('type="text"', o, o[:120])
+
+    def test_there_is_a_way_to_reveal_it(self) -> None:
+        """Ẩn mà không mở lại được thì người ta sẽ đi tìm vé ở chỗ khác."""
+        self.assertIn('id="ve-hien"', self.trang())
+
+    def test_it_can_be_copied_without_revealing(self) -> None:
+        """Đường an toàn nhất là chép thẳng, không phơi lên màn hình."""
+        self.assertIn('id="ve-chep"', self.trang())
 
 
 if __name__ == "__main__":

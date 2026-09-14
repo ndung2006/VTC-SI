@@ -126,14 +126,67 @@ chất lượng dịch vụ, còn mất NIT mới là mất kênh.</p>
   cả</b>. Kiểm trước khi ghi là cố ý: một file hỏng nằm trong hộp thư sẽ làm
   hỏng lần sinh EIT kế tiếp, mà lần đó xảy ra vài giây sau và không ai đang nhìn.</p>
 
-  <label>Vé hiện tại</label>
+  <label for="ve">Vé hiện tại</label>
   {% if token %}
-  <input type="text" readonly value="{{ token }}" onclick="this.select()"
-         style="font-family:var(--mono);font-size:12.5px">
-  <span class="dim" style="font-size:12.5px">Bấm vào để chọn rồi sao chép.
+  {#  Mac dinh AN.
+
+      Man hinh nay hay duoc mo trong phong may, chieu len man lon, hoac chia se
+      man hinh khi goi ho tro. Mot cai ve hien san la mot cai ve da lo — va no
+      lo theo kieu khong ai nhan ra, vi khong co dau vet nao de lai.
+
+      Nut "Chép" cho phep sao chep ma KHONG can hien ra: duong dung nhat la
+      duong khong bao gio phoi ve len man hinh.  #}
+  <div class="row" style="margin-top:0;flex-wrap:nowrap;gap:7px">
+    <input type="password" id="ve" readonly value="{{ token }}"
+           autocomplete="off" spellcheck="false" onclick="this.select()"
+           style="font-family:var(--mono);font-size:12.5px">
+    <button type="button" class="alt" id="ve-hien" aria-pressed="false"
+            aria-controls="ve" style="white-space:nowrap">Hiện</button>
+    <button type="button" class="alt" id="ve-chep"
+            style="white-space:nowrap">Chép</button>
+  </div>
+  <span class="dim" style="font-size:12.5px">Vé được ẩn sẵn; bấm
+  <b>Chép</b> là sao chép được mà không cần hiện ra màn hình.
   Vé này <b>không</b> đổi khi bạn đổi mật khẩu — hai thứ có vòng đời khác nhau,
   và buộc hệ thống bên ngoài cấu hình lại sau mỗi lần đổi mật khẩu sẽ dẫn
   tới việc xác thực bị vô hiệu hoá vì lý do thuận tiện.</span>
+
+  <script>
+  (function () {
+    var o = document.getElementById("ve"),
+        h = document.getElementById("ve-hien"),
+        c = document.getElementById("ve-chep");
+
+    h.addEventListener("click", function () {
+      var an = o.type === "password";
+      o.type = an ? "text" : "password";
+      h.textContent = an ? "Ẩn" : "Hiện";
+      h.setAttribute("aria-pressed", an ? "true" : "false");
+    });
+
+    c.addEventListener("click", function () {
+      var xong = function (chu) {
+        c.textContent = chu;
+        setTimeout(function () { c.textContent = "Chép"; }, 1400);
+      };
+      // navigator.clipboard chi co tren ngu canh an toan (https hoac localhost).
+      // Trong mang noi bo chay http thi no KHONG ton tai — nen phai co duong lui,
+      // khong thi nut bam khong lam gi ma cung khong bao gi.
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(o.value)
+          .then(function () { xong("Đã chép"); })
+          .catch(function () { xong("Không chép được"); });
+        return;
+      }
+      var cu = o.type;
+      o.type = "text";
+      o.select();
+      try { xong(document.execCommand("copy") ? "Đã chép" : "Ctrl+C"); }
+      catch (e) { xong("Ctrl+C"); }
+      o.type = cu;
+    });
+  }());
+  </script>
   {% else %}
   <p class="msg err">Chưa có vé. Cấp một cái bên dưới.</p>
   {% endif %}
