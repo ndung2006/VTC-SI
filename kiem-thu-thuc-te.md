@@ -530,6 +530,67 @@ khác — chứ không phải đi dò xem mux hỏng ở đâu.
 
 ---
 
+## Soi EIT: luôn thêm `--all-sections`
+
+Thiếu cờ này, một luồng EIT **hoàn toàn tốt** trông y hệt một luồng **không có
+EIT**. Cái bẫy đã sập một lần và tốn cả tiếng để gỡ.
+
+```bash
+# SAI — im lang, khong bao gi ca
+tsp -I file ban-thu.ts -P tables --pid 18 -O drop
+
+# DUNG
+tsp -I file ban-thu.ts -P tables --pid 18 --all-sections -O drop
+```
+
+**Vì sao.** `-P tables` chỉ báo khi thu **đủ mọi section của một bảng**. Bảng
+EIT p/f khai `Section: 0 (last: 1)` — hai section, `0` là chương trình đang
+phát và `1` là chương trình kế tiếp. Chừng nào TSDuck chưa ghép đủ cặp đó
+trong cửa sổ quan sát thì nó **im lặng bỏ qua**. Không lỗi, không cảnh báo,
+không dòng nào.
+
+`-P analyze` thì đếm ở mức section nên vẫn thấy EIT. Hai công cụ nhìn hai tầng
+khác nhau và cả hai đều đúng — nhưng đặt cạnh nhau thì trông như mâu thuẫn.
+
+### Thứ tự soi khi nghi EIT có vấn đề
+
+```bash
+# 1. Co goi tren PID 18 khong, va co loi lien tuc khong?
+tsp -I file ban-thu.ts -P analyze -O drop | grep -A 7 '0x0012'
+tsp -I file ban-thu.ts -P continuity -O drop      # rong = khong mat goi
+
+# 2. Co section nao hong khong?
+tsp -I file ban-thu.ts -P tables --pid 18 --only-invalid-sections -O drop
+
+# 3. Doc noi dung that
+tsp -I file ban-thu.ts -P tables --pid 18 --all-sections -O drop | head -20
+```
+
+Bước 2 rỗng nghĩa là mọi section hợp lệ: CRC đúng, không cụt, không thiếu.
+
+### Băng thông EIT: đọc con số cho đúng
+
+Ta cấp `eitinject --bitrate 400000`. Thấy PID 18 chạy ở **80 kbps** thì đó
+**không** phải dấu hiệu nghẽn — nghẽn thì nó phải **chạm trần 400**. Tám mươi
+nghĩa là `eitinject` đã gửi hết những gì nó có và còn thừa chỗ. Tăng trần lên
+chỉ đổi gói EIT thành gói nhồi.
+
+### Máy phân tích sẽ báo thiếu, và đó là ĐÚNG
+
+Luồng này **chỉ có báo hiệu**: PID 16, 17, 18 và gói nhồi. Không PAT, không
+PMT, không PCR, không video. Máy phân tích chuyên dụng đánh giá nó như một
+luồng truyền hình hoàn chỉnh nên sẽ hiện:
+
+* `No services found` — không có PAT/PMT để ánh xạ PID sang dịch vụ
+* `Bitrate: Unknown` — không có PCR nên không tính được tốc độ từ chính luồng
+* Dấu cảnh báo trên PID 18
+
+Cả ba đều **đúng thiết kế**, không phải lỗi. Mux mới là nơi ghép ba PID này
+vào luồng thật của nó — luồng đó mới có PAT, PMT, PCR và video. Những cảnh
+báo trên sẽ biến mất sau khi ghép.
+
+---
+
 ## Bốn điều đã biết trước sẽ gặp
 
 Ghi ở đây để lúc gặp thì không hoảng.
