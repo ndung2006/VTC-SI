@@ -190,11 +190,18 @@ def main() -> int:
 
         # Hai ben co the cung 40 su kien ma khong su kien nao trung nhau. So
         # dem bang nhau khong chung minh duoc gi; so KHOA moi chung minh duoc.
-        ka = {k for sid in chung for k in ta["su_kien"][sid]}
-        kb = {k for sid in chung for k in song["su_kien"][sid]}
-        print(f"   tren {len(chung)} dich vu chung: {len(ka & kb)} su kien TRUNG KHOP"
-              f" (gio bat dau + thoi luong), {len(ka - kb)} chi {ten_a} co,"
-              f" {len(kb - ka)} chi {ten_b} co")
+        # Khoa PHAI kem service_id. Bo no di thi hai chuong trinh khac kenh
+        # ma cung gio cung thoi luong gop lam mot, va so trung khop bi thoi
+        # phong len. Dau hieu nhan ra: trung + chi-A + chi-B khong bang tong
+        # su kien hai ben. Da xay ra that, tren du lieu that.
+        ka = {(sid, k) for sid in chung for k in ta["su_kien"][sid]}
+        kb = {(sid, k) for sid in chung for k in song["su_kien"][sid]}
+        trung, chi_a, chi_b = len(ka & kb), len(ka - kb), len(kb - ka)
+        print(f"   tren {len(chung)} dich vu chung:"
+              f" {trung} su kien TRUNG KHOP (kenh + gio bat dau + thoi luong),"
+              f" {chi_a} chi {ten_a} co, {chi_b} chi {ten_b} co")
+        # Phep tinh nay phai khop. Neu khong thi khoa dang bi gop nham lan nua.
+        assert trung + chi_a == len(ka) and trung + chi_b == len(kb)
     return 0
 
 
