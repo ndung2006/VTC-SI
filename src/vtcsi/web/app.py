@@ -440,6 +440,7 @@ def create_app(config_dir: Path, repo_root: Path | None = None, *,
         service_type: int = Form(1),
         epg: bool = Form(False),
         free_ca_mode: bool = Form(False),
+        epg_source_id: str = Form(""),
         creating: bool = Form(False),
     ):
         cfg = load()
@@ -452,10 +453,23 @@ def create_app(config_dir: Path, repo_root: Path | None = None, *,
             return back(f"/ts/{ts_id}/new", err=f"dịch vụ {service_id} đã tồn tại")
         if not creating and service_id not in existing:
             return back(f"/ts/{ts_id}", err=f"không có dịch vụ {service_id}")
+        where = f"/ts/{ts_id}/new" if creating else \
+            f"/ts/{ts_id}/service/{service_id}"
         if not name.strip():
-            where = f"/ts/{ts_id}/new" if creating else \
-                f"/ts/{ts_id}/service/{service_id}"
             return back(where, err="tên dịch vụ không được để trống")
+
+        # O trong = khong doi so. Nhan CHUOI chu khong phai `int | None`: form
+        # HTML gui o trong thanh "", ma FastAPI doc "" thanh loi 422 — nguoi
+        # truc se thay mot trang loi tho thay vi mot cau tieng Viet.
+        nguon = epg_source_id.strip()
+        so_nguon: int | None = None
+        if nguon:
+            if not nguon.isdigit() or not (0 <= int(nguon) <= 65535):
+                return back(where, err="số hiệu trong file lịch phải là số 0–65535")
+            so_nguon = int(nguon)
+            if so_nguon == service_id:
+                # Khai trung so la vo nghia, va de nguoi doc sau tuong co doi so.
+                so_nguon = None
 
         # Mot cong tac dat CA HAI co. Xem `entities.set_epg` ve ly do khong
         # cho tach chung ra.
@@ -464,6 +478,7 @@ def create_app(config_dir: Path, repo_root: Path | None = None, *,
             service_type=ServiceType(service_type),
             running_status=RunningStatus.RUNNING,
             free_ca_mode=free_ca_mode, eit_pf=epg, eit_schedule=epg,
+            epg_source_id=so_nguon,
         )
         others = [x for x in sdt.services if x.service_id != service_id]
         services = tuple(sorted(others + [made], key=lambda x: x.service_id))

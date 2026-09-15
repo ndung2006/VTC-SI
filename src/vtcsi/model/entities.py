@@ -166,6 +166,18 @@ class Service:
     free_ca_mode: bool = False
     eit_pf: bool = True
     eit_schedule: bool = True
+    epg_source_id: int | None = None
+    """Số hiệu dịch vụ này mang trong **file lịch**, khi nó khác số trên sóng.
+
+    Bên cấp lịch đánh số theo sổ của họ, không theo sổ của transport stream.
+    Kênh Quảng Trị lên sóng là ``825`` nhưng trong file lịch là ``875``. Không
+    khai chỗ này thì lịch của nó mang một số không có trong SDT, bị
+    ``only_services`` loại sạch, và kênh đó **không có EPG nào trên sóng** —
+    lặng lẽ, vì loại một dịch vụ lạ là hành vi đúng trong mọi trường hợp khác.
+
+    Barrowa gọi tính năng này là *Mapping*. Để trống khi hai số trùng nhau,
+    tức phần lớn các kênh.
+    """
 
 
 def set_epg(service: Service, on: bool) -> Service:

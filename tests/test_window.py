@@ -131,6 +131,65 @@ class TestMergeTheoPhamVi(unittest.TestCase):
                             f"pham vi cua {c.service_id} khong chua su kien nao")
 
 
+class TestDoiSoDichVu(unittest.TestCase):
+    """``epg_source_id`` — lịch đến dưới một số, lên sóng dưới số khác.
+
+    Thật trên hệ: Quảng Trị lên sóng là 825, trong file lịch là 875. Không đổi
+    số thì ``only_services`` loại sạch và kênh **không có EPG nào**.
+    """
+
+    def test_it_renames_the_service(self) -> None:
+        out = W.remap(((ev(875, T0, 30),), ()), {875: 825})
+        self.assertEqual([e.service_id for e in out[0]], [825])
+
+    def test_it_renames_the_declared_coverage_too(self) -> None:
+        """Bỏ sót phạm vi thì đợt mới không thay được đợt cũ của chính kênh đó."""
+        out = W.remap(((), (phu(875, T0, 24),)), {875: 825})
+        self.assertEqual([c.service_id for c in out[1]], [825])
+
+    def test_services_not_in_the_table_are_untouched(self) -> None:
+        out = W.remap((ev(801, T0, 30), ev(875, T0, 30)), {875: 825})
+        self.assertEqual(sorted(e.service_id for e in out[0]), [801, 825])
+
+    def test_an_empty_table_changes_nothing(self) -> None:
+        goc = (ev(875, T0, 30),)
+        self.assertEqual(W.remap(goc, {})[0], goc)
+
+    def test_the_source_number_may_clash_with_a_real_on_air_service(self) -> None:
+        """Hai sổ đánh số khác nhau: 875 của bên cấp lịch ≠ 875 của SDT.
+
+        Trên hệ thật, SDT có dịch vụ 875 là QUANG NGAI 2 RADIO — không liên
+        quan gì tới Quảng Trị. Phép đổi tra theo số của **nguồn**, và chạy
+        trước mọi bước khác, nên chuyện trùng số này không bao giờ lẫn được.
+        """
+        out = W.remap(((ev(875, T0, 30, "lich Quang Tri"),), ()), {875: 825})
+        self.assertEqual([(e.service_id, e.name) for e in out[0]],
+                         [(825, "lich Quang Tri")])
+
+    def test_build_renames_before_merging(self) -> None:
+        """Đổi số phải xảy ra TRƯỚC khi gộp, nếu không hai đợt của cùng một
+        kênh bị coi là hai kênh và cả hai cùng lên sóng."""
+        cu_ = ((ev(875, T0, 60, "ban cu"),), (phu(875, T0, 24),))
+        moi_ = ((ev(875, T0 + timedelta(minutes=30), 60, "ban moi"),),
+                (phu(875, T0, 24),))
+        out = W.build([cu_, moi_], T0 - timedelta(hours=1), mapping={875: 825})
+        self.assertEqual([(e.service_id, e.name) for e in out],
+                         [(825, "ban moi")])
+
+    def test_without_the_table_the_channel_is_filtered_away(self) -> None:
+        """Chứng minh hậu quả của việc KHÔNG khai: kênh biến mất khỏi EPG."""
+        su_kien = W.build([((ev(875, T0, 60),), ())], T0 - timedelta(hours=1))
+        giu, bo = W.only_services(su_kien, {825})
+        self.assertEqual(giu, ())
+        self.assertEqual(bo, (875,))
+
+        su_kien = W.build([((ev(875, T0, 60),), ())], T0 - timedelta(hours=1),
+                          mapping={875: 825})
+        giu, bo = W.only_services(su_kien, {825})
+        self.assertEqual([e.service_id for e in giu], [825])
+        self.assertEqual(bo, ())
+
+
 class TestClip(unittest.TestCase):
     def test_keeps_event_in_progress(self) -> None:
         """Sự kiện đang phát dở vẫn cần cho p/f, không được cắt."""

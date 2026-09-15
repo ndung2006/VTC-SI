@@ -362,6 +362,44 @@ class TestEditingAService(WebCase):
         self.assertTrue(svc.eit_pf)
         self.assertTrue(svc.eit_schedule)
 
+    def test_the_schedule_number_is_saved(self) -> None:
+        self.post(f"/ts/{TS}/service/save", service_id=SID, name="QUANG TRI",
+                  provider="VTC", service_type=1, epg="true",
+                  epg_source_id="875", creating="false")
+        svc = next(x for x in self.sdt().services if x.service_id == SID)
+        self.assertEqual(svc.epg_source_id, 875)
+
+    def test_leaving_it_blank_means_no_renumbering(self) -> None:
+        """Ô trống phải ra ``None``, không phải 0 — 0 là một số hiệu hợp lệ."""
+        self.post(f"/ts/{TS}/service/save", service_id=SID, name="X", provider="",
+                  service_type=1, epg_source_id="", creating="false")
+        svc = next(x for x in self.sdt().services if x.service_id == SID)
+        self.assertIsNone(svc.epg_source_id)
+
+    def test_a_number_equal_to_the_on_air_id_is_stored_as_none(self) -> None:
+        """Khai trùng số là vô nghĩa, và để lại thì người đọc sau tưởng có đổi số."""
+        self.post(f"/ts/{TS}/service/save", service_id=SID, name="X", provider="",
+                  service_type=1, epg_source_id=str(SID), creating="false")
+        svc = next(x for x in self.sdt().services if x.service_id == SID)
+        self.assertIsNone(svc.epg_source_id)
+
+    def test_rubbish_is_refused_in_vietnamese(self) -> None:
+        r = self.post(f"/ts/{TS}/service/save", service_id=SID, name="X", provider="",
+                      service_type=1, epg_source_id="tam linh", creating="false")
+        self.assertRedirectCarries(r, "err", "số hiệu trong file lịch")
+
+    def test_a_number_past_the_ceiling_is_refused(self) -> None:
+        r = self.post(f"/ts/{TS}/service/save", service_id=SID, name="X", provider="",
+                      service_type=1, epg_source_id="65536", creating="false")
+        self.assertRedirectCarries(r, "err", "số hiệu trong file lịch")
+
+    def test_the_form_shows_what_was_saved(self) -> None:
+        self.post(f"/ts/{TS}/service/save", service_id=SID, name="X", provider="",
+                  service_type=1, epg_source_id="875", creating="false")
+        html = self.c.get(f"/ts/{TS}/service/{SID}").text
+        self.assertIn('name="epg_source_id"', html)
+        self.assertIn('value="875"', html)
+
     def test_a_hand_edited_mismatch_is_healed_on_save(self) -> None:
         """Hai co lech nhau chi den tu sua YAML tay; luu lai la dua ve mot moi."""
         from dataclasses import replace

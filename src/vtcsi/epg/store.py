@@ -91,6 +91,7 @@ def build(
     inbox: Path,
     now_utc: datetime,
     depth_hours: int = window.WINDOW_HOURS,
+    mapping: dict[int, int] | None = None,
 ) -> BuildResult:
     """Từ hộp thư tới tập sự kiện sẵn sàng sinh EIT.
 
@@ -108,7 +109,8 @@ def build(
             + ", ".join(str(t) for t in sorted(ts_ids))
             + " — moi TS mot hop thu rieng")
 
-    merged = window.build([(x.events, x.coverage) for x in loaded], now_utc, depth_hours)
+    merged = window.build([(x.events, x.coverage) for x in loaded],
+                          now_utc, depth_hours, mapping=mapping)
     keep, rejected = window.reject_overlong(merged)
     return BuildResult(
         events=eventid.assign_all(keep),

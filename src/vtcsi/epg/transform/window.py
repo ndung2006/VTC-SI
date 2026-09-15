@@ -15,6 +15,7 @@ hai thời điểm khác nhau.
 from __future__ import annotations
 
 from collections import defaultdict
+from dataclasses import replace
 from datetime import datetime, timedelta
 
 from vtcsi.model.entities import Coverage, Event
@@ -127,17 +128,42 @@ def drop_overlaps(events: tuple[Event, ...]) -> tuple[Event, ...]:
     return _sorted(kept)
 
 
+def remap(batch: Batch, mapping: dict[int, int]) -> Batch:
+    """Đổi số dịch vụ của **file lịch** sang số trên **sóng** — xem ``Service.epg_source_id``.
+
+    Phải làm **trước** mọi thứ khác. Bên cấp lịch đánh số theo sổ của họ: kênh
+    Quảng Trị lên sóng là ``825`` nhưng trong file lịch là ``875``. Đổi muộn
+    hơn thì hỏng theo hai đường — ``merge`` sẽ coi hai nguồn của cùng một kênh
+    là hai kênh khác nhau, và ``drop_overlaps`` không thấy chồng lấn giữa
+    chúng, nên hai lịch của cùng một kênh cùng lên sóng.
+
+    Đổi cả phạm vi tự khai, không riêng sự kiện: bỏ sót phạm vi thì đợt mới
+    không còn thay được đợt cũ của chính kênh đó.
+    """
+    events, coverage = _tach(batch)
+    if not mapping:
+        return events, coverage
+    doi = lambda sid: mapping.get(sid, sid)   # noqa: E731
+    return (
+        tuple(replace(e, service_id=doi(e.service_id)) for e in events),
+        tuple(replace(c, service_id=doi(c.service_id)) for c in coverage),
+    )
+
+
 def build(
     batches: tuple[Batch, ...] | list[Batch],
     now_utc: datetime,
     depth_hours: int = WINDOW_HOURS,
+    mapping: dict[int, int] | None = None,
 ) -> tuple[Event, ...]:
     """Từ nhiều file lịch tới cửa sổ sẵn sàng sinh EIT.
 
-    Thứ tự ba bước có ý nghĩa: gộp trước để bản sửa ghi đè bản cũ, cắt sau để
-    khỏi phải xử lý dữ liệu ngoài cửa sổ, rồi mới khử chồng lấn trên đúng tập
-    sẽ lên sóng.
+    Thứ tự bốn bước có ý nghĩa: đổi số trước để mọi bước sau làm việc trên số
+    của sóng, gộp để đợt mới đè đợt cũ, cắt để khỏi xử lý dữ liệu ngoài cửa
+    sổ, rồi mới khử chồng lấn trên đúng tập sẽ lên sóng.
     """
+    if mapping:
+        batches = [remap(b, mapping) for b in batches]
     return drop_overlaps(clip(merge(*batches), now_utc, depth_hours))
 
 

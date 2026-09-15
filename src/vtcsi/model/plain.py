@@ -174,6 +174,28 @@ def _delivery_in(d: dict, where: str) -> SatelliteDelivery:
 
 # ---------------------------------------------------------------------- ghi
 
+
+def _service_out(s) -> dict:
+    """Một dịch vụ thành dict để ghi YAML.
+
+    ``epg_source_id`` **chỉ xuất hiện khi có khai**. Ghi ``null`` cho cả bảy
+    trăm dịch vụ chỉ làm mọi file phình ra và mọi lần so cấu hình đầy nhiễu,
+    trong khi số kênh thật sự cần đổi số đếm trên một bàn tay.
+    """
+    out = {
+        "service_id": s.service_id,
+        "name": s.name,
+        "provider": s.provider,
+        "type": int(s.service_type),
+        "running_status": _RUN_OUT[s.running_status],
+        "free_ca_mode": s.free_ca_mode,
+        "eit_pf": s.eit_pf,
+        "eit_schedule": s.eit_schedule,
+    }
+    if s.epg_source_id is not None:
+        out["epg_source_id"] = s.epg_source_id
+    return out
+
 def to_plain(cfg: Config) -> dict:
     """Mô hình thành dict thuần, gộp vòng NIT với bảng SDT theo từng TS."""
     sdt_by_ts = {s.ts_id: s for s in cfg.sdts}
@@ -189,19 +211,7 @@ def to_plain(cfg: Config) -> dict:
             "sdt_version": sdt.version,
             "delivery": _delivery_out(loop.delivery) if loop.delivery else None,
             "private_data_specifier": _pds_out(loop.private_data_specifier),
-            "services": [
-                {
-                    "service_id": s.service_id,
-                    "name": s.name,
-                    "provider": s.provider,
-                    "type": int(s.service_type),
-                    "running_status": _RUN_OUT[s.running_status],
-                    "free_ca_mode": s.free_ca_mode,
-                    "eit_pf": s.eit_pf,
-                    "eit_schedule": s.eit_schedule,
-                }
-                for s in sdt.services
-            ],
+            "services": [_service_out(s) for s in sdt.services],
         })
 
     bouquets = []
@@ -267,6 +277,8 @@ def from_plain(data: dict) -> Config:
                 free_ca_mode=bool(s.get("free_ca_mode", False)),
                 eit_pf=bool(s.get("eit_pf", True)),
                 eit_schedule=bool(s.get("eit_schedule", True)),
+                epg_source_id=(_int(s["epg_source_id"], where + ".epg_source_id")
+                               if s.get("epg_source_id") is not None else None),
             ))
 
         deliv = raw.get("delivery")

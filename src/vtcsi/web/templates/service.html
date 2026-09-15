@@ -66,6 +66,21 @@
     khớp với nội dung thực phát.
   </span>
 
+  <label for="epg_source_id" style="margin-top:16px">Số hiệu trong file lịch</label>
+  <input type="number" name="epg_source_id" id="epg_source_id" min="0" max="65535"
+         placeholder="để trống nếu trùng số trên sóng"
+         value="{{ svc.epg_source_id if svc.epg_source_id is not none else '' }}">
+  <span class="dim" style="font-size:12.5px">
+    Chỉ điền khi bên cấp lịch đánh số kênh này <b>khác</b> số nó mang trên
+    sóng. Ví dụ thật: Quảng Trị lên sóng là <span class="m">825</span> nhưng
+    trong file lịch là <span class="m">875</span>; không khai thì lịch của nó
+    mang một số không có trong SDT, bị loại sạch, và kênh <b>không có EPG
+    nào</b> — lặng lẽ, vì loại một dịch vụ lạ là việc đúng trong mọi trường
+    hợp khác. Barrowa gọi đây là <i>Mapping</i>.
+    <br>Số này thuộc sổ của bên cấp lịch, <b>không</b> phải sổ của transport
+    stream — hai sổ có thể trùng số mà khác kênh.
+  </span>
+
   {% if svc.eit_pf != svc.eit_schedule %}
   <p class="msg warn" style="margin-top:10px">Hai cờ đang khai <b>khác nhau</b>:
     <span class="m">p/f={{ svc.eit_pf|lower }}</span>,

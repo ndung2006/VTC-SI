@@ -143,7 +143,23 @@ def cmd_epg(args) -> int:
     now = (datetime.fromisoformat(args.now).astimezone(timezone.utc)
            if args.now else datetime.now(timezone.utc))
 
-    result = store.build(Path(args.inbox), now, depth_hours=args.depth)
+    # Doc cau hinh TRUOC khi dung cua so.
+    #
+    # Bang doi so dich vu (`epg_source_id`) phai co mat tu buoc dau, vi
+    # `window.build` doi so truoc khi gop — xem `window.remap`.
+    cfg = None
+    try:
+        cfg = loader.load(Path(args.config))
+    except ConfigError as exc:
+        print(f"khong doc duoc cau hinh ({exc}) — sinh EIT cho moi dich vu",
+              file=sys.stderr)
+
+    anh_xa = {x.epg_source_id: x.service_id
+              for s_ in (cfg.sdts if cfg else ()) for x in s_.services
+              if x.epg_source_id is not None} or None
+
+    result = store.build(Path(args.inbox), now, depth_hours=args.depth,
+                         mapping=anh_xa)
 
     # Ton trong cong tac EPG trong SDT.
     #
@@ -153,12 +169,7 @@ def cmd_epg(args) -> int:
     events = result.events
     tat = ()
     cho_phep = None
-    try:
-        cfg = loader.load(Path(args.config))
-    except ConfigError as exc:
-        print(f"khong doc duoc cau hinh ({exc}) — sinh EIT cho moi dich vu",
-              file=sys.stderr)
-    else:
+    if cfg is not None:
         cho_phep = {x.service_id for s_ in cfg.sdts for x in s_.services
                     if x.eit_schedule}
         events, tat = window.only_services(events, cho_phep)

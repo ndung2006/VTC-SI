@@ -531,6 +531,50 @@ khác — chứ không phải đi dò xem mux hỏng ở đâu.
 
 ---
 
+## Một kênh không có EPG: hỏi "số hiệu trong file lịch" trước
+
+Trước khi đi tìm lỗi ở đâu xa, hỏi câu này: **bên cấp lịch có gọi kênh đó bằng
+một số khác không?**
+
+Có thật: Quảng Trị lên sóng là `825`, nhưng trong file lịch nó là `875`. Không
+khai chỗ đổi số thì lịch của nó mang một số không có trong SDT, `only_services`
+loại sạch — và kênh **không có EPG nào**, lặng lẽ, không lỗi nào cả. Loại một
+dịch vụ lạ là hành vi đúng trong mọi trường hợp khác, nên không chỗ nào kêu.
+
+Khai ở ô **"Số hiệu trong file lịch"** trên trang dịch vụ, hoặc thẳng trong
+YAML:
+
+```yaml
+- service_id: 825
+  name: QUANG TRI
+  epg_source_id: 875      # so hieu ben cap lich dung cho kenh nay
+```
+
+### Hai sổ đánh số, có thể trùng số mà khác kênh
+
+SDT của ta **cũng** có dịch vụ `875` — là `QUANG NGAI 2 RADIO`, không liên quan
+gì tới Quảng Trị. Phép đổi số tra theo số của *nguồn* và chạy trước mọi bước
+khác nên không lẫn được.
+
+Nhưng nhớ chuyện này: kênh radio ấy đang **tắt** EPG. Nếu có ngày ai bật nó lên
+mà chưa khai đổi số thì lịch Quảng Trị sẽ lên sóng dưới tên Quảng Ngãi 2 Radio.
+Hôm nay không xảy ra là do may, không do thiết kế.
+
+### Cách kiểm
+
+```bash
+docker cp vtcsi-si:/build/eit/eit.xml /home/vtc/data/eit-sinh.xml
+docker run --rm -v /home/vtc/data:/data -v /srv/vtcsi/repo:/repo vtcsi:local \
+  python3 /repo/cong-cu/so-eit.py /data/new_epg.xml /data/eit-sinh.xml \
+          "NGUON" "TA SINH RA"
+```
+
+Dòng `NGUON co, TA SINH RA KHONG` liệt kê đúng những số hiệu nguồn mà ta không
+sinh bảng. Mỗi số ở đó là một câu hỏi: **kênh này tắt EPG có chủ ý, hay ta đang
+bỏ sót vì chưa khai đổi số?**
+
+---
+
 ## Rút kênh khỏi lịch: phải khởi động lại `si`
 
 Chỗ này đi ngược lời khuyên ở mọi mục khác, nên đọc kỹ.
