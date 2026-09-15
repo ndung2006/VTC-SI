@@ -16,6 +16,15 @@ Trích EIT ra XML **phải** có hai cờ này::
 
     python3 cong-cu/so-eit.py eit-ta.xml eit-br.xml
 
+Khi hai bên đánh số một kênh khác nhau, khai phép đổi ở cuối dòng lệnh —
+``<số bên A>=<số bên B>``, đổi trên **bên A**::
+
+    python3 cong-cu/so-eit.py nguon.xml song.xml "NGUON" "PHAT" 875=825
+
+Không khai thì kênh đó hiện ra ở cả hai dòng "bên kia có, bên này không" mãi
+mãi. Một cảnh báo luôn kêu là một cảnh báo đã bị tắt — và cái bị bỏ qua cùng
+với nó sẽ là một khác biệt thật.
+
 Vì sao hai cờ đó. ``-P tables`` chỉ xuất bảng **đầy đủ mọi section**. EIT p/f
 khai hai section — ``0`` chương trình đang phát, ``1`` chương trình kế tiếp —
 và bảng lịch phân đoạn thường không truyền các section rỗng ở cuối. Thiếu cờ
@@ -153,16 +162,37 @@ def in_mot_ben(ten: str, d: dict) -> None:
             print(f"      {ng}  {n:>5}  {'#' * max(1, round(n * 40 / dinh))}")
 
 
+def _doi_so(d: dict, bang: dict[int, int]) -> dict:
+    """Đổi số dịch vụ của một bên trước khi so."""
+    if not bang or "loi" in d:
+        return d
+    gom: dict[int, set[str]] = defaultdict(set)
+    for sid, v in d["su_kien"].items():
+        gom[bang.get(sid, sid)] |= v
+    return {**d, "su_kien": gom}
+
+
 def main() -> int:
-    if len(sys.argv) < 3:
+    tham_so = [x for x in sys.argv[1:] if "=" not in x]
+    if len(tham_so) < 2:
         print(__doc__)
         return 2
-    ta, song = doc(Path(sys.argv[1])), doc(Path(sys.argv[2]))
+    bang = {}
+    for x in sys.argv[1:]:
+        if "=" in x:
+            a, b = x.split("=", 1)
+            bang[int(a, 0)] = int(b, 0)
+
+    ta, song = doc(Path(tham_so[0])), doc(Path(tham_so[1]))
+    ta = _doi_so(ta, bang)
+    if bang:
+        print("doi so trên " + (tham_so[2] if len(tham_so) > 2 else "ben A")
+              + ": " + ", ".join(f"{a}->{b}" for a, b in sorted(bang.items())))
     # Cong cu nay khong chi dung de so ta voi Barrowa. So BANG SINH RA voi
     # BAN THU CUA CHINH TA tra loi mot cau khac han — mat mat nam o khau soan
     # lich hay khau phat — nen hai cai nhan phai doi duoc.
-    ten_a = sys.argv[3] if len(sys.argv) > 3 else "EPG CUA TA"
-    ten_b = sys.argv[4] if len(sys.argv) > 4 else "EPG TREN SONG"
+    ten_a = tham_so[2] if len(tham_so) > 2 else "EPG CUA TA"
+    ten_b = tham_so[3] if len(tham_so) > 3 else "EPG TREN SONG"
     in_mot_ben(ten_a, ta)
     print()
     in_mot_ben(ten_b, song)
