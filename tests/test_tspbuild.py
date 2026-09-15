@@ -187,7 +187,11 @@ class TestAgainstInstalledTsduck(unittest.TestCase):
 
         Đo được: bảng ta sinh ra bắt đầu 00:00 UTC (FR-98) nhưng trên sóng bắt
         đầu 06:45 — đúng chương trình đang chạy lúc thu. 336 trên 802 sự kiện
-        không lên sóng. Cờ này đưa được tới mép phân đoạn ba giờ.
+        không lên sóng.
+
+        Cờ này giữ thêm chương trình **đã kết thúc** trong phân đoạn ba giờ
+        đang chạy. Tác dụng thật chưa đo được: phải thu vào cuối một phân đoạn
+        mới thấy, xem FR-99.
         """
         self.assertIn("--lazy-schedule-update", B.build(_plan(), start_time=T0))
 

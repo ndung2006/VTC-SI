@@ -581,11 +581,20 @@ chưa bao giờ được nạp, nên cờ lazy cũng không có gì để giữ.
 
 ### Trần không vượt qua được
 
-Cờ đó đưa ta tới **mép phân đoạn** (`06:00`), còn Barrowa giữ từ **đầu ngày**
-(`00:00`). TSDuck không có tuỳ chọn nào cho cả ngày. Nên chênh lệch tối đa ba
-giờ là mức gần nhất đạt được mà vẫn dùng bộ sinh EIT của TSDuck — muốn bằng
-đúng Barrowa thì phải tự sinh EIT, đổi lấy một rủi ro lớn hơn nhiều so với cái
-được.
+Theo tài liệu TSDuck, cờ đó giữ tới **hết phân đoạn ba giờ đang chạy**, còn
+Barrowa giữ từ **đầu ngày** (`00:00`). Không có tuỳ chọn nào cho cả ngày. Nên
+chênh lệch tối đa ba giờ là mức gần nhất đạt được mà vẫn dùng bộ sinh EIT của
+TSDuck — muốn bằng đúng Barrowa thì phải tự sinh EIT, đổi lấy một rủi ro lớn
+hơn nhiều so với cái được.
+
+**Tác dụng thật của cờ thì chưa đo được**, và chỗ này dễ đo nhầm. Cờ chỉ giữ
+thêm chương trình **đã kết thúc** trong phân đoạn hiện tại. Thu lúc `09:11` —
+mới qua mốc `09:00` được mười một phút — thì phần đó gần như bằng không, không
+có gì để nhìn. Mép đầu `08:00` quan sát được chỉ là chương trình dài nhất còn
+đang chạy, tức hành vi vốn có của `eitinject`, không phải tác dụng của cờ.
+
+Muốn đo thật thì thu vào **cuối một phân đoạn**: 02:45, 05:45, 08:45, 11:45,
+14:45… UTC. Lúc đó mép đầu phải lùi về gần đầu phân đoạn.
 
 ### Đừng suy hành vi này ra hành vi kia
 
