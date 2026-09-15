@@ -164,6 +164,17 @@ def build(plan: Plan, *, start_time: datetime) -> list[str]:
         "--bitrate", str(plan.bitrate_eit),
         "--poll-interval", str(plan.eit_poll_ms),
         "--wait-first-batch",
+        # Giu chuong trinh da phat xong cho het phan doan ba gio dang chay.
+        #
+        # Mac dinh `eitinject` GO NGAY mot su kien vua ket thuc. Do la ly do
+        # bang ta sinh ra bat dau tu 00:00 UTC (FR-98) ma tren song lai bat dau
+        # tu 06:45 — do la chuong trinh dang chay luc thu. Ta nap du ca ngay,
+        # `eitinject` loc lai.
+        #
+        # Co nay dua duoc toi mep phan doan (06:00), khong toi duoc dau ngay.
+        # Barrowa giu ca ngay tu 00:00; TSDuck khong co cach nao lam vay, va
+        # day la muc gan nhat dat duoc. Xem FR-99.
+        "--lazy-schedule-update",
     ]
 
     cmd += ["-P", "regulate", "--bitrate", str(plan.total_bitrate)]
@@ -215,7 +226,7 @@ USED_OPTIONS = {
     "inject": ["--pid", "--bitrate", "--poll-files"],
     "eitinject": ["--pid", "--files", "--ts-id", "--time", "--actual",
                   "--default-charset", "--bitrate", "--poll-interval",
-                  "--wait-first-batch"],
+                  "--wait-first-batch", "--lazy-schedule-update"],
     "regulate": ["--bitrate"],
 }
 USED_OUTPUT_OPTIONS = {

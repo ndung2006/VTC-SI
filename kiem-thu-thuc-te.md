@@ -563,11 +563,41 @@ Chỗ này không phải chuyện bắt chước. EIT schedule sub-table `0x50` 
 nhau bốn tiếng **đều** bắt đầu đúng `00:00:00` UTC — không phải nửa đêm Hà Nội
 (17:00 UTC).
 
-Đã sửa ở FR-98. Giá phải trả là số sự kiện tăng chừng 46 % (521 → 759 đo lúc
-07:00 UTC), PID 18 từ ~80 lên ~117 kbps, còn xa trần 400 kbps.
+Đã sửa ở FR-98 — nhưng **một mình nó không đổi được gì trên sóng**, và đây là
+chỗ dễ nhầm nhất trong cả chuỗi này.
 
-Kiểm bằng chính dòng `lich tu` trong báo cáo `so-eit.py`: mép đầu của ta phải
-là `00:00:00`, giống Barrowa.
+### `eitinject` lọc lại một lần nữa
+
+Đo ngay sau khi sửa: bảng ta sinh ra bắt đầu `2026-09-14 23:45` với **802** sự
+kiện, còn bản thu trên sóng bắt đầu `06:45` với **466**. Ba trăm ba mươi sáu sự
+kiện được nạp vào mà không bao giờ phát, và `06:45` chính là chương trình đang
+chạy lúc thu.
+
+Mặc định `eitinject` **gỡ ngay** một sự kiện vừa kết thúc. Cờ
+`--lazy-schedule-update` giữ nó lại cho tới khi hết phân đoạn ba giờ đang chạy.
+
+Hai thứ phải đi cùng nhau: không có FR-98 thì sự kiện của phân đoạn hiện tại
+chưa bao giờ được nạp, nên cờ lazy cũng không có gì để giữ.
+
+### Trần không vượt qua được
+
+Cờ đó đưa ta tới **mép phân đoạn** (`06:00`), còn Barrowa giữ từ **đầu ngày**
+(`00:00`). TSDuck không có tuỳ chọn nào cho cả ngày. Nên chênh lệch tối đa ba
+giờ là mức gần nhất đạt được mà vẫn dùng bộ sinh EIT của TSDuck — muốn bằng
+đúng Barrowa thì phải tự sinh EIT, đổi lấy một rủi ro lớn hơn nhiều so với cái
+được.
+
+### Đừng suy hành vi này ra hành vi kia
+
+`eitinject` **quên** chương trình đã qua, nhưng **không bao giờ quên** dịch vụ
+đã rút khỏi lịch (FR-94). Hai hành vi ngược nhau trong cùng một plugin. Biết một
+cái rồi đoán cái kia là sai.
+
+### Kiểm
+
+Đọc dòng `lich tu` trong báo cáo `so-eit.py` của **bản thu**, không phải của
+bảng sinh ra: mép đầu phải rơi đúng mốc phân đoạn — `00:00`, `03:00`, `06:00`,
+`09:00`… chứ không phải một giờ lẻ.
 
 ---
 

@@ -182,6 +182,15 @@ class TestAgainstInstalledTsduck(unittest.TestCase):
                 missing = B.missing_options(self._help("-O", plugin), wanted)
                 self.assertEqual(missing, [], f"{plugin}: thieu {missing}")
 
+    def test_lazy_schedule_update_is_on_the_command_line(self) -> None:
+        """Không có cờ này thì `eitinject` gỡ ngay chương trình vừa kết thúc.
+
+        Đo được: bảng ta sinh ra bắt đầu 00:00 UTC (FR-98) nhưng trên sóng bắt
+        đầu 06:45 — đúng chương trình đang chạy lúc thu. 336 trên 802 sự kiện
+        không lên sóng. Cờ này đưa được tới mép phân đoạn ba giờ.
+        """
+        self.assertIn("--lazy-schedule-update", B.build(_plan(), start_time=T0))
+
     def test_interval_really_does_not_exist(self) -> None:
         """Khẳng định ngược, để ghi chú trong module không trôi khỏi sự thật.
 
