@@ -251,6 +251,24 @@ def cmd_epg(args) -> int:
         for e in result.rejected[:5]:
             print(f"   dich vu {e.service_id}  {e.start_utc:%Y-%m-%d %H:%M}  "
                   f"{e.duration}  {e.name[:40]!r}")
+    if result.suspect:
+        # Bao ra, KHONG tu vut. Xem `window.far_future`.
+        #
+        # Canh bao nay noi ve phan lich NGOAI cua so, nen no im lang trong
+        # nhieu ngay roi bong keu — dung hom phan rac do sap lot vao cua so.
+        # Do la chu y: keu som thi nguoi truc con kip bao ben cap lich.
+        theo_kenh: dict[int, int] = {}
+        for e in result.suspect:
+            theo_kenh[e.service_id] = theo_kenh.get(e.service_id, 0) + 1
+        dau = min(e.start_utc for e in result.suspect)
+        print(f"\nCANH BAO: {len(result.suspect)} su kien nam SAU mot khoang "
+              f"trong dai trong lich, som nhat {dau:%Y-%m-%d %H:%M} UTC.")
+        print("   theo dich vu: "
+              + ", ".join(f"{k}={v}" for k, v in sorted(theo_kenh.items())))
+        print("   Gan nhu chac chan la loi nhap lieu ben cap lich. Chung CHUA "
+              "len song vi nam ngoai cua so,")
+        print(f"   nhung se lot vao khi ngay do con cach hien tai duoi "
+              f"{args.depth} gio. Bao ben cap lich truoc do.")
     if thin:
         # Nguong phai dat DUOI do sau thuc te dang co. Neu khong, canh bao keu
         # cho moi kenh, moi gio, mai mai — va mot canh bao luon keu la mot

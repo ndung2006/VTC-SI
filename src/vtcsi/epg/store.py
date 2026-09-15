@@ -42,6 +42,8 @@ class BuildResult:
     files: tuple[Path, ...]
     ts_id: int
     original_network_id: int
+    suspect: tuple[Event, ...] = ()
+    """Phần lịch nằm sau một khoảng trống dài — xem ``window.far_future``."""
 
     @property
     def services(self) -> tuple[int, ...]:
@@ -109,12 +111,18 @@ def build(
             + ", ".join(str(t) for t in sorted(ts_ids))
             + " — moi TS mot hop thu rieng")
 
-    merged = window.build([(x.events, x.coverage) for x in loaded],
-                          now_utc, depth_hours, mapping=mapping)
+    dot = [window.remap((x.events, x.coverage), mapping or {}) for x in loaded]
+
+    # Do phan dang ngo TRUOC khi cat cua so. Cat roi moi do thi canh bao chi
+    # hien ra dung hom rac len song — muon mat tam ngay.
+    suspect = window.far_future(window.merge(*dot), now_utc)
+
+    merged = window.build(dot, now_utc, depth_hours)
     keep, rejected = window.reject_overlong(merged)
     return BuildResult(
         events=eventid.assign_all(keep),
         rejected=rejected,
+        suspect=suspect,
         files=tuple(x.path for x in loaded),
         ts_id=loaded[0].ts_id,
         original_network_id=loaded[0].original_network_id,

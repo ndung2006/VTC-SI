@@ -186,6 +186,49 @@ def only_services(
     return keep, bo
 
 
+KHOANG_TRONG = timedelta(days=2)
+"""Khoảng trống đủ dài để nghi phần lịch sau nó là rác — xem ``far_future``."""
+
+
+def far_future(
+    events: tuple[Event, ...], now_utc: datetime,
+    gap: timedelta = KHOANG_TRONG,
+) -> tuple[Event, ...]:
+    """Sự kiện nằm **sau một khoảng trống dài** trong lịch. Nghi là lỗi nguồn.
+
+    Trả về phần đáng ngờ để báo ra, **không** tự vứt — cùng khuôn với
+    ``reject_overlong`` và ``only_services``, và vì lý do như nhau: một phép
+    đoán không được phép lặng lẽ xoá lịch thật.
+
+    Có thật, file lịch ngày 2026-09-14: 292 sự kiện đề ngày 2 và 3 tháng 10,
+    **toàn bộ thuộc dịch vụ 838**, mỗi cái lặp bốn lần, trong khi từ 16/9 tới
+    1/10 không có gì. Bên cấp lịch xác nhận đó là lỗi nhập liệu. Cửa sổ 192
+    giờ che được hôm nay, nhưng **chỉ tới khoảng 24/9**: từ hôm đó ngày 2/10
+    lọt vào cửa sổ và rác lên sóng như lịch thật.
+
+    Vì sao đo trên **toàn mạng** chứ không từng kênh: một kênh nghỉ hai ngày
+    là chuyện bình thường, còn *cả mười tám kênh* cùng không có gì trong hai
+    ngày thì không.
+
+    Đo trước khi cắt cửa sổ, nếu không thì phần đáng ngờ đã bị cắt mất và cảnh
+    báo chỉ hiện ra đúng hôm nó lên sóng — muộn mất tám ngày.
+
+    Chỉ xét phần **chưa kết thúc**. Hộp thư giữ cả lịch cũ, nên quá khứ đầy
+    khoảng trống hợp lệ — hộp thư thật có file ngày 24/8 rồi nhảy sang 8/9.
+    Lấy khoảng trống đầu tiên trên toàn bộ dữ liệu thì cảnh báo kêu 7101 sự
+    kiện trên cả 45 kênh, tức là kêu về mọi thứ, tức là không nói gì. Lịch đã
+    qua thì dù có thủng cũng không lên sóng được nữa.
+    """
+    if now_utc.tzinfo is None:
+        raise ValueError("now_utc phai co mui gio")
+    xs = sorted((e for e in events if e.end_utc > now_utc),
+                key=lambda e: e.start_utc)
+    for i in range(1, len(xs)):
+        if xs[i].start_utc - xs[i - 1].start_utc >= gap:
+            return _sorted(xs[i:])
+    return ()
+
+
 MAX_EVENT_DURATION = timedelta(hours=23, minutes=59, seconds=59)
 """Trần của trường ``duration`` trong EIT: BCD ``HHMMSS``, không quá 23:59:59."""
 

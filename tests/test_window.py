@@ -190,6 +190,61 @@ class TestDoiSoDichVu(unittest.TestCase):
         self.assertEqual(bo, ())
 
 
+class TestLichSauKhoangTrong(unittest.TestCase):
+    """``far_future`` — báo phần lịch nằm sau một khoảng trống dài.
+
+    Thật: file lịch 2026-09-14 mang 292 sự kiện đề ngày 2 và 3 tháng 10, toàn
+    bộ thuộc dịch vụ 838, trong khi 16/9 tới 1/10 trống trơn. Bên cấp lịch xác
+    nhận là lỗi nhập liệu.
+    """
+
+    TRUOC = T0 - timedelta(hours=1)
+
+    def test_a_continuous_schedule_raises_nothing(self) -> None:
+        lien = tuple(ev(801, T0 + timedelta(hours=i), 60) for i in range(48))
+        self.assertEqual(W.far_future(lien, self.TRUOC), ())
+
+    def test_it_reports_what_sits_after_the_gap(self) -> None:
+        than = tuple(ev(801, T0 + timedelta(hours=i), 60) for i in range(24))
+        rac = (ev(838, T0 + timedelta(days=17), 60, "rac"),)
+        out = W.far_future(than + rac, self.TRUOC)
+        self.assertEqual([e.name for e in out], ["rac"])
+
+    def test_it_does_not_drop_anything(self) -> None:
+        """Báo ra, không tự vứt — cùng khuôn với ``reject_overlong``."""
+        than = tuple(ev(801, T0 + timedelta(hours=i), 60) for i in range(24))
+        rac = (ev(838, T0 + timedelta(days=17), 60),)
+        giu = W.build([than + rac], self.TRUOC, depth_hours=24 * 30)
+        self.assertEqual(len(giu), 25)
+
+    def test_gaps_in_the_past_are_ignored(self) -> None:
+        """Hộp thư giữ cả lịch cũ; quá khứ đầy khoảng trống hợp lệ.
+
+        Không lọc quá khứ thì trên hộp thư thật cảnh báo kêu 7101 sự kiện trên
+        cả 45 kênh — kêu về mọi thứ là không nói gì.
+        """
+        cu_ky = (ev(801, T0 - timedelta(days=20), 60),)
+        nay = tuple(ev(801, T0 + timedelta(hours=i), 60) for i in range(24))
+        self.assertEqual(W.far_future(cu_ky + nay, self.TRUOC), ())
+
+    def test_an_event_in_progress_counts_as_present(self) -> None:
+        dang = (ev(801, T0 - timedelta(minutes=30), 60),)
+        sau = tuple(ev(801, T0 + timedelta(hours=i), 60) for i in range(1, 24))
+        self.assertEqual(W.far_future(dang + sau, T0), ())
+
+    def test_naive_now_refused(self) -> None:
+        with self.assertRaises(ValueError):
+            W.far_future((ev(801, T0, 60),), datetime(2026, 9, 8))
+
+    def test_the_real_gap_is_two_days(self) -> None:
+        """Một ngày rưỡi chưa phải khoảng trống; hai ngày thì phải."""
+        than = (ev(801, T0, 60),)
+        gan = (ev(801, T0 + timedelta(days=1, hours=12), 60),)
+        xa = (ev(801, T0 + timedelta(days=2, hours=1), 60),)
+        self.assertEqual(W.far_future(than + gan, self.TRUOC), ())
+        self.assertEqual(len(W.far_future(than + xa, self.TRUOC)), 1)
+
+
 class TestClip(unittest.TestCase):
     def test_keeps_event_in_progress(self) -> None:
         """Sự kiện đang phát dở vẫn cần cho p/f, không được cắt."""
