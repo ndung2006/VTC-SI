@@ -6,6 +6,7 @@ Không có cơ sở dữ liệu, không có file trạng thái ẩn. Hệ quả 
 
 from __future__ import annotations
 
+import os
 import shutil
 import tempfile
 import unittest
@@ -39,6 +40,39 @@ class StoreCase(unittest.TestCase):
 
     def tearDown(self) -> None:
         self.tmp.cleanup()
+
+
+class TestThuTuNhan(StoreCase):
+    """Thứ tự nạp phải là thứ tự **nhận**, không phải thứ tự **tên**.
+
+    Dựng lại đúng tình huống trên máy phát ngày 2026-09-15: file tên
+    ``2026-09-15.xml`` là đợt CŨ (nhận 08:29), file tên ``2026-09-14.xml`` là
+    đợt MỚI (nhận 09:37). Sắp theo tên thì đợt cũ thắng — ngược hoàn toàn.
+    """
+
+    def _dat(self, ten: str, shift_days: int, mtime: float) -> Path:
+        p = self.inbox / ten
+        _day_file(SAMPLE, p, shift_days)
+        os.utime(p, (mtime, mtime))
+        return p
+
+    def test_newest_file_is_loaded_last_even_if_its_name_sorts_first(self) -> None:
+        self._dat("2026-09-15.xml", 0, 1_000_000)   # ten dung sau, nhan TRUOC
+        self._dat("2026-09-14.xml", 1, 2_000_000)   # ten dung truoc, nhan SAU
+        thu_tu = [x.path.name for x in store.load_all(self.inbox)]
+        self.assertEqual(thu_tu, ["2026-09-15.xml", "2026-09-14.xml"])
+
+    def test_same_mtime_falls_back_to_name_so_it_stays_deterministic(self) -> None:
+        self._dat("b.xml", 0, 1_500_000)
+        self._dat("a.xml", 1, 1_500_000)
+        thu_tu = [x.path.name for x in store.load_all(self.inbox)]
+        self.assertEqual(thu_tu, ["a.xml", "b.xml"])
+
+    def test_coverage_reaches_the_window(self) -> None:
+        """Phạm vi tự khai phải đi hết từ file tới hàm gộp, không rơi dọc đường."""
+        self._dat("2026-09-15.xml", 0, 1_000_000)
+        nap = store.load_all(self.inbox)
+        self.assertTrue(nap[0].coverage)
 
 
 class TestEmptyAndBroken(StoreCase):

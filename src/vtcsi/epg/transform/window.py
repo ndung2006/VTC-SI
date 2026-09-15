@@ -1,8 +1,11 @@
 """Gộp nhiều file lịch theo ngày thành cửa sổ 192 giờ — FR-52.
 
-Nguồn phát hành **một ngày mỗi file** (RO-13), trong khi EIT schedule cần giữ
-tám ngày cùng lúc. Module này là chỗ ghép chúng lại, và cũng là chỗ tính được
-lịch còn sâu bao nhiêu cho cảnh báo ở FR-31.
+Nguồn phát hành từng đợt — mỗi đợt vài ngày, có chồng lấn nhau — trong khi
+EIT schedule cần giữ tám ngày cùng lúc. Module này là chỗ ghép chúng lại, và
+cũng là chỗ tính được lịch còn sâu bao nhiêu cho cảnh báo ở FR-31.
+
+Chỗ khó duy nhất ở đây là **ai đè ai**, và nó đã từng sai trên sóng. Đọc
+``merge`` trước khi sửa bất cứ gì trong file này.
 
 Hàm thuần. ``now_utc`` **luôn là tham số truyền vào**, không bao giờ gọi đồng
 hồ — nếu không thì không test được, và hai thực thể ngang hàng sẽ cắt cửa sổ ở
@@ -14,11 +17,15 @@ from __future__ import annotations
 from collections import defaultdict
 from datetime import datetime, timedelta
 
-from vtcsi.model.entities import Event
+from vtcsi.model.entities import Coverage, Event
 
 WINDOW_HOURS = 192
-"""Tám ngày — độ sâu Barrowa đang dùng, và cũng là dung lượng của hai sub-table
-EIT schedule, mỗi cái phủ bốn ngày."""
+"""Tám ngày — dung lượng của hai sub-table EIT schedule, mỗi cái phủ bốn ngày.
+
+Đây là **trần**, không phải độ sâu thật. Bản trước ghi "độ sâu Barrowa đang
+dùng"; đo ngày 2026-09-15 thì Barrowa cũng chỉ sâu tới 16:59 cùng ngày, vì nó
+đọc đúng file lịch mà ta đọc và file đó dừng ở đấy. Độ sâu thật do bên cấp
+lịch quyết định, không do con số này."""
 
 
 def _key(ev: Event) -> tuple[int, datetime]:
@@ -31,15 +38,48 @@ def _sorted(events) -> tuple[Event, ...]:
     return tuple(sorted(events, key=lambda e: (e.service_id, e.start_utc)))
 
 
-def merge(*batches: tuple[Event, ...]) -> tuple[Event, ...]:
-    """Gộp nhiều đợt nạp, **đợt sau thắng** khi trùng khoá.
+#: Một đợt giao: các sự kiện, kèm phạm vi đợt đó **tự khai** là mình phụ trách.
+Batch = tuple[Event, ...] | tuple[tuple[Event, ...], tuple[Coverage, ...]]
 
-    Đợt sau thắng vì một file phát hành lại thường là bản sửa: đổi giờ, đổi
-    tên chương trình. Ai nạp cuối là ai nói lời cuối.
+
+def _tach(batch: Batch) -> tuple[tuple[Event, ...], tuple[Coverage, ...]]:
+    """Nhận cả dạng chỉ-sự-kiện lẫn dạng có phạm vi."""
+    if (len(batch) == 2 and isinstance(batch[0], tuple)
+            and isinstance(batch[1], tuple)):
+        return batch  # type: ignore[return-value]
+    return batch, ()   # type: ignore[return-value]
+
+
+def merge(*batches: Batch) -> tuple[Event, ...]:
+    """Gộp nhiều đợt giao, **đợt sau thắng**.
+
+    Hai mức thắng, và sự khác nhau giữa chúng là chỗ đã gây lỗi trên sóng.
+
+    **Mức yếu — trùng khoá.** Cùng dịch vụ, cùng giờ bắt đầu thì bản sau đè lên
+    bản trước. Đủ cho việc sửa tên chương trình, nhưng **không** đủ cho việc
+    dời giờ: dời giờ thì bản cũ và bản mới thành hai khoá khác nhau, cả hai
+    cùng sống. Sau đó ``drop_overlaps`` giữ cái bắt đầu sớm hơn — tức giữ đúng
+    bản **cũ** và vứt bản mới. Đo ngày 2026-09-15 trên máy phát: 290 trong 670
+    sự kiện lên sóng không còn tồn tại trong đợt giao mới nhất, trong khi
+    Barrowa đọc cùng nguồn chỉ lệch 31 trên 740.
+
+    **Mức mạnh — theo phạm vi tự khai.** Đợt nào khai ``start_time``/
+    ``end_time`` trên ``<SERVICE>`` thì nó **thay trọn** khoảng đó cho dịch vụ
+    đó: mọi sự kiện cũ nằm trong khoảng bị gỡ trước khi đổ sự kiện mới vào.
+    Đây mới đúng nghĩa "đây là lịch của kênh này cho khoảng này", và cũng là
+    cách Barrowa làm — nó tách ra ``schedule_<kênh>.xml`` rồi thay nguyên file.
+
+    Đợt **không** khai phạm vi thì chỉ được mức yếu. Cố ý: suy phạm vi ra từ
+    chính các sự kiện là tự cho mình quyền xoá dữ liệu mà nguồn chưa hề tuyên
+    bố phụ trách, và một file lỗi chỉ còn ba sự kiện sẽ quét sạch cả ngày.
     """
     out: dict[tuple[int, datetime], Event] = {}
     for batch in batches:
-        for ev in batch:
+        events, coverage = _tach(batch)
+        if coverage:
+            out = {k: ev for k, ev in out.items()
+                   if not any(c.chua(ev) for c in coverage)}
+        for ev in events:
             out[_key(ev)] = ev
     return _sorted(out.values())
 
@@ -88,7 +128,7 @@ def drop_overlaps(events: tuple[Event, ...]) -> tuple[Event, ...]:
 
 
 def build(
-    batches: tuple[tuple[Event, ...], ...] | list[tuple[Event, ...]],
+    batches: tuple[Batch, ...] | list[Batch],
     now_utc: datetime,
     depth_hours: int = WINDOW_HOURS,
 ) -> tuple[Event, ...]:

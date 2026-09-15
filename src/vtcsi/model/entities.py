@@ -262,11 +262,38 @@ class Event:
 
 
 @dataclass(frozen=True, slots=True)
+class Coverage:
+    """Khoảng thời gian một đợt giao lịch **tự khai** là mình phủ.
+
+    Nguồn ghi nó ngay trên thẻ ``<SERVICE>``::
+
+        <SERVICE id="801" start_time="2026-09-14T00:10:00+07:00"
+                          end_time="2026-09-15T23:59:00+07:00" ...>
+
+    Không có nó thì không thể phân biệt hai trường hợp khác hẳn nhau: *đợt mới
+    không nhắc tới chương trình này vì nó đã bị huỷ*, và *đợt mới không nhắc
+    tới nó vì nó nằm ngoài khoảng đợt này phụ trách*. Bản trước bỏ qua hai
+    thuộc tính này nên phải gộp từng sự kiện một, và chương trình bị dời giờ
+    thì bản cũ sống sót cạnh bản mới.
+    """
+
+    service_id: int
+    start_utc: datetime
+    end_utc: datetime
+
+    def chua(self, ev: "Event") -> bool:
+        """Sự kiện này có thuộc phạm vi đợt giao không."""
+        return (ev.service_id == self.service_id
+                and self.start_utc <= ev.start_utc <= self.end_utc)
+
+
+@dataclass(frozen=True, slots=True)
 class Schedule:
     network_id: int
     ts_id: int
     original_network_id: int
     events: tuple[Event, ...] = ()
+    coverage: tuple[Coverage, ...] = ()
 
 
 # ----------------------------------------------------------------- toàn cấu hình

@@ -14,7 +14,7 @@ from pathlib import Path
 from vtcsi.epg.transform import eventid as EID
 from vtcsi.epg.transform import parse as P
 from vtcsi.epg.transform import window as W
-from vtcsi.model.entities import Event
+from vtcsi.model.entities import Coverage, Event
 
 SAMPLE = Path(__file__).parent / "data" / "epg-sample.xml"
 REAL = Path(__file__).parent.parent / "Bang mau" / "File xml đầu vào cho EPG.xml"
@@ -59,6 +59,16 @@ class TestMerge(unittest.TestCase):
         b = (ev(801, T0 + timedelta(minutes=30), 30),)
         self.assertEqual(len(W.merge(a, b)), 2)
 
+    def test_a_rescheduled_programme_leaves_the_old_one_behind(self) -> None:
+        """Không có phạm vi thì dời giờ để lại rác — lỗi đã lên sóng thật."""
+        cu = (ev(801, T0, 60, "ban cu"),)
+        moi = (ev(801, T0 + timedelta(minutes=30), 60, "ban moi"),)
+        out = W.merge(cu, moi)
+        self.assertEqual(len(out), 2)
+        # Và `drop_overlaps` sau đó giữ đúng bản CŨ, vứt bản mới.
+        con_lai = W.drop_overlaps(out)
+        self.assertEqual([e.name for e in con_lai], ["ban cu"])
+
     def test_same_start_different_service_kept_apart(self) -> None:
         self.assertEqual(len(W.merge((ev(801, T0, 30),), (ev(802, T0, 30),))), 2)
 
@@ -66,6 +76,59 @@ class TestMerge(unittest.TestCase):
         a = (ev(802, T0, 30), ev(801, T0, 30))
         b = (ev(801, T0, 30), ev(802, T0, 30))
         self.assertEqual(W.merge(a), W.merge(b))
+
+
+def phu(service_id: int, dau: datetime, gio: int) -> Coverage:
+    return Coverage(service_id=service_id, start_utc=dau,
+                    end_utc=dau + timedelta(hours=gio))
+
+
+class TestMergeTheoPhamVi(unittest.TestCase):
+    """Đợt giao khai phạm vi thì nó **thay trọn** khoảng đó."""
+
+    def test_rescheduled_programme_replaces_instead_of_duplicating(self) -> None:
+        cu = (ev(801, T0, 60, "ban cu"),)
+        moi = ((ev(801, T0 + timedelta(minutes=30), 60, "ban moi"),),
+               (phu(801, T0, 24),))
+        out = W.merge(cu, moi)
+        self.assertEqual([e.name for e in out], ["ban moi"])
+
+    def test_a_cancelled_programme_disappears(self) -> None:
+        """Đợt mới phủ khoảng đó mà không nhắc tới nó nữa: nó phải biến mất."""
+        cu = (ev(801, T0, 60, "da huy"),)
+        out = W.merge(cu, ((), (phu(801, T0, 24),)))
+        self.assertEqual(out, ())
+
+    def test_it_only_touches_the_declared_service(self) -> None:
+        cu = (ev(801, T0, 60), ev(802, T0, 60))
+        out = W.merge(cu, ((), (phu(801, T0, 24),)))
+        self.assertEqual([e.service_id for e in out], [802])
+
+    def test_events_outside_the_declared_window_survive(self) -> None:
+        """Đợt mới phụ trách hôm nay thì không được đụng tới ngày mai."""
+        cu = (ev(801, T0, 60, "hom nay"),
+              ev(801, T0 + timedelta(days=3), 60, "ngay kia"))
+        out = W.merge(cu, ((), (phu(801, T0, 24),)))
+        self.assertEqual([e.name for e in out], ["ngay kia"])
+
+    def test_batch_without_coverage_deletes_nothing(self) -> None:
+        """Không khai phạm vi thì không được quyền xoá — file lỗi không quét sạch ngày."""
+        cu = tuple(ev(801, T0 + timedelta(hours=i), 60) for i in range(8))
+        out = W.merge(cu, (ev(801, T0 + timedelta(hours=20), 60),))
+        self.assertEqual(len(out), 9)
+
+    def test_declared_window_is_inclusive_at_both_ends(self) -> None:
+        cu = (ev(801, T0, 10), ev(801, T0 + timedelta(hours=24), 10))
+        out = W.merge(cu, ((), (phu(801, T0, 24),)))
+        self.assertEqual(out, ())
+
+    def test_real_file_declares_coverage(self) -> None:
+        sched = P.parse(SAMPLE.read_text(encoding="utf-8"))
+        self.assertTrue(sched.coverage, "file mau phai khai start_time/end_time")
+        for c in sched.coverage:
+            self.assertLess(c.start_utc, c.end_utc)
+            self.assertTrue(any(c.chua(e) for e in sched.events),
+                            f"pham vi cua {c.service_id} khong chua su kien nao")
 
 
 class TestClip(unittest.TestCase):

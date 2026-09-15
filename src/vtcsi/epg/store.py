@@ -17,7 +17,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 
 from vtcsi.epg.transform import eventid, parse, window
-from vtcsi.model.entities import Event
+from vtcsi.model.entities import Coverage, Event
 
 PATTERN = "*.xml"
 
@@ -30,6 +30,7 @@ class Loaded:
     ts_id: int
     original_network_id: int
     events: tuple[Event, ...]
+    coverage: tuple[Coverage, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -52,21 +53,34 @@ class StoreError(ValueError):
 
 
 def load_all(inbox: Path) -> list[Loaded]:
-    """Đọc mọi file lịch trong hộp thư, theo thứ tự tên file.
+    """Đọc mọi file lịch trong hộp thư, theo **thứ tự nhận được**.
 
-    Thứ tự tên file quyết định ai ghi đè ai khi trùng khoá, nên đặt tên theo
-    ngày là đủ để "bản sửa nạp sau thắng" hoạt động đúng.
+    Thứ tự này quyết định ai ghi đè ai, nên nó phải là thứ tự giao chứ không
+    phải thứ tự tên. Bản trước sắp theo tên file và chú thích rằng "đặt tên
+    theo ngày là đủ" — giả định đó sai trên máy phát thật:
+
+        -rw-r--r-- 1 root root 1634126 Sep 15 09:37 2026-09-14.xml
+        -rw-r--r-- 1 root root  947534 Sep 15 08:29 2026-09-15.xml
+
+    Tên file là ngày lịch, **không phải** ngày giao. Sắp theo tên thì file
+    ``2026-09-15.xml`` — đợt CŨ, nhận lúc 08:29 — đứng sau và thắng đợt mới
+    nhận lúc 09:37. Đúng ngược.
+
+    Dùng ``st_mtime``, lấy tên file làm mốc phân định khi trùng mili giây để
+    kết quả vẫn tất định. Hộp thư nằm ngoài git (``.gitignore``) nên không có
+    chuyện ``git checkout`` dập phẳng mọi mtime.
     """
     if not inbox.is_dir():
         raise StoreError(f"hop thu khong ton tai: {inbox}")
     out = []
-    for path in sorted(inbox.glob(PATTERN)):
+    for path in sorted(inbox.glob(PATTERN), key=lambda p: (p.stat().st_mtime, p.name)):
         sched = parse.parse(path.read_text(encoding="utf-8"))
         out.append(Loaded(
             path=path,
             ts_id=sched.ts_id,
             original_network_id=sched.original_network_id,
             events=sched.events,
+            coverage=sched.coverage,
         ))
     if not out:
         raise StoreError(f"hop thu rong: {inbox}")
@@ -94,7 +108,7 @@ def build(
             + ", ".join(str(t) for t in sorted(ts_ids))
             + " — moi TS mot hop thu rieng")
 
-    merged = window.build([x.events for x in loaded], now_utc, depth_hours)
+    merged = window.build([(x.events, x.coverage) for x in loaded], now_utc, depth_hours)
     keep, rejected = window.reject_overlong(merged)
     return BuildResult(
         events=eventid.assign_all(keep),

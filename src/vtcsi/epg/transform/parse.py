@@ -13,7 +13,7 @@ import re
 import xml.etree.ElementTree as ET
 from datetime import datetime, timedelta, timezone
 
-from vtcsi.model.entities import Event, RunningStatus, Schedule
+from vtcsi.model.entities import Coverage, Event, RunningStatus, Schedule
 
 _DURATION = re.compile(r"^PT(\d+)H(\d+)M(\d+)S$")
 
@@ -115,8 +115,19 @@ def parse(xml_text: str) -> Schedule:
         raise ParseError("thieu <TRANSPORT_STREAM>")
 
     events: list[Event] = []
+    coverage: list[Coverage] = []
     for service in ts.findall("SERVICE"):
         service_id = int(_require(service, "id"))
+        # Phạm vi đợt giao — xem `Coverage`. Khuyết thì bỏ qua, KHÔNG suy ra
+        # từ chính các sự kiện: suy ra là tự cho mình quyền xoá dữ liệu mà
+        # nguồn chưa hề tuyên bố phụ trách.
+        dau, cuoi = service.get("start_time"), service.get("end_time")
+        if dau and cuoi:
+            coverage.append(Coverage(
+                service_id=service_id,
+                start_utc=parse_time_utc(dau),
+                end_utc=parse_time_utc(cuoi),
+            ))
         for ev in service.findall("EVENT"):
             name, name_enc = _text_of(ev, "NAME")
             if name_enc is None:
@@ -147,4 +158,5 @@ def parse(xml_text: str) -> Schedule:
         ts_id=int(_require(ts, "id")),
         original_network_id=int(_require(ts, "on_id")),
         events=tuple(events),
+        coverage=tuple(sorted(coverage, key=lambda c: (c.service_id, c.start_utc))),
     )
