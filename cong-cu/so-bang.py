@@ -83,7 +83,25 @@ def duyet(a: ET.Element, b: ET.Element, ten_a: str, ten_b: str,
             if na != nb:
                 print(f"      {t}: {ten_a}={na} {ten_b}={nb}")
     for i, (x, y) in enumerate(zip(ca, cb)):
-        duyet(x, y, ten_a, ten_b, f"{duong}/{a.tag}[{i}]")
+        duyet(x, y, ten_a, ten_b, f"{duong}/{a.tag}{_nhan(x, i)}")
+
+
+#: Thuộc tính đủ để gọi tên một phần tử, theo thứ tự ưu tiên.
+DINH_DANH = ("service_id", "bouquet_id", "transport_stream_id",
+             "original_network_id", "network_id")
+
+
+def _nhan(el: ET.Element, i: int) -> str:
+    """Nhãn cho một phần tử con: số hiệu nếu có, không thì vị trí.
+
+    ``/SDT[4]`` không đi sửa được — phải tra ngược ra kênh nào. ``/SDT(0x0325)``
+    thì đi thẳng tới đúng dịch vụ. Vị trí chỉ là đường lui khi phần tử không
+    mang số hiệu nào.
+    """
+    for k in DINH_DANH:
+        if k in el.attrib:
+            return f"({el.attrib[k]})"
+    return f"[{i}]"
 
 
 def main() -> int:
