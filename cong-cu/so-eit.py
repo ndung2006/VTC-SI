@@ -9,14 +9,23 @@ EIT thay đổi theo từng phút, nên so byte không có nghĩa. Nhưng vẫn 
 * Ta phát **những loại bảng nào** — p/f, lịch ngày 0–3, lịch ngày 4–7?
 * Lịch của ta **sâu bao nhiêu** so với sóng?
 
-Cách dùng, sau khi đã trích EIT ra XML bằng ``tsp -P tables --pid 18
---all-sections --xml``::
+Trích EIT ra XML **phải** có hai cờ này::
 
-    python3 cong-cu/so-eit.py /data/eit-ta.xml /data/eit-br.xml
+    tsp -I file ban-thu.ts -P tables --pid 18 --fill-eit --pack-and-flush         --xml eit.xml -O drop
 
-Nhớ ``--all-sections``. Thiếu nó thì TSDuck chỉ báo bảng ĐẦY ĐỦ, và một luồng
-EIT hoàn toàn tốt sẽ ra file rỗng — xem mục *Soi EIT* trong
-``kiem-thu-thuc-te.md``.
+    python3 cong-cu/so-eit.py eit-ta.xml eit-br.xml
+
+Vì sao hai cờ đó. ``-P tables`` chỉ xuất bảng **đầy đủ mọi section**. EIT p/f
+khai hai section — ``0`` chương trình đang phát, ``1`` chương trình kế tiếp —
+và bảng lịch phân đoạn thường không truyền các section rỗng ở cuối. Thiếu cờ
+thì file XML ra **rỗng**, và một luồng EIT hoàn toàn tốt trông y hệt một luồng
+không có EIT.
+
+``--all-sections`` thì **không** dùng được ở đây: TSDuck từ chối nó khi đầu ra
+là XML hoặc JSON. Nó chỉ dành cho đầu ra dạng văn bản.
+
+Bảng do ``--pack-and-flush`` đóng gói có thể thiếu section — chỉ dùng để
+**phân tích**, đừng bao giờ phát lại chúng.
 """
 
 from __future__ import annotations
