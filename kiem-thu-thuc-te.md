@@ -551,15 +551,23 @@ Cách đo, cả ba đều bằng `cong-cu/so-eit.py`:
   `PHAT co, NGUON KHONG` phải rỗng.
 * **so với Barrowa** — hai bản thu, hai hệ, cùng thời điểm.
 
-### Một khác biệt còn lại, và nó là chủ ý
+### Khác biệt cuối cùng, đã đóng: giữ trọn ngày 0
 
 Barrowa phát 705 sự kiện, ta 485. Nhìn dòng `lich tu` là ra: Barrowa bắt đầu từ
-**00:00**, ta từ **thời điểm hiện tại**. Ta cắt bỏ chương trình đã phát xong
-(`window.clip` chỉ giữ sự kiện `end_utc > now`), Barrowa giữ cả ngày.
+**00:00**, ta từ thời điểm hiện tại — ta cắt bỏ chương trình đã phát xong trong
+ngày.
 
-Chưa đổi vì chưa có ai yêu cầu, nhưng phải biết sự khác biệt này tồn tại: nếu
-đầu thu ở nhà khán giả cho phép cuộn ngược lại chương trình đã chiếu trong ngày
-thì hai hệ sẽ hiện khác nhau, và đó là thứ người xem thấy được.
+Chỗ này không phải chuyện bắt chước. EIT schedule sub-table `0x50` phủ **ngày
+0–3**, ngày 0 bắt đầu **nửa đêm UTC** và chia thành phân đoạn ba giờ. Cắt ở
+`now` là phát ra một ngày 0 khuyết đầu. Đo cho chắc: hai bản thu Barrowa cách
+nhau bốn tiếng **đều** bắt đầu đúng `00:00:00` UTC — không phải nửa đêm Hà Nội
+(17:00 UTC).
+
+Đã sửa ở FR-98. Giá phải trả là số sự kiện tăng chừng 46 % (521 → 759 đo lúc
+07:00 UTC), PID 18 từ ~80 lên ~117 kbps, còn xa trần 400 kbps.
+
+Kiểm bằng chính dòng `lich tu` trong báo cáo `so-eit.py`: mép đầu của ta phải
+là `00:00:00`, giống Barrowa.
 
 ---
 

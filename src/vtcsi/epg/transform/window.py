@@ -16,7 +16,7 @@ from __future__ import annotations
 
 from collections import defaultdict
 from dataclasses import replace
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from vtcsi.model.entities import Coverage, Event
 
@@ -85,20 +85,41 @@ def merge(*batches: Batch) -> tuple[Event, ...]:
     return _sorted(out.values())
 
 
+def dau_ngay_utc(now_utc: datetime) -> datetime:
+    """00:00 UTC của ngày chứa ``now_utc`` — mép đầu của "ngày 0" trong EIT."""
+    if now_utc.tzinfo is None:
+        raise ValueError("now_utc phai co mui gio")
+    return now_utc.astimezone(timezone.utc).replace(
+        hour=0, minute=0, second=0, microsecond=0)
+
+
 def clip(
     events: tuple[Event, ...],
     now_utc: datetime,
     depth_hours: int = WINDOW_HOURS,
 ) -> tuple[Event, ...]:
-    """Cắt về cửa sổ quanh ``now_utc``.
+    """Cắt về cửa sổ, mép đầu là **00:00 UTC hôm nay**, không phải ``now_utc``.
 
-    Giữ sự kiện **chưa kết thúc** — sự kiện đang phát dở vẫn cần cho p/f — và
-    **bắt đầu trước** mép cuối cửa sổ.
+    Giữ cả chương trình đã phát xong trong ngày. Nghe như lãng phí băng thông,
+    nhưng đó là cách DVB chia bảng: EIT schedule sub-table 0x50 phủ "ngày 0–3",
+    ngày 0 bắt đầu **00:00 UTC** và chia thành các phân đoạn ba giờ. Cắt ở
+    ``now_utc`` là cắt vào giữa một phân đoạn — phát ra một ngày 0 khuyết đầu.
+
+    Đo được chứ không suy: hai bản thu Barrowa cách nhau bốn tiếng đều bắt đầu
+    đúng ``00:00:00`` UTC. Không phải nửa đêm Hà Nội (17:00 UTC), mà nửa đêm
+    UTC — tức Barrowa phát trọn ngày 0. Ta thì bắt đầu từ ``now``: lúc 06:00
+    UTC ta phát 427 sự kiện, Barrowa 705.
+
+    Điều đó **người xem thấy được**: đầu thu cho cuộn ngược lại chương trình đã
+    chiếu trong ngày sẽ hiện trống ở hệ này mà đầy ở hệ kia. VTC-SI là hệ dự
+    phòng cho Barrowa, nên tiêu chuẩn là những gì Barrowa đang làm.
+
+    Mép cuối vẫn tính từ ``now_utc``: nó là **độ sâu còn lại về phía trước**,
+    và neo nó vào đầu ngày sẽ khiến cửa sổ ngắn dần đi trong ngày.
     """
-    if now_utc.tzinfo is None:
-        raise ValueError("now_utc phai co mui gio")
+    dau = dau_ngay_utc(now_utc)
     end = now_utc + timedelta(hours=depth_hours)
-    return _sorted(e for e in events if e.end_utc > now_utc and e.start_utc < end)
+    return _sorted(e for e in events if e.end_utc > dau and e.start_utc < end)
 
 
 def drop_overlaps(events: tuple[Event, ...]) -> tuple[Event, ...]:

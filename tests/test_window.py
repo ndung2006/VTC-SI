@@ -251,8 +251,8 @@ class TestClip(unittest.TestCase):
         running = ev(801, T0 - timedelta(minutes=10), 30)
         self.assertEqual(W.clip((running,), T0), (running,))
 
-    def test_drops_event_already_finished(self) -> None:
-        past = ev(801, T0 - timedelta(hours=2), 30)
+    def test_drops_event_finished_on_an_earlier_day(self) -> None:
+        past = ev(801, T0 - timedelta(hours=2), 30)   # hom truoc, T0 la 00:00 UTC
         self.assertEqual(W.clip((past,), T0), ())
 
     def test_drops_event_beyond_the_window(self) -> None:
@@ -263,6 +263,48 @@ class TestClip(unittest.TestCase):
     def test_naive_now_refused(self) -> None:
         with self.assertRaises(ValueError):
             W.clip((), datetime(2026, 9, 8))
+
+
+class TestClipGiuTronNgay(unittest.TestCase):
+    """Mép đầu cửa sổ là **00:00 UTC hôm nay**, không phải ``now``.
+
+    EIT schedule sub-table 0x50 phủ "ngày 0–3"; ngày 0 bắt đầu 00:00 UTC. Cắt
+    ở ``now`` là phát ra một ngày 0 khuyết đầu. Hai bản thu Barrowa cách nhau
+    bốn tiếng đều bắt đầu đúng 00:00:00 UTC.
+    """
+
+    TRUA = T0 + timedelta(hours=12)      # 2026-09-08 12:00 UTC
+
+    def test_a_programme_finished_earlier_today_is_kept(self) -> None:
+        xong = ev(801, T0 + timedelta(hours=2), 60)   # 02:00-03:00, da xong
+        self.assertEqual(W.clip((xong,), self.TRUA), (xong,))
+
+    def test_a_programme_from_yesterday_is_dropped(self) -> None:
+        hom_qua = ev(801, T0 - timedelta(hours=3), 60)
+        self.assertEqual(W.clip((hom_qua,), self.TRUA), ())
+
+    def test_a_programme_straddling_midnight_is_kept(self) -> None:
+        """Bắt đầu hôm qua, kết thúc hôm nay: vẫn thuộc ngày 0."""
+        vat = ev(801, T0 - timedelta(minutes=30), 60)
+        self.assertEqual(W.clip((vat,), self.TRUA), (vat,))
+
+    def test_the_far_edge_still_moves_with_now(self) -> None:
+        """Mép cuối là độ sâu CÒN LẠI; neo vào đầu ngày thì cửa sổ ngắn dần."""
+        xa = ev(801, self.TRUA + timedelta(hours=191), 30)
+        self.assertEqual(W.clip((xa,), self.TRUA), (xa,))
+
+    def test_day_start_is_utc_midnight_not_hanoi_midnight(self) -> None:
+        """Nửa đêm Hà Nội là 17:00 UTC hôm trước — khác hẳn, và Barrowa dùng UTC."""
+        self.assertEqual(W.dau_ngay_utc(self.TRUA), T0)
+
+    def test_day_start_converts_other_zones(self) -> None:
+        vn = timezone(timedelta(hours=7))
+        # 2026-09-08 09:00 gio Ha Noi = 02:00 UTC cung ngay
+        self.assertEqual(W.dau_ngay_utc(datetime(2026, 9, 8, 9, 0, tzinfo=vn)), T0)
+
+    def test_naive_now_refused(self) -> None:
+        with self.assertRaises(ValueError):
+            W.dau_ngay_utc(datetime(2026, 9, 8))
 
 
 class TestDropOverlaps(unittest.TestCase):
