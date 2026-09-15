@@ -71,6 +71,7 @@ def doc(p: Path) -> dict:
     goc = ET.parse(p).getroot()
     bang: dict[int, int] = defaultdict(int)
     su_kien: dict[int, set[str]] = defaultdict(set)
+    ngay: dict[str, set[str]] = defaultdict(set)
     moc: list[str] = []
     for eit in goc.iter("EIT"):
         n = _table_id(eit)
@@ -79,9 +80,12 @@ def doc(p: Path) -> dict:
         for e in eit.iter("event"):
             t = e.get("start_time")
             if t:
-                su_kien[sid].add(f"{t}|{e.get('duration','')}")
+                khoa = f"{t}|{e.get('duration','')}"
+                su_kien[sid].add(khoa)
+                # Gom theo ngay, moi su kien dem MOT lan du nhieu dich vu.
+                ngay[t.split(" ")[0]].add(f"{sid}|{khoa}")
                 moc.append(t)
-    return {"bang": dict(bang), "su_kien": su_kien,
+    return {"bang": dict(bang), "su_kien": su_kien, "ngay": ngay,
             "som": min(moc) if moc else None, "muon": max(moc) if moc else None}
 
 
@@ -99,6 +103,14 @@ def in_mot_ben(ten: str, d: dict) -> None:
     tong = sum(len(v) for v in d["su_kien"].values())
     print(f"   {len(d['su_kien'])} dich vu · {tong} su kien")
     print(f"   lich tu {d['som']}  den  {d['muon']}")
+    if d["ngay"]:
+        # Do SAU cua lich. Mot con so tong khong phan biet duoc "day du mot
+        # ngay" voi "thua thot tam ngay" — cot theo ngay thi phan biet duoc.
+        print("   sau theo ngay:")
+        dinh = max(len(v) for v in d["ngay"].values()) or 1
+        for ng in sorted(d["ngay"]):
+            n = len(d["ngay"][ng])
+            print(f"      {ng}  {n:>5}  {'#' * max(1, round(n * 40 / dinh))}")
 
 
 def main() -> int:
@@ -106,9 +118,14 @@ def main() -> int:
         print(__doc__)
         return 2
     ta, song = doc(Path(sys.argv[1])), doc(Path(sys.argv[2]))
-    in_mot_ben("EPG CUA TA", ta)
+    # Cong cu nay khong chi dung de so ta voi Barrowa. So BANG SINH RA voi
+    # BAN THU CUA CHINH TA tra loi mot cau khac han — mat mat nam o khau soan
+    # lich hay khau phat — nen hai cai nhan phai doi duoc.
+    ten_a = sys.argv[3] if len(sys.argv) > 3 else "EPG CUA TA"
+    ten_b = sys.argv[4] if len(sys.argv) > 4 else "EPG TREN SONG"
+    in_mot_ben(ten_a, ta)
     print()
-    in_mot_ben("EPG TREN SONG", song)
+    in_mot_ben(ten_b, song)
 
     if "loi" in ta or "loi" in song:
         return 1
@@ -116,18 +133,20 @@ def main() -> int:
     print("--- SO SANH ---")
     a, b = set(ta["su_kien"]), set(song["su_kien"])
     thieu, thua = sorted(b - a), sorted(a - b)
-    print(f"   song co, ta THIEU : {thieu or 'khong'}")
-    print(f"   ta co, song khong : {thua or 'khong'}")
+    print(f"   {ten_b} co, {ten_a} KHONG : {thieu or 'khong'}")
+    print(f"   {ten_a} co, {ten_b} KHONG : {thua or 'khong'}")
 
     chung = sorted(a & b)
     if chung:
-        print(f"   {len(chung)} dich vu ca hai cung co — so su kien ta/song:")
-        for sid in chung[:12]:
+        # In HET, khong cat bot. Ban cat o 12 dong tung giau mat nua danh
+        # sach dung luc dang can doc no.
+        print(f"   {len(chung)} dich vu ca hai cung co — so su kien:")
+        print(f"      {'dich vu':<10}{'A':>6}{'B':>7}   ti le")
+        for sid in chung:
             na, nb = len(ta["su_kien"][sid]), len(song["su_kien"][sid])
+            ti = f"{na / nb:.2f}" if nb else "—"
             dau = "  <-- lech nhieu" if nb and (na < nb * 0.5) else ""
-            print(f"      {sid}: {na:>4} / {nb:<4}{dau}")
-        if len(chung) > 12:
-            print(f"      ... va {len(chung) - 12} dich vu nua")
+            print(f"      {sid:<10}{na:>6}{nb:>7}   {ti}{dau}")
     return 0
 
 
