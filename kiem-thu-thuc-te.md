@@ -531,6 +531,38 @@ khác — chứ không phải đi dò xem mux hỏng ở đâu.
 
 ---
 
+## Đã kiểm chứng trên sóng — 2026-09-15
+
+Ba lỗi EPG tìm ra trong ngày, hai cái đã sửa và **đo lại trên sóng thật**, không
+phải chỉ trên file sinh ra. Giữ lại số liệu ở đây để lần sau còn đối chiếu.
+
+| | trước | sau |
+|---|---|---|
+| Kênh đã rút khỏi lịch mà vẫn phát (FR-94) | **23** | 0 |
+| Sự kiện trên sóng không có trong đợt giao mới nhất (FR-95) | **290** | 0 |
+| Dịch vụ ta phát mà Barrowa không phát | 22 | 0 |
+| Dịch vụ Barrowa phát mà ta không | 2 | 1 *(825, chờ khai `epg_source_id`)* |
+
+Cách đo, cả ba đều bằng `cong-cu/so-eit.py`:
+
+* **FR-94** — bảng sinh ra so với bản thu từ sóng. Dòng `PHAT co, SINH RA KHONG`
+  phải rỗng.
+* **FR-95** — file lịch nguồn so với bản thu từ sóng. Dòng
+  `PHAT co, NGUON KHONG` phải rỗng.
+* **so với Barrowa** — hai bản thu, hai hệ, cùng thời điểm.
+
+### Một khác biệt còn lại, và nó là chủ ý
+
+Barrowa phát 705 sự kiện, ta 485. Nhìn dòng `lich tu` là ra: Barrowa bắt đầu từ
+**00:00**, ta từ **thời điểm hiện tại**. Ta cắt bỏ chương trình đã phát xong
+(`window.clip` chỉ giữ sự kiện `end_utc > now`), Barrowa giữ cả ngày.
+
+Chưa đổi vì chưa có ai yêu cầu, nhưng phải biết sự khác biệt này tồn tại: nếu
+đầu thu ở nhà khán giả cho phép cuộn ngược lại chương trình đã chiếu trong ngày
+thì hai hệ sẽ hiện khác nhau, và đó là thứ người xem thấy được.
+
+---
+
 ## Một kênh không có EPG: hỏi "số hiệu trong file lịch" trước
 
 Trước khi đi tìm lỗi ở đâu xa, hỏi câu này: **bên cấp lịch có gọi kênh đó bằng
