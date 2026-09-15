@@ -143,7 +143,8 @@ tsp -I null \
 
 ```bash
 tsanalyze build/thu-nghiem.ts
-tstables build/thu-nghiem.ts --all-sections --xml-output build/doc-lai.xml
+tstables build/thu-nghiem.ts --fill-eit --pack-and-flush \
+         --xml-output build/doc-lai.xml
 vtccmp compare build/doc-lai.xml "Bang mau/dvb_tables_dump_win.xml"
 ```
 
@@ -182,7 +183,7 @@ Từ **một máy khác** trong cùng mạng:
 
 ```bash
 tstables --ip-udp 236.30.239.1:6000 --pid 16 --pid 17 --pid 18 \
-         --all-sections --xml-output thu-tu-mang.xml --duration 120
+         --fill-eit --pack-and-flush --xml-output thu-tu-mang.xml --duration 120
 vtccmp compare thu-tu-mang.xml "Bang mau/dvb_tables_dump_win.xml"
 ```
 
@@ -530,7 +531,7 @@ khác — chứ không phải đi dò xem mux hỏng ở đâu.
 
 ---
 
-## Soi EIT: luôn thêm `--all-sections`
+## Soi EIT: luôn thêm cờ, nhưng cờ nào thì tuỳ đầu ra
 
 Thiếu cờ này, một luồng EIT **hoàn toàn tốt** trông y hệt một luồng **không có
 EIT**. Cái bẫy đã sập một lần và tốn cả tiếng để gỡ.
@@ -539,9 +540,21 @@ EIT**. Cái bẫy đã sập một lần và tốn cả tiếng để gỡ.
 # SAI — im lang, khong bao gi ca
 tsp -I file ban-thu.ts -P tables --pid 18 -O drop
 
-# DUNG
+# DUNG, dau ra VAN BAN (doc bang mat)
 tsp -I file ban-thu.ts -P tables --pid 18 --all-sections -O drop
+
+# DUNG, dau ra XML (cho cong-cu/so-eit.py)
+tsp -I file ban-thu.ts -P tables --pid 18 --fill-eit --pack-and-flush \
+    --xml ban-thu-eit.xml -O drop
 ```
+
+`--all-sections` **không** ghép được với `--xml` hay `--json`; TSDuck báo thẳng
+*"filtering sections ... is incompatible with XML or JSON output"* rồi dừng.
+Cùng luật đó áp cho `tstables --xml-output`. Với XML thì hai cờ thay thế là
+`--fill-eit` (bù section rỗng ở cuối phân đoạn lịch) và `--pack-and-flush`
+(đóng gói nốt các bảng còn dở lúc kết thúc).
+
+Bảng đã đóng gói có thể thiếu section — chỉ để **phân tích**, đừng phát lại.
 
 **Vì sao.** `-P tables` chỉ báo khi thu **đủ mọi section của một bảng**. Bảng
 EIT p/f khai `Section: 0 (last: 1)` — hai section, `0` là chương trình đang

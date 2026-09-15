@@ -11,7 +11,8 @@ EIT thay đổi theo từng phút, nên so byte không có nghĩa. Nhưng vẫn 
 
 Trích EIT ra XML **phải** có hai cờ này::
 
-    tsp -I file ban-thu.ts -P tables --pid 18 --fill-eit --pack-and-flush         --xml eit.xml -O drop
+    tsp -I file ban-thu.ts -P tables --pid 18 --fill-eit --pack-and-flush \\
+        --xml eit.xml -O drop
 
     python3 cong-cu/so-eit.py eit-ta.xml eit-br.xml
 
