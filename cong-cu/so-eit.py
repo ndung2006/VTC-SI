@@ -69,13 +69,15 @@ def doc(p: Path) -> dict:
     if not p.exists():
         return {"loi": f"khong co file {p}"}
     goc = ET.parse(p).getroot()
-    bang: dict[int, int] = defaultdict(int)
+    if goc.tag.upper() == "PSI":
+        return _doc_nguon(p)
+    bang: dict[str, int] = defaultdict(int)
     su_kien: dict[int, set[str]] = defaultdict(set)
     ngay: dict[str, set[str]] = defaultdict(set)
     moc: list[str] = []
     for eit in goc.iter("EIT"):
         n = _table_id(eit)
-        bang[n] += 1
+        bang[LOAI.get(n, f"table_id {n:#04x}")] += 1
         sid = int(eit.get("service_id", "0"), 0)
         for e in eit.iter("event"):
             t = e.get("start_time")
@@ -89,6 +91,44 @@ def doc(p: Path) -> dict:
             "som": min(moc) if moc else None, "muon": max(moc) if moc else None}
 
 
+def _doc_nguon(p: Path) -> dict:
+    """Đọc **file lịch nguồn** (lược đồ ``<PSI>``), không phải bảng EIT.
+
+    Lý do đáng để công cụ này biết hai định dạng thay vì tách thành hai công
+    cụ: so ta với Barrowa chỉ cho biết **có** lệch, không cho biết **ai** sai.
+    Cùng một file nguồn đi vào cả hai hệ, nên đo cả hai so với nó mới quy được
+    trách nhiệm. Mà muốn so được thì ba bên phải ra cùng một khuôn số liệu.
+
+    Khoá sự kiện dựng đúng như ``doc``: ``"YYYY-MM-DD HH:MM:SS|HH:MM:SS"``.
+    Cả hai đầu đều là UTC — ``parse`` chuẩn hoá về UTC, và ``start_time`` của
+    EIT theo DVB vốn là UTC — nên khoá khớp nhau từng ký tự, và phép so là so
+    **từng sự kiện**, không phải so hai con số tổng.
+    """
+    try:
+        from vtcsi.epg.transform.parse import parse
+    except ModuleNotFoundError:
+        # Chay tay tu kho nguon, ngoai container: `src/` chua nam tren
+        # sys.path. Cong cu nay de nguoi truc go luc dang co su co, nen no
+        # phai chay duoc o ca hai cho.
+        sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
+        from vtcsi.epg.transform.parse import parse
+
+    lich = parse(p.read_text(encoding="utf-8"))
+    su_kien: dict[int, set[str]] = defaultdict(set)
+    ngay: dict[str, set[str]] = defaultdict(set)
+    moc: list[str] = []
+    for e in lich.events:
+        giay = int(e.duration.total_seconds())
+        khoa = (f"{e.start_utc:%Y-%m-%d %H:%M:%S}"
+                f"|{giay // 3600:02d}:{giay // 60 % 60:02d}:{giay % 60:02d}")
+        t = khoa.split("|")[0]
+        su_kien[e.service_id].add(khoa)
+        ngay[t.split(" ")[0]].add(f"{e.service_id}|{khoa}")
+        moc.append(t)
+    return {"bang": {"file lich nguon": 1}, "su_kien": su_kien, "ngay": ngay,
+            "som": min(moc) if moc else None, "muon": max(moc) if moc else None}
+
+
 def in_mot_ben(ten: str, d: dict) -> None:
     print(f"--- {ten} ---")
     if "loi" in d:
@@ -98,8 +138,8 @@ def in_mot_ben(ten: str, d: dict) -> None:
         print("   khong co bang EIT nao."
               " Thieu --all-sections luc trich? Xem docstring.")
         return
-    for tid in sorted(d["bang"]):
-        print(f"   {LOAI.get(tid, f'table_id {tid:#04x}'):<24} {d['bang'][tid]:>4} bang")
+    for nhan in sorted(d["bang"]):
+        print(f"   {nhan:<24} {d['bang'][nhan]:>4} bang")
     tong = sum(len(v) for v in d["su_kien"].values())
     print(f"   {len(d['su_kien'])} dich vu · {tong} su kien")
     print(f"   lich tu {d['som']}  den  {d['muon']}")
@@ -147,6 +187,14 @@ def main() -> int:
             ti = f"{na / nb:.2f}" if nb else "—"
             dau = "  <-- lech nhieu" if nb and (na < nb * 0.5) else ""
             print(f"      {sid:<10}{na:>6}{nb:>7}   {ti}{dau}")
+
+        # Hai ben co the cung 40 su kien ma khong su kien nao trung nhau. So
+        # dem bang nhau khong chung minh duoc gi; so KHOA moi chung minh duoc.
+        ka = {k for sid in chung for k in ta["su_kien"][sid]}
+        kb = {k for sid in chung for k in song["su_kien"][sid]}
+        print(f"   tren {len(chung)} dich vu chung: {len(ka & kb)} su kien TRUNG KHOP"
+              f" (gio bat dau + thoi luong), {len(ka - kb)} chi {ten_a} co,"
+              f" {len(kb - ka)} chi {ten_b} co")
     return 0
 
 
