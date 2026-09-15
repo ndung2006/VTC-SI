@@ -531,6 +531,40 @@ khác — chứ không phải đi dò xem mux hỏng ở đâu.
 
 ---
 
+## Rút kênh khỏi lịch: phải khởi động lại `si`
+
+Chỗ này đi ngược lời khuyên ở mọi mục khác, nên đọc kỹ.
+
+`eitinject` giữ một bản EPG tích luỹ trong bộ nhớ và **chỉ cộng vào, không bao
+giờ bớt đi**. File lịch thôi nhắc tới một dịch vụ thì dịch vụ đó **vẫn tiếp tục
+lên sóng**, vô thời hạn. Không có cờ nào của TSDuck đổi được hành vi này.
+
+Đo ngày 2026-09-15 trên máy phát: bảng sinh ra còn **17 dịch vụ**, bản thu trên
+sóng có **40** — đúng 17 cộng 23 kênh đã rút khỏi lịch từ mấy tiếng trước.
+
+Nên câu phải hỏi trước khi sửa lịch là: **thêm hay bớt?**
+
+| Việc | Có phải dựng lại `si` không |
+|---|---|
+| Sửa NIT, SDT, BAT | **Không.** Dựng lại mới là thứ gây chớp nguồn |
+| Thêm kênh vào lịch, sửa giờ, sửa tên chương trình | **Không.** `--poll-interval` lo được |
+| **Rút một kênh khỏi lịch** | **Có.** `docker compose restart si` |
+
+### Kiểm sau khi rút kênh
+
+```bash
+docker cp vtcsi-si:/build/eit/eit.xml /home/vtc/data/eit-sinh.xml
+# ... thu mot ban tu song thanh /home/vtc/data/eit-phat.xml ...
+docker run --rm -v /home/vtc/data:/data -v /srv/vtcsi/repo:/repo vtcsi:local \
+  python3 /repo/cong-cu/so-eit.py /data/eit-sinh.xml /data/eit-phat.xml \
+          "SINH RA" "PHAT"
+```
+
+Dòng `PHAT co, SINH RA KHONG` phải **rỗng**. Còn tên kênh nào ở đó thì kênh ấy
+vẫn đang lên sóng dù đã bị rút.
+
+---
+
 ## Soi EIT: luôn thêm cờ, nhưng cờ nào thì tuỳ đầu ra
 
 Thiếu cờ này, một luồng EIT **hoàn toàn tốt** trông y hệt một luồng **không có
