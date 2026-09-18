@@ -34,7 +34,11 @@ cáp) — gõ quá số đó thì trang này từ chối lưu.</p>
            style="width:8em;text-align:right"> ms
   </td>
   <td class="n"><span class="m">{{ h.tran }} ms</span></td>
-  <td class="dim" style="font-size:12.5px">{{ h.khuyen }}</td>
+  <td style="font-size:12.5px">
+    {% if h.lech %}<span class="pill warn">lệch</span>
+      <span class="dim">khuyến nghị {{ h.goc }} ms — {{ h.khuyen }}</span>
+    {% else %}<span class="dim">{{ h.khuyen }}</span>{% endif %}
+  </td>
 </tr>
 {% endfor %}
 </table></div></div>
@@ -58,7 +62,9 @@ thật đã đo, để biết còn bao nhiêu chỗ.</p>
   </td>
   <td class="n"><span class="m">{{ h.do_duoc }}</span></td>
   <td class="n">{% if h.con %}<span class="pill ok">{{ h.con }}</span>
-      {% else %}<span class="pill crit">chật</span>{% endif %}</td>
+      {% else %}<span class="pill crit">chật</span>{% endif %}
+    {% if h.lech %}<br><span class="dim" style="font-size:12px">khuyến nghị
+      {{ '{:,}'.format(h.goc).replace(',', '.') }}</span>{% endif %}</td>
 </tr>
 {% endfor %}
 </table></div></div>
@@ -95,6 +101,33 @@ thật đã đo, để biết còn bao nhiêu chỗ.</p>
     tác dụng — xem ngay bên dưới.</span>
 </div>
 </form>
+
+<h2>Bộ khuyến nghị</h2>
+<div class="card">
+{% if lech %}
+<p style="margin-top:0"><b>{{ lech|length }} mục đang lệch</b> khỏi bộ khuyến
+nghị, đã đánh dấu <span class="pill warn">lệch</span> ở các bảng trên.</p>
+{% else %}
+<p style="margin-top:0" class="msg ok">Đang đúng bộ khuyến nghị — không mục nào
+lệch.</p>
+{% endif %}
+
+<p class="dim" style="font-size:12.5px">Mặc định và khuyến nghị ở đây là
+<b>một</b> bộ, không phải hai. Một bộ "mặc định" khác bộ "khuyến nghị" nghĩa là
+hệ tự khởi động bằng thứ chính nó bảo đừng dùng. Bộ này đã chạy thật trên sóng
+và đo được: nhịp lặp nằm trong trần ETSI TS 101 211 với biên rộng, ba trần
+bitrate đều cao hơn mức đo được ít nhất 1,7 lần.</p>
+
+<form method="post" action="/toc-do/khuyen-nghi" style="margin:0"
+      onsubmit="return confirm(this.dataset.hoi)"
+      data-hoi="Đặt lại toàn bộ tốc độ và nhịp lặp về bộ khuyến nghị?
+
+{% if lech %}{{ lech|length }} mục đang lệch sẽ bị ghi đè.{% else %}Không mục nào đang lệch, nên sẽ không có gì thay đổi.{% endif %}
+
+Số mới chỉ có tác dụng sau khi dựng lại dịch vụ phát.">
+  <button type="submit">Đặt lại theo khuyến nghị</button>
+</form>
+</div>
 
 <h2>Áp dụng: phải dựng lại dịch vụ phát</h2>
 <div class="card">

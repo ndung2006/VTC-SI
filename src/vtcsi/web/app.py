@@ -1295,8 +1295,14 @@ def create_app(config_dir: Path, repo_root: Path | None = None, *,
                         "gia_tri": v, "do_duoc": f"{TD.so(do)} bit/s",
                         "con": (f"{v / do:.1f}×" if v >= do else "")})
 
+        lech = set(TD.khac_khuyen_nghi(t))
+        for h in lap + pid:
+            h["lech"] = h["truong"] in lech
+            h["goc"] = getattr(TD.KHUYEN_NGHI, h["truong"])
+
         f = CT.path_for(config_dir)
         return page(request, "toc-do.html", t=t, lap=lap, pid=pid,
+                    lech=sorted(lech), kn=TD.KHUYEN_NGHI,
                     nhac=TD.canh_bao(t), san=TD.SAN_LAP_MS,
                     tran_pid=TD.TRAN_PID, san_tong=TD.SAN_TONG,
                     tran_tong=TD.TRAN_TONG, tong_tran=TD.so(t.tong_tran_pid),
@@ -1347,6 +1353,31 @@ def create_app(config_dir: Path, repo_root: Path | None = None, *,
         return back("/toc-do",
                     note="đã lưu — CHƯA có tác dụng cho tới khi chạy "
                          "`docker compose restart si` trên máy phát")
+
+    @app.post("/toc-do/khuyen-nghi")
+    def dat_khuyen_nghi():
+        """Đặt lại bộ số khuyến nghị.
+
+        Mặc định và khuyến nghị là **một** bộ, không phải hai — xem
+        ``model/toc_do.KHUYEN_NGHI``. Nút này vì thế không phải "khôi phục cài
+        đặt gốc" theo nghĩa thông thường, mà là "về lại bộ đã chạy thật trên
+        sóng và đo được".
+        """
+        from vtcsi.config import toc_do as CT
+        from vtcsi.model import toc_do as TD
+
+        try:
+            cu = CT.load(config_dir)
+        except TD.TocDoError:
+            cu = None
+        if cu == TD.KHUYEN_NGHI:
+            return back("/toc-do", note="đang đúng bộ khuyến nghị rồi")
+        lech = TD.khac_khuyen_nghi(cu) if cu else ()
+        CT.save(TD.KHUYEN_NGHI, config_dir)
+        return back("/toc-do",
+                    note=f"đã đặt lại {len(lech)} mục về bộ khuyến nghị — "
+                         f"CHƯA có tác dụng cho tới khi chạy "
+                         f"`docker compose restart si` trên máy phát")
 
     @app.get("/dau-ra", response_class=HTMLResponse)
     def trang_dau_ra(request: Request, note: str = "", err: str = ""):

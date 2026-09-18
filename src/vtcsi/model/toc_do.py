@@ -16,7 +16,7 @@ Mọi giới hạn dưới đây lấy từ ETSI TS 101 211 §4.1, hồ sơ vệ
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, fields
 
 #: Chu kỳ lặp **tối đa** theo ETSI TS 101 211 §4.1, tính bằng mili giây.
 #:
@@ -136,6 +136,23 @@ def validate(t: TocDo) -> None:
     if not isinstance(t.eit_poll_ms, int) or not 50 <= t.eit_poll_ms <= 60_000:
         raise TocDoError(f"nhịp ngó lại file EIT phải từ 50 đến 60000 ms, "
                          f"đang là {t.eit_poll_ms!r}")
+
+
+#: Bộ số **khuyến nghị**, và cũng là mặc định. Một, không phải hai.
+#:
+#: Không tách làm hai hằng số, và đó là chủ ý. Một bộ "mặc định" khác bộ
+#: "khuyến nghị" nghĩa là hệ tự khởi động bằng thứ chính mình bảo đừng dùng —
+#: và rồi phải giải thích với người vận hành vì sao. Bộ này đã chạy trên sóng
+#: thật và đo được: nhịp lặp nằm trong trần ETSI TS 101 211 với biên rộng, ba
+#: trần bitrate đều cao hơn mức đo được ít nhất 1,7 lần.
+KHUYEN_NGHI = TocDo()
+
+
+def khac_khuyen_nghi(t: TocDo) -> tuple[str, ...]:
+    """Tên những trường đang lệch khỏi bộ khuyến nghị, đã sắp thứ tự."""
+    return tuple(sorted(
+        f.name for f in fields(TocDo)
+        if getattr(t, f.name) != getattr(KHUYEN_NGHI, f.name)))
 
 
 def so(n: int) -> str:

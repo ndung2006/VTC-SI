@@ -93,6 +93,26 @@ class TestCanhBao(unittest.TestCase):
         self.assertEqual(TD.so(2_000_000), "2.000.000")
 
 
+class TestKhuyenNghi(unittest.TestCase):
+    """Mặc định và khuyến nghị là **một** bộ, không phải hai."""
+
+    def test_they_are_the_same_object(self) -> None:
+        """Tách làm hai nghĩa là hệ tự khởi động bằng thứ chính nó bảo đừng dùng."""
+        self.assertEqual(TD.TocDo(), TD.KHUYEN_NGHI)
+
+    def test_the_recommended_set_passes_its_own_rules(self) -> None:
+        TD.validate(TD.KHUYEN_NGHI)
+        self.assertEqual(TD.canh_bao(TD.KHUYEN_NGHI), ())
+
+    def test_nothing_drifts_when_nothing_changed(self) -> None:
+        self.assertEqual(TD.khac_khuyen_nghi(TD.TocDo()), ())
+
+    def test_it_names_every_field_that_drifted(self) -> None:
+        t = TD.TocDo(lap_bat=7_000, bitrate_eit=500_000, tong=1_500_000)
+        self.assertEqual(TD.khac_khuyen_nghi(t),
+                         ("bitrate_eit", "lap_bat", "tong"))
+
+
 class TestFileYaml(unittest.TestCase):
     def setUp(self) -> None:
         self._tmp = tempfile.TemporaryDirectory()
@@ -253,6 +273,42 @@ class TestTrangWeb(unittest.TestCase):
         C.save(TD.TocDo(), self.dir)
         note, _ = self.said(self.post())
         self.assertIn("không có gì thay đổi", note)
+
+    def test_the_reset_button_restores_every_field(self) -> None:
+        C.save(TD.TocDo(lap_bat=7_000, bitrate_eit=500_000), self.dir)
+        r = self.c.post("/toc-do/khuyen-nghi", follow_redirects=False)
+        note, _ = self.said(r)
+        self.assertIn("2 mục", note)
+        self.assertEqual(C.load(self.dir), TD.KHUYEN_NGHI)
+
+    def test_the_reset_also_hands_over_the_restart_command(self) -> None:
+        C.save(TD.TocDo(lap_bat=7_000), self.dir)
+        note, _ = self.said(self.c.post("/toc-do/khuyen-nghi",
+                                        follow_redirects=False))
+        self.assertIn("docker compose restart si", note)
+
+    def test_resetting_when_already_right_says_so(self) -> None:
+        C.save(TD.KHUYEN_NGHI, self.dir)
+        note, _ = self.said(self.c.post("/toc-do/khuyen-nghi",
+                                        follow_redirects=False))
+        self.assertIn("đang đúng bộ khuyến nghị", note)
+
+    def test_the_page_marks_which_boxes_drifted(self) -> None:
+        C.save(TD.TocDo(lap_bat=7_000), self.dir)
+        html = self.c.get("/toc-do").text
+        self.assertIn("1 mục đang lệch", html)
+        self.assertIn("khuyến nghị 5000 ms", html)
+
+    def test_the_page_says_so_when_nothing_drifted(self) -> None:
+        C.save(TD.KHUYEN_NGHI, self.dir)
+        html = self.c.get("/toc-do").text
+        self.assertIn("Đang đúng bộ khuyến nghị", html)
+        self.assertNotIn("mục đang lệch", html)
+
+    def test_the_reset_button_asks_first(self) -> None:
+        html = self.c.get("/toc-do").text
+        self.assertIn("/toc-do/khuyen-nghi", html)
+        self.assertIn("return confirm(this.dataset.hoi)", html)
 
     def test_the_tab_is_reachable_from_the_other_psisi_pages(self) -> None:
         for url in ("/epg", "/dau-ra"):
