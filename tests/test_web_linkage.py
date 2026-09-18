@@ -287,10 +287,49 @@ class TestCongTacLinkage(WebCase):
         self.post(f"/linkage/{MASTER:04x}/cong-tac", on="false")
         self.assertEqual(self.bouquet(MASTER).version, ver)
 
+    def _cong_tac(self) -> list[dict]:
+        """Mọi công tắc linkage trên trang chủ, đọc bằng trình phân tích HTML.
+
+        Phải phân tích thật chứ không tìm chuỗi. Bản đầu nhét câu hỏi vào
+        ``onclick`` bằng ``|tojson``, sinh ra nháy kép trong một thuộc tính
+        cũng bao bằng nháy kép — HTML đứt giữa chừng, trình duyệt không chạy
+        ``confirm`` nào. Bài kiểm lúc đó chỉ tìm chuỗi ``return confirm(`` nên
+        vẫn xanh, và lỗi ra tới người dùng.
+        """
+        from html.parser import HTMLParser
+
+        thay: list[dict] = []
+
+        class Doc(HTMLParser):
+            def handle_starttag(self, tag, attrs):
+                d = dict(attrs)
+                if tag == "input" and d.get("type") == "checkbox" and "data-hoi" in d:
+                    thay.append(d)
+
+        Doc().feed(self.c.get("/").text)
+        return thay
+
     def test_the_home_page_offers_the_switch_with_a_confirmation(self) -> None:
-        html = self.c.get("/").text
-        self.assertIn(f"/linkage/{MASTER:04x}/cong-tac", html)
-        self.assertIn("return confirm(", html)
+        cong_tac = self._cong_tac()
+        self.assertGreaterEqual(len(cong_tac), 3)   # 0044, 3622, 6510
+        for d in cong_tac:
+            # Bang nhau CHINH XAC: thuoc tinh bi cat ngan van chua "confirm(".
+            self.assertEqual(d["onclick"], "return confirm(this.dataset.hoi)")
+            self.assertTrue(d["data-hoi"].strip())
+
+    def test_the_question_names_the_consequence_for_that_bouquet(self) -> None:
+        hoi = [d["data-hoi"] for d in self._cong_tac()]
+        chi_linkage = [x for x in hoi if "Master" in x]
+        co_kenh = [x for x in hoi if "VTC_FULLHD" in x]
+        self.assertTrue(chi_linkage and co_kenh)
+        self.assertIn("bảng BAT RỖNG", chi_linkage[0])
+        self.assertIn("vẫn giữ nguyên", co_kenh[0])
+        self.assertNotIn("bảng BAT RỖNG", co_kenh[0])
+
+    def test_an_already_off_bouquet_asks_about_turning_it_back_on(self) -> None:
+        self.post(f"/linkage/{MASTER:04x}/cong-tac", on="false")
+        hoi = [d["data-hoi"] for d in self._cong_tac() if "Master" in d["data-hoi"]]
+        self.assertIn("BẬT LẠI", hoi[0])
 
     def test_the_switch_is_not_offered_where_there_is_no_linkage(self) -> None:
         html = self.c.get("/").text

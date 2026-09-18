@@ -55,30 +55,33 @@
   <td class="n">
     {% if not b.linkages %}<span class="dim">—</span>
     {% else %}
-    {% set chi_linkage = not b.ts_loops|map(attribute='services')|map('length')|sum %}
+    {% set rieng_linkage = not nsvc %}
+    {%- if b.linkages_on %}
+      {%- set hoi %}TẮT {{ b.linkages|length }} linkage của bouquet 0x{{ '%04x' % b.bouquet_id }} — {{ b.name }}?
+
+{% if rieng_linkage %}Bouquet này KHÔNG mang kênh nào, nên tắt xong nó thành một bảng BAT RỖNG.
+Đầu thu đang dùng đường này để nâng cấp sẽ mất đường nâng cấp.{% else %}{{ nsvc }} kênh trong bouquet vẫn giữ nguyên, chỉ con trỏ linkage thôi lên sóng.{% endif %}
+
+Dữ liệu được giữ lại, bật lại lúc nào cũng được.{% endset %}
+    {%- else %}
+      {%- set hoi %}BẬT LẠI {{ b.linkages|length }} linkage của bouquet 0x{{ '%04x' % b.bouquet_id }} — {{ b.name }}?
+
+Chúng lên sóng lại sau khoảng một phút.{% endset %}
+    {%- endif %}
     <form method="post" action="/linkage/{{ '%04x' % b.bouquet_id }}/cong-tac"
           style="margin:0">
       <input type="hidden" name="on" value="{{ 'false' if b.linkages_on else 'true' }}">
       <label class="cong-tac">
+        {#- Câu hỏi đi qua `data-hoi`, KHÔNG nhét thẳng vào `onclick`.
+
+            Bản trước dùng `|tojson` ngay trong onclick="…": tojson sinh chuỗi
+            có nháy kép, mà thuộc tính cũng bao bằng nháy kép, nên HTML đứt
+            giữa chừng và không có confirm nào chạy — bấm là tắt luôn, không
+            hỏi gì. Ở vị trí giá trị thuộc tính thì Jinja escape đúng dấu nháy,
+            nên đường này không thể đứt. -#}
         <input type="checkbox" {{ 'checked' if b.linkages_on }}
-               onclick="return confirm({{ (
-                 ('BẬT LẠI ' ~ b.linkages|length ~ ' linkage của bouquet 0x%04x' % b.bouquet_id ~
-                  ' — ' ~ b.name ~ '?
-
-Chúng sẽ lên sóng ngay ở chu kỳ phát tiếp theo.')
-                 if not b.linkages_on else
-                 ('TẮT ' ~ b.linkages|length ~ ' linkage của bouquet 0x%04x' % b.bouquet_id ~
-                  ' — ' ~ b.name ~ '?
-
-'
-                  ~ ('Bouquet này KHÔNG mang kênh nào, nên tắt xong nó thành một bảng BAT RỖNG.
-Đầu thu đang dùng đường này để nâng cấp sẽ mất đường nâng cấp.'
-                     if chi_linkage else
-                     'Các kênh trong bouquet vẫn giữ nguyên, chỉ con trỏ linkage thôi lên sóng.')
-                  ~ '
-
-Dữ liệu được giữ lại, bật lại lúc nào cũng được.')
-               )|tojson }})"
+               data-hoi="{{ hoi }}"
+               onclick="return confirm(this.dataset.hoi)"
                onchange="this.form.submit()">
         <span class="nut" aria-hidden="true"></span>
         <span class="chu">{{ 'Bật' if b.linkages_on else 'Tắt' }}</span>
