@@ -222,6 +222,9 @@ def to_plain(cfg: Config) -> dict:
             "version": b.version,
             "private_data_specifier": _pds_out(b.private_data_specifier),
             "linkages": [_linkage_out(x) for x in b.linkages],
+            # Chi ghi khi TAT. Bat la truong hop thuong, va ghi `true` vao ca
+            # sau bouquet chi lam moi lan so cau hinh day nhieu.
+            **({} if b.linkages_on else {"linkages_on": False}),
             "transport_streams": [
                 {
                     "ts_id": t.ts_id,
@@ -332,6 +335,7 @@ def from_plain(data: dict) -> Config:
             version=_int(_need(raw, "version", where), where + ".version"),
             private_data_specifier=_pds_in(raw.get("private_data_specifier")),
             linkages=tuple(_linkage_in(x, where) for x in raw.get("linkages", [])),
+            linkages_on=bool(raw.get("linkages_on", True)),
             ts_loops=tuple(ts_loops),
         ))
 

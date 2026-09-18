@@ -140,6 +140,7 @@ class TestTheRouteTableIsComplete(WebCase):
         ("GET", "/linkage"),
         ("GET", "/linkage/{raw}/{index}"),
         ("POST", "/linkage/{raw}/save"),
+        ("POST", "/linkage/{raw}/cong-tac"),
         ("POST", "/linkage/{raw}/{index}/delete"),
         ("GET", "/thay-doi"),
         ("POST", "/thay-doi/commit"),

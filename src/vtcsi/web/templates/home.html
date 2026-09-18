@@ -43,6 +43,7 @@
 <h2>Bảng nhóm kênh (Bouquet)</h2>
 <div class="tw"><table>
 <tr><th class="n">ID</th><th>Tên</th><th class="n">TS</th>
+    <th class="n">Linkage</th>
     <th class="n">Dịch vụ</th><th class="n">LCN</th><th class="n">Ver</th></tr>
 {% for b in cfg.bouquets %}
 {% set nsvc = b.ts_loops|map(attribute='services')|map('length')|sum %}
@@ -52,8 +53,42 @@
   <td><a href="/bouquet/{{ '%04x' % b.bouquet_id }}">{{ b.name }}</a></td>
   <td class="n">{{ b.ts_loops|length }}</td>
   <td class="n">
+    {% if not b.linkages %}<span class="dim">—</span>
+    {% else %}
+    {% set chi_linkage = not b.ts_loops|map(attribute='services')|map('length')|sum %}
+    <form method="post" action="/linkage/{{ '%04x' % b.bouquet_id }}/cong-tac"
+          style="margin:0">
+      <input type="hidden" name="on" value="{{ 'false' if b.linkages_on else 'true' }}">
+      <label class="cong-tac">
+        <input type="checkbox" {{ 'checked' if b.linkages_on }}
+               onclick="return confirm({{ (
+                 ('BẬT LẠI ' ~ b.linkages|length ~ ' linkage của bouquet 0x%04x' % b.bouquet_id ~
+                  ' — ' ~ b.name ~ '?
+
+Chúng sẽ lên sóng ngay ở chu kỳ phát tiếp theo.')
+                 if not b.linkages_on else
+                 ('TẮT ' ~ b.linkages|length ~ ' linkage của bouquet 0x%04x' % b.bouquet_id ~
+                  ' — ' ~ b.name ~ '?
+
+'
+                  ~ ('Bouquet này KHÔNG mang kênh nào, nên tắt xong nó thành một bảng BAT RỖNG.
+Đầu thu đang dùng đường này để nâng cấp sẽ mất đường nâng cấp.'
+                     if chi_linkage else
+                     'Các kênh trong bouquet vẫn giữ nguyên, chỉ con trỏ linkage thôi lên sóng.')
+                  ~ '
+
+Dữ liệu được giữ lại, bật lại lúc nào cũng được.')
+               )|tojson }})"
+               onchange="this.form.submit()">
+        <span class="nut" aria-hidden="true"></span>
+        <span class="chu">{{ 'Bật' if b.linkages_on else 'Tắt' }}</span>
+      </label>
+    </form>
+    {% endif %}
+  </td>
+  <td class="n">
     {% if nsvc %}{{ nsvc }}
-    {% elif b.linkages %}<a class="pill ok" style="text-decoration:none"
+    {% elif b.linkages and b.linkages_on %}<a class="pill ok" style="text-decoration:none"
         href="/linkage/{{ '%04x' % b.bouquet_id }}/0"
         title="{{ b.linkages|length }} linkage, không có dịch vụ nào">linkage</a>
     {% else %}<span class="pill crit">rỗng</span>{% endif %}

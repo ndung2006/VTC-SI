@@ -220,6 +220,83 @@ class TestEditing(WebCase):
                          before + [0x05])
 
 
+class TestCongTacLinkage(WebCase):
+    """Công tắc bật/tắt linkage — **giữ dữ liệu**, chỉ thôi phát.
+
+    Lý do nó không phải là nút xoá: linkage user-defined mang khối byte thô mà
+    ta không có đặc tả (RO-8). Xoá rồi gõ lại là chuyện may rủi.
+    """
+
+    def test_turning_it_off_keeps_every_byte(self) -> None:
+        truoc = self.links(f"{MASTER:04x}")
+        self.post(f"/linkage/{MASTER:04x}/cong-tac", on="false")
+        b = self.bouquet(MASTER)
+        self.assertFalse(b.linkages_on)
+        self.assertEqual(b.linkages, truoc)
+
+    def test_turning_it_off_removes_them_from_the_table(self) -> None:
+        """Điều duy nhất đổi là bảng lên sóng."""
+        from vtcsi.tables import tsduck as TS
+        self.post(f"/linkage/{MASTER:04x}/cong-tac", on="false")
+        bang = TS.write_bat(self.bouquet(MASTER))
+        self.assertEqual(bang.findall("linkage_descriptor"), [])
+
+    def test_turning_it_back_on_restores_the_table(self) -> None:
+        from vtcsi.tables import tsduck as TS
+        goc = len(TS.write_bat(self.bouquet(MASTER)).findall("linkage_descriptor"))
+        self.assertGreater(goc, 0)
+        self.post(f"/linkage/{MASTER:04x}/cong-tac", on="false")
+        self.post(f"/linkage/{MASTER:04x}/cong-tac", on="true")
+        bang = TS.write_bat(self.bouquet(MASTER))
+        self.assertEqual(len(bang.findall("linkage_descriptor")), goc)
+
+    def test_it_survives_a_round_trip_through_yaml(self) -> None:
+        """Tắt rồi nạp lại từ đĩa vẫn phải là tắt.
+
+        ``self.bouquet()`` đọc lại từ ``config/`` chứ không giữ bản trong bộ
+        nhớ, nên bài này chính là phép thử vòng tròn qua YAML. Không lưu được
+        thì mất trạng thái ngay lần khởi động lại đầu tiên.
+        """
+        self.post(f"/linkage/{MASTER:04x}/cong-tac", on="false")
+        self.assertFalse(self.bouquet(MASTER).linkages_on)
+        self.assertIn("linkages_on",
+                      (self.dir / "bouquets").glob("3622*.yaml").__next__()
+                      .read_text(encoding="utf-8"))
+
+    def test_a_bouquet_that_becomes_empty_says_so(self) -> None:
+        """0x3622 chỉ có linkage; tắt xong là bảng rỗng, và phải nói ra."""
+        r = self.post(f"/linkage/{MASTER:04x}/cong-tac", on="false")
+        self.assertIn("RỖNG", self.said(r))
+
+    def test_a_bouquet_with_services_does_not_claim_to_be_empty(self) -> None:
+        r = self.post(f"/linkage/{FULLHD:04x}/cong-tac", on="false")
+        self.assertNotIn("RỖNG", self.said(r))
+        self.assertTrue(self.bouquet(FULLHD).ts_loops)
+
+    def test_a_bouquet_without_linkage_is_refused(self) -> None:
+        r = self.post(f"/linkage/{EMPTY:04x}/cong-tac", on="false")
+        self.assertEqual(self.kind(r), "err")
+
+    def test_an_unknown_bouquet_is_refused(self) -> None:
+        r = self.post("/linkage/ffff/cong-tac", on="false")
+        self.assertEqual(self.kind(r), "err")
+
+    def test_pressing_it_twice_changes_nothing(self) -> None:
+        self.post(f"/linkage/{MASTER:04x}/cong-tac", on="false")
+        ver = self.bouquet(MASTER).version
+        self.post(f"/linkage/{MASTER:04x}/cong-tac", on="false")
+        self.assertEqual(self.bouquet(MASTER).version, ver)
+
+    def test_the_home_page_offers_the_switch_with_a_confirmation(self) -> None:
+        html = self.c.get("/").text
+        self.assertIn(f"/linkage/{MASTER:04x}/cong-tac", html)
+        self.assertIn("return confirm(", html)
+
+    def test_the_switch_is_not_offered_where_there_is_no_linkage(self) -> None:
+        html = self.c.get("/").text
+        self.assertNotIn(f"/linkage/{EMPTY:04x}/cong-tac", html)
+
+
 class TestPrivateDataIsNeverMangled(WebCase):
     """Byte cua Irdeto va ViCAS qua bieu mau HTML roi quay ve phai giong het."""
 

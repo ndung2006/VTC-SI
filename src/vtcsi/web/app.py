@@ -902,6 +902,37 @@ def create_app(config_dir: Path, repo_root: Path | None = None, *,
         return back("/linkage",
                     note=_kem(f"đã {verb} linkage {kind:#04x} ở {title}", tang))
 
+    @app.post("/linkage/{raw}/cong-tac")
+    def switch_linkage(raw: str, on: bool = Form(False)):
+        """Bật/tắt toàn bộ linkage của một bouquet — **giữ nguyên dữ liệu**.
+
+        Vì sao là công tắc chứ không phải xoá rồi gõ lại: linkage user-defined
+        mang khối byte thô mà ta không có đặc tả (RO-8), nên gõ lại được là
+        chuyện may rủi. Tắt đi rồi bật lại thì byte vẫn y nguyên.
+
+        Chỉ làm cho bouquet. Linkage của NIT cũng có, nhưng NIT đánh version
+        **bằng tay** (FR-92) nên một công tắc ở đó sẽ đổi nội dung mà không đổi
+        version — đầu thu không nhận ra, và đó là kiểu hỏng tệ nhất. Muốn có
+        thì phải giải quyết chuyện version trước.
+        """
+        cfg = load()
+        title, items, b = _scope(cfg, raw)
+        if b is None:
+            return back("/", err=f"không có bouquet '{raw}'")
+        if not items:
+            return back("/", err=f"{title} không có linkage nào để bật tắt")
+        if b.linkages_on == on:
+            return back("/")          # bam hai lan, khong co gi de lam
+
+        from dataclasses import replace
+        tang = _save(_swap(cfg, replace(b, linkages_on=on)))
+        viec = "bật lại" if on else "tắt"
+        them = ""
+        if not on and not any(loop.services for loop in b.ts_loops):
+            them = " — bouquet này giờ là bảng RỖNG, xem cảnh báo ở trang chủ"
+        return back("/", note=_kem(f"đã {viec} {len(items)} linkage "
+                                   f"ở {title}{them}", tang))
+
     @app.post("/linkage/{raw}/{index}/delete")
     def delete_linkage(raw: str, index: int, confirm: str = Form("")):
         cfg = load()

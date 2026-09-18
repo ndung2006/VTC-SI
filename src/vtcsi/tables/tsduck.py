@@ -363,8 +363,9 @@ def write_bat(b: Bouquet) -> ET.Element:
     })
     ET.SubElement(el, "bouquet_name_descriptor", {"bouquet_name": b.name})
     _put_pds(el, b.private_data_specifier)
-    for lk in b.linkages:
-        _put_linkage(el, lk)
+    if b.linkages_on:
+        for lk in b.linkages:
+            _put_linkage(el, lk)
     for loop in b.ts_loops:
         ts = ET.SubElement(el, "transport_stream", {
             "transport_stream_id": _hex16(loop.ts_id),

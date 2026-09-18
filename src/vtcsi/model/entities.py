@@ -243,6 +243,20 @@ class Bouquet:
     version: int
     private_data_specifier: str | int | None = None
     linkages: tuple[Linkage, ...] = ()
+    linkages_on: bool = True
+    """Có phát các ``linkage_descriptor`` của bouquet này lên sóng không.
+
+    Tắt thì **giữ nguyên dữ liệu**, chỉ thôi ghi descriptor vào bảng — bật lại
+    là có ngay, không phải gõ lại. Đó là điểm khác nhau giữa công tắc này và
+    nút xoá, và là lý do nó tồn tại: linkage user-defined mang khối byte thô mà
+    ta không có đặc tả (RO-8), gõ lại được là chuyện may rủi.
+
+    Với bouquet **chỉ có linkage** (0x0044, 0x3622) thì tắt đi sẽ còn lại một
+    BAT rỗng — đúng cái RO-15 mà trang chủ gắn nhãn đỏ. Không tự ý bỏ phát bảng
+    thay người vận hành: bảng biến mất khỏi sóng là một thay đổi lớn hơn nhiều
+    so với những gì một công tắc nên tự quyết. Cảnh báo có sẵn sẽ kêu, và người
+    trực nhìn thấy để tự xử.
+    """
     ts_loops: tuple[BatTsLoop, ...] = ()
 
 
