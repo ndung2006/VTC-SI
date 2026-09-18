@@ -92,10 +92,66 @@ thật đã đo, để biết còn bao nhiêu chỗ.</p>
 <div class="row" style="margin-top:14px">
   <button type="submit">Lưu</button>
   <span class="dim">Lưu xong phải <b>dựng lại dịch vụ phát</b> thì số mới có
-    tác dụng: dòng lệnh <span class="m">tsp</span> chỉ được dựng một lần lúc
-    khởi động.</span>
+    tác dụng — xem ngay bên dưới.</span>
 </div>
 </form>
+
+<h2>Áp dụng: phải dựng lại dịch vụ phát</h2>
+<div class="card">
+<p style="margin-top:0"><b>Lưu thôi chưa đủ.</b> Ba nhóm số trên trang này là
+<b>đối số dòng lệnh</b> của <span class="m">tsp</span>, không phải nội dung file
+XML. Dòng lệnh được ghép <b>một lần duy nhất lúc khởi động</b>, rồi tiến trình
+ôm nguyên bộ đối số ấy cho tới khi dừng — hệ điều hành không cho sửa đối số của
+một tiến trình đang sống.</p>
+
+<p>Chạy lệnh này trong thư mục chứa <span class="m">docker-compose.yml</span>
+trên máy phát:</p>
+
+<div class="row" style="align-items:flex-start;gap:8px">
+  <pre id="lenh-dung-lai" style="margin:0;flex:1">docker compose restart si</pre>
+  <button type="button" id="chep-lenh">Chép</button>
+</div>
+
+<p class="dim" style="font-size:12.5px;margin-bottom:0">Chỉ dịch vụ
+<span class="m">si</span>. <span class="m">web</span> không chạy
+<span class="m">tsp</span> nên không cần đụng tới.</p>
+
+<p class="msg warn" style="margin-bottom:0">Dựng lại <b>có giá</b>: luồng
+multicast đứt vài giây, và <span class="m">eitinject</span> nạp lại EPG rồi loại
+ngay chương trình đã kết thúc — mép đầu EPG nhảy về giờ khởi động (FR-99). Khi
+mux đã lấy luồng này làm đầu vào, mỗi lần dựng lại là một lần mux có thể nhảy
+nguồn. <b>Hẹn giờ, đừng bấm tuỳ hứng.</b></p>
+</div>
+
+<script>
+(function () {
+  var nut = document.getElementById("chep-lenh");
+  var o = document.getElementById("lenh-dung-lai");
+  if (!nut || !o) { return; }
+  nut.addEventListener("click", function () {
+    var xong = function (chu) {
+      nut.textContent = chu;
+      setTimeout(function () { nut.textContent = "Chép"; }, 1400);
+    };
+    // navigator.clipboard chi co tren ngu canh an toan (https hoac localhost).
+    // Mang noi bo chay http thi no KHONG ton tai — phai co duong lui, khong
+    // thi nut bam khong lam gi ma cung khong bao gi.
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(o.textContent)
+        .then(function () { xong("Đã chép"); })
+        .catch(function () { xong("Không chép được"); });
+      return;
+    }
+    var v = document.createRange();
+    v.selectNodeContents(o);
+    var s = window.getSelection();
+    s.removeAllRanges();
+    s.addRange(v);
+    try { xong(document.execCommand("copy") ? "Đã chép" : "Ctrl+C"); }
+    catch (e) { xong("Ctrl+C"); }
+  });
+}());
+</script>
 
 <h2>Khuyến nghị</h2>
 <div class="card">

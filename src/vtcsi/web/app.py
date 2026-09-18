@@ -1338,9 +1338,15 @@ def create_app(config_dir: Path, repo_root: Path | None = None, *,
             return back("/toc-do", err=str(exc))
         if moi == cu:
             return back("/toc-do", note="không có gì thay đổi")
+        # Dua han LENH vao thong bao, khong chi noi "phai dung lai".
+        #
+        # Nguoi truc doc thong bao nay luc dang lam viec khac. "Phai dung lai
+        # dich vu phat" thi con phai nho lenh gi, go o dau, dich vu ten gi —
+        # ba cho de quen, va quen cho nao cung dan toi cung mot ket qua: tuong
+        # da doi ma thuc ra chua.
         return back("/toc-do",
-                    note="đã lưu — phải dựng lại dịch vụ phát thì số mới có "
-                         "tác dụng")
+                    note="đã lưu — CHƯA có tác dụng cho tới khi chạy "
+                         "`docker compose restart si` trên máy phát")
 
     @app.get("/dau-ra", response_class=HTMLResponse)
     def trang_dau_ra(request: Request, note: str = "", err: str = ""):

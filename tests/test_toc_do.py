@@ -214,8 +214,26 @@ class TestTrangWeb(unittest.TestCase):
     def test_it_saves_and_reads_back(self) -> None:
         note, err = self.said(self.post(lap_bat="7000"))
         self.assertFalse(err)
-        self.assertIn("dựng lại dịch vụ phát", note)
         self.assertEqual(C.load(self.dir).lap_bat, 7_000)
+
+    def test_saving_hands_over_the_exact_command(self) -> None:
+        """Nói "phải dựng lại" thôi thì còn ba chỗ để quên: lệnh gì, gõ ở đâu,
+        dịch vụ tên gì. Quên chỗ nào cũng ra cùng kết quả — tưởng đã đổi mà
+        thực ra chưa."""
+        note, _ = self.said(self.post(lap_bat="7000"))
+        self.assertIn("docker compose restart si", note)
+
+    def test_the_page_shows_the_command_and_a_copy_button(self) -> None:
+        html = self.c.get("/toc-do").text
+        self.assertIn("docker compose restart si", html)
+        self.assertIn('id="chep-lenh"', html)
+
+    def test_the_page_says_why_saving_is_not_enough(self) -> None:
+        """Trang phải giải thích, không chỉ ra lệnh — nếu không thì lần sau
+        người khác lại hỏi đúng câu 'là sao'."""
+        html = self.c.get("/toc-do").text
+        self.assertIn("đối số dòng lệnh", html)
+        self.assertIn("một lần duy nhất lúc khởi động", html)
 
     def test_a_value_past_the_standard_is_refused_in_vietnamese(self) -> None:
         _, err = self.said(self.post(lap_sdt_actual="9000"))
