@@ -1255,6 +1255,93 @@ def create_app(config_dir: Path, repo_root: Path | None = None, *,
         return tspbuild.shell(tspbuild.build(
             plan, start_time=datetime.now(timezone.utc)))
 
+    # ------------------------------------------------------------ tốc độ
+
+    #: Mức đã ĐO trên sóng, không phải ước lượng. Dùng để nói "còn bao nhiêu chỗ".
+    DO_DUOC = {"bitrate_nit": 2_900, "bitrate_sdt_bat": 19_000,
+               "bitrate_eit": 240_000}
+
+    @app.get("/toc-do", response_class=HTMLResponse)
+    def trang_toc_do(request: Request, note: str = "", err: str = ""):
+        from vtcsi.config import toc_do as CT
+        from vtcsi.model import toc_do as TD
+        try:
+            t = CT.load(config_dir)
+        except TD.TocDoError as exc:
+            return page(request, "loi.html", loi=str(exc))
+
+        lap = [
+            {"truong": "lap_nit", "ten": "NIT", "gia_tri": t.lap_nit,
+             "tran": TD.TRAN_LAP["nit"],
+             "khuyen": "2000 ms — rộng chán so với trần, và NIT rất nhỏ"},
+            {"truong": "lap_sdt_actual", "ten": "SDT actual",
+             "gia_tri": t.lap_sdt_actual, "tran": TD.TRAN_LAP["sdt_actual"],
+             "khuyen": "1000 ms — nhanh gấp đôi yêu cầu, giữ biên khi dòng bận"},
+            {"truong": "lap_sdt_other", "ten": "SDT other",
+             "gia_tri": t.lap_sdt_other, "tran": TD.TRAN_LAP["sdt_other"],
+             "khuyen": "5000 ms — TS khác, đầu thu không cần gấp"},
+            {"truong": "lap_bat", "ten": "BAT", "gia_tri": t.lap_bat,
+             "tran": TD.TRAN_LAP["bat"],
+             "khuyen": "5000 ms — sáu bouquet chia nhau một PID"},
+        ]
+        pid = []
+        for truong, so_pid, mang in (
+                ("bitrate_nit", "16", "NIT"),
+                ("bitrate_sdt_bat", "17", "SDT actual, SDT other, BAT"),
+                ("bitrate_eit", "18", "EIT p/f, EIT schedule")):
+            v = getattr(t, truong)
+            do = DO_DUOC[truong]
+            pid.append({"truong": truong, "pid": so_pid, "mang": mang,
+                        "gia_tri": v, "do_duoc": f"{TD.so(do)} bit/s",
+                        "con": (f"{v / do:.1f}×" if v >= do else "")})
+
+        f = CT.path_for(config_dir)
+        return page(request, "toc-do.html", t=t, lap=lap, pid=pid,
+                    nhac=TD.canh_bao(t), san=TD.SAN_LAP_MS,
+                    tran_pid=TD.TRAN_PID, san_tong=TD.SAN_TONG,
+                    tran_tong=TD.TRAN_TONG, tong_tran=TD.so(t.tong_tran_pid),
+                    nhoi=t.phan_nhoi, file=f, co_file=f.exists(),
+                    note=note, err=err)
+
+    @app.post("/toc-do/luu")
+    async def luu_toc_do(request: Request):
+        """Lưu tốc độ và nhịp lặp.
+
+        **Sai thì không ghi**, cùng lý do với trang Đầu ra: file này được
+        ``vtcsi run`` đọc thẳng lúc khởi động, nên một con số hỏng nằm sẵn ở
+        đây là quả mìn cho lần dựng lại kế tiếp — mà lần đó thường xảy ra lúc
+        nửa đêm và vì một lý do khác.
+        """
+        from dataclasses import fields
+
+        from vtcsi.config import toc_do as CT
+        from vtcsi.model import toc_do as TD
+
+        raw = await request.form()
+        try:
+            cu = CT.load(config_dir)
+        except TD.TocDoError:
+            cu = TD.TocDo()
+        dat = {}
+        for f_ in fields(TD.TocDo):
+            v = str(raw.get(f_.name, "")).strip()
+            if not v:
+                dat[f_.name] = getattr(cu, f_.name)
+                continue
+            if not v.isdigit():
+                return back("/toc-do", err=f"{f_.name} phải là số nguyên dương")
+            dat[f_.name] = int(v)
+        moi = TD.TocDo(**dat)
+        try:
+            CT.save(moi, config_dir)
+        except TD.TocDoError as exc:
+            return back("/toc-do", err=str(exc))
+        if moi == cu:
+            return back("/toc-do", note="không có gì thay đổi")
+        return back("/toc-do",
+                    note="đã lưu — phải dựng lại dịch vụ phát thì số mới có "
+                         "tác dụng")
+
     @app.get("/dau-ra", response_class=HTMLResponse)
     def trang_dau_ra(request: Request, note: str = "", err: str = ""):
         try:

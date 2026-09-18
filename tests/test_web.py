@@ -130,6 +130,8 @@ class TestTheRouteTableIsComplete(WebCase):
         ("POST", "/epg/xoa"),
         ("POST", "/epg/ve-moi"),
         ("GET", "/dau-ra"),
+        ("GET", "/toc-do"),
+        ("POST", "/toc-do/luu"),
         ("POST", "/dau-ra/luu"),
         ("GET", "/bouquet/{raw}"),
         ("POST", "/bouquet/{raw}/ts/{ts_id}/lcn"),

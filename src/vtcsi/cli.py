@@ -359,7 +359,23 @@ def cmd_run(args) -> int:
         sao = sao_card = None
     ttl = args.ttl if args.ttl is not None else ra.ttl
 
+    # Toc do va nhip lap. Thieu file thi dung mac dinh — bo so dang chay tren
+    # song — nen mot he chua tung mo trang do van phat y nhu truoc.
+    from vtcsi.config import toc_do as config_toc_do
+    from vtcsi.model.toc_do import TocDoError
+    try:
+        td = config_toc_do.load(Path(args.config))
+    except TocDoError as exc:
+        print(f"loi: {exc}", file=sys.stderr)
+        return 2
+
     plan = plan_from_config(
+        repetition_ms=td.repetition_ms(),
+        bitrates={"bitrate_nit": td.bitrate_nit,
+                  "bitrate_sdt_bat": td.bitrate_sdt_bat,
+                  "bitrate_eit": td.bitrate_eit,
+                  "total_bitrate": td.tong,
+                  "eit_poll_ms": td.eit_poll_ms},
         build_dir=args.build,
         eit_dir=args.eit_dir,
         ts_id=actual[0].ts_id,

@@ -252,6 +252,7 @@ def plan_from_config(
     mirror_local_address: str | None = None,
     ttl: int = 8,
     repetition_ms: dict[str, int] | None = None,
+    bitrates: dict[str, int] | None = None,
 ) -> Plan:
     """Kế hoạch mặc định khớp bố cục thư mục mà ``vtcsi build`` sinh ra.
 
@@ -296,4 +297,8 @@ def plan_from_config(
         output=Output(destination=destination, local_address=local_address,
                       mirror=mirror, mirror_local_address=mirror_local_address,
                       ttl=ttl),
+        # Thieu khoa nao thi giu mac dinh cua `Plan`, khong doan.
+        **{k: v for k, v in (bitrates or {}).items()
+           if k in ("bitrate_nit", "bitrate_sdt_bat", "bitrate_eit",
+                    "total_bitrate", "eit_poll_ms")},
     )

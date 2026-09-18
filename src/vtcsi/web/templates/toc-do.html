@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% block title %}Tốc độ — VTC-SI{% endblock %}
+{% block body %}
+
+<h1>Quản lý PSI/SI</h1>
+<p class="sub">Hai đầu của hệ thống: lịch phát sóng dạng XML đi <b>vào</b>,
+luồng truyền tải báo hiệu đi <b>ra</b>.</p>
+
+{% set trang_con = 'toc-do' %}{% include "_tabs-psisi.html" %}
+
+<p class="sub">Tốc độ dòng ra và nhịp lặp từng bảng. Khác địa chỉ đầu ra, bộ số
+này <b>vào git</b> và phải giống nhau trên cả hai máy: nhịp lệch nhau thì hôm
+chuyển máy, đầu thu đang quen nhận SDT mỗi giây bỗng phải chờ lâu hơn — và đó
+là thứ nhìn thấy được trên màn hình khán giả.</p>
+
+{% for m in nhac %}<p class="msg warn">{{ m }}</p>{% endfor %}
+
+<form method="post" action="/toc-do/luu">
+
+<h2>Nhịp lặp từng bảng</h2>
+<p class="sub">Đây mới là thứ <b>quyết định</b> bảng ra sóng bao lâu một lần.
+Cột <b>Trần chuẩn</b> là giới hạn của ETSI TS 101 211 §4.1 (hồ sơ vệ tinh và
+cáp) — gõ quá số đó thì trang này từ chối lưu.</p>
+
+<div class="card"><div class="tw"><table>
+<tr><th>Bảng</th><th class="n">Hiện tại</th><th class="n">Trần chuẩn</th>
+    <th>Khuyến nghị</th></tr>
+{% for h in lap %}
+<tr>
+  <td>{{ h.ten }}</td>
+  <td class="n">
+    <input type="number" name="{{ h.truong }}" value="{{ h.gia_tri }}"
+           min="{{ san }}" max="{{ h.tran }}" step="100"
+           style="width:8em;text-align:right"> ms
+  </td>
+  <td class="n"><span class="m">{{ h.tran }} ms</span></td>
+  <td class="dim" style="font-size:12.5px">{{ h.khuyen }}</td>
+</tr>
+{% endfor %}
+</table></div></div>
+
+<h2>Trần bitrate từng PID</h2>
+<p class="sub"><b>Trần, không phải mục tiêu.</b> Đặt EIT 400 kbps không làm nó
+chạy 400 kbps — nó chỉ nói "được phép tới đó". Cột <b>Đo trên sóng</b> là mức
+thật đã đo, để biết còn bao nhiêu chỗ.</p>
+
+<div class="card"><div class="tw"><table>
+<tr><th>PID</th><th>Mang gì</th><th class="n">Trần</th>
+    <th class="n">Đo trên sóng</th><th class="n">Còn chỗ</th></tr>
+{% for h in pid %}
+<tr>
+  <td class="n">{{ h.pid }}</td>
+  <td>{{ h.mang }}</td>
+  <td class="n">
+    <input type="number" name="{{ h.truong }}" value="{{ h.gia_tri }}"
+           min="1" max="{{ tran_pid }}" step="1000"
+           style="width:9em;text-align:right"> bit/s
+  </td>
+  <td class="n"><span class="m">{{ h.do_duoc }}</span></td>
+  <td class="n">{% if h.con %}<span class="pill ok">{{ h.con }}</span>
+      {% else %}<span class="pill crit">chật</span>{% endif %}</td>
+</tr>
+{% endfor %}
+</table></div></div>
+
+<h2>Cả dòng</h2>
+<div class="card">
+  <div class="grid two">
+    <div>
+      <label for="tong">Tốc độ transport stream</label>
+      <input type="number" name="tong" id="tong" value="{{ t.tong }}"
+             min="{{ san_tong }}" max="{{ tran_tong }}" step="100000">
+      <span class="dim" style="font-size:12.5px">Phần dư thành gói nhồi. Luồng
+        phải <b>đều</b>: mux phát hiện mất nguồn bằng cách đếm gói UDP, nên một
+        khoảng lặng bị đọc thành nguồn chết.</span>
+    </div>
+    <div>
+      <label for="eit_poll_ms">Nhịp <span class="m">eitinject</span> ngó lại file EIT</label>
+      <input type="number" name="eit_poll_ms" id="eit_poll_ms"
+             value="{{ t.eit_poll_ms }}" min="50" max="60000" step="50">
+      <span class="dim" style="font-size:12.5px">Chỉ áp cho EIT. NIT, SDT và BAT
+        đi qua <span class="m">inject</span>, mà plugin đó <b>không có</b> tuỳ
+        chọn tương đương — đo được 67 giây, xem FR-93.</span>
+    </div>
+  </div>
+  <p class="sub" style="margin:12px 0 0">Ba trần PID cộng lại là
+    <span class="m">{{ tong_tran }}</span> bit/s, tức
+    <b>{{ '%.0f' % (nhoi * 100) }}%</b> của dòng là gói nhồi khi cả ba cùng
+    chạm trần.</p>
+</div>
+
+<div class="row" style="margin-top:14px">
+  <button type="submit">Lưu</button>
+  <span class="dim">Lưu xong phải <b>dựng lại dịch vụ phát</b> thì số mới có
+    tác dụng: dòng lệnh <span class="m">tsp</span> chỉ được dựng một lần lúc
+    khởi động.</span>
+</div>
+</form>
+
+<h2>Khuyến nghị</h2>
+<div class="card">
+<p>Bộ số đang chạy <b>đã đúng</b>, không có gì cần đổi. Nhịp lặp nằm trong trần
+chuẩn với biên rộng, và ba trần bitrate đều cao gấp đôi mức đo được.</p>
+<p>Chỗ duy nhất đáng bàn là <b>tốc độ cả dòng</b>: {{ '%.0f' % (nhoi * 100) }}%
+đang là gói nhồi. Trên một đường riêng tới headend thì đó không phải lãng phí
+mà là <i>biên</i> — dòng đều và rộng rãi chính là thứ làm phép phát hiện mất
+nguồn của mux đáng tin. <b>Đừng hạ nó để tiết kiệm băng thông</b> nếu chưa
+thống nhất với bên headend; con số này là giao kèo giữa hai hệ, không phải một
+núm chỉnh.</p>
+<p class="dim" style="font-size:12.5px">Hạ trần EIT là chỗ nguy hiểm nhất trong
+trang này. Chật thì section bị hoãn, và triệu chứng trông <b>y hệt mất kênh</b>
+— đã mất vài giờ vì nhầm lẫn đó một lần.</p>
+</div>
+
+<p class="sub" style="margin-top:14px">Ghi vào
+  <span class="m">{{ file }}</span>{% if not co_file %} — <b>chưa có file</b>,
+  hệ đang chạy bộ mặc định{% endif %}.</p>
+
+{% endblock %}
