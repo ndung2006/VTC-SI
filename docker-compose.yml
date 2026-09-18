@@ -7,6 +7,12 @@
 #   docker compose up -d web        # nhập liệu, an toàn, không phát gì
 #   docker compose up -d si         # PHÁT SÓNG THẬT — xem cảnh báo dưới
 #
+# Đổi code thì `docker compose build` rồi `up -d si web` — **cả hai**. Cả hai
+# cùng sinh bảng XML vào `/build` và ghi đè lên nhau, nên dựng lại mỗi `web` sẽ
+# để `si` chạy code cũ mà đọc cấu hình mới: bảng ra có version MỚI mà nội dung
+# CŨ. Xem mục "Đổi code thì phải dựng lại cả hai dịch vụ" trong
+# `kiem-thu-thuc-te.md`.
+#
 # Trước khi bật `si` lần đầu, đọc `kiem-thu-thuc-te.md`. Bậc 0 và bậc 1 không
 # đụng tới mux và bắt được phần lớn lỗi; đừng nhảy thẳng lên đây.
 

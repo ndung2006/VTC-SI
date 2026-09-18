@@ -654,6 +654,39 @@ bỏ sót vì chưa khai đổi số?**
 
 ---
 
+## Đổi code thì phải dựng lại **cả hai** dịch vụ
+
+```bash
+docker compose build
+docker compose up -d si web      # CA HAI, khong phai mot
+```
+
+**Vì sao không chỉ `web`.** Nghe thì `web` là nhập liệu còn `si` là phát, nên
+đổi giao diện thì dựng lại `web` là đủ. Sai: **cả hai cùng sinh bảng XML vào
+`/build`**. `web` sinh lại mỗi lần lưu cấu hình; `si` sinh lại mỗi giờ và mỗi
+khi cấu hình đổi. Chúng ghi đè lên nhau.
+
+Dựng lại mỗi `web` thì sinh ra một trạng thái rất khó đọc: `si` chạy **code cũ**
+nhưng đọc **cấu hình mới**. Bảng nó ghi đè sẽ mang `version` mới — vì version
+nằm trong cấu hình — mà nội dung theo logic cũ.
+
+Đã xảy ra thật, ngày 2026-09-18, khi thêm công tắc linkage (FR-100):
+
+```
+bang                   config bang-si7.xml   noi dung
+BAT 0044                   11           11   LECH
+      linkage_descriptor: config=0 bang-si7.xml=1
+```
+
+Version **khớp** mà nội dung **lệch**. Đó là dấu vân tay của đúng lỗi này, và
+nó đánh lừa được: version khớp trông như đã cập nhật xong.
+
+**Cách nhận ra ngay:** version hai bên bằng nhau nhưng `so-bang.py` báo `LECH`.
+Bình thường đổi nội dung thì version phải đổi theo (FR-92). Hai thứ đó rời nhau
+chỉ khi có hai tiến trình sinh bảng bằng hai phiên bản code khác nhau.
+
+---
+
 ## Rút kênh khỏi lịch: phải khởi động lại `si`
 
 Chỗ này đi ngược lời khuyên ở mọi mục khác, nên đọc kỹ.
