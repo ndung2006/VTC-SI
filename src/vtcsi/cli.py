@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import argparse
 import sys
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 from xml.etree import ElementTree as ET
@@ -410,8 +411,33 @@ def cmd_run(args) -> int:
                    "--alarm-below", str(args.alarm_below))
 
     print(_summary(cfg))
+    def bao_telegram(loai: str, tieu_de: str, dong: tuple[str, ...]) -> None:
+        """Bắn thông báo, đọc lại cấu hình mỗi lần.
+
+        Đọc lại chứ không nhớ một lần lúc khởi động: người trực bật thông báo
+        trên giao diện thì phải có tác dụng ngay, không phải chờ lần dựng lại
+        dịch vụ kế tiếp. File nhỏ, và mấy sự kiện này mỗi ngày đếm trên đầu
+        ngón tay.
+        """
+        from vtcsi.config import telegram as CTG
+        from vtcsi.model import telegram as TG
+        from vtcsi.notify import telegram as NTG
+
+        c = CTG.load(Path(args.config))
+        if not TG.bat_loai(c, loai):
+            return
+        khoa = f"{loai}:{tieu_de}"
+        if not TG.nen_gui(khoa, time.time(), _da_bao, c.im_lang_phut):
+            return
+        _da_bao[khoa] = time.time()
+        NTG.gui_nen(c, TG.soan(loai, tieu_de, dong, c.ten_may),
+                    ghi=supervise.log)
+
+    _da_bao: dict[str, float] = {}
+
     sup = supervise.Supervisor(
-        plan=plan, refresh=refresh, refresh_every=args.refresh_every,
+        plan=plan, bao=bao_telegram,
+        refresh=refresh, refresh_every=args.refresh_every,
         # Theo doi ca hop thu lich lan thu muc cau hinh: file moi ve hoac ai do
         # sua YAML bang tay deu phai len song ngay, khong cho het gio.
         watch=(Path(args.inbox), Path(args.config)),

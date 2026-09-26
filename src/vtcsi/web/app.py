@@ -20,6 +20,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import sys
 import time
 
 from fastapi import FastAPI, Form, Request
@@ -372,6 +373,35 @@ def create_app(config_dir: Path, repo_root: Path | None = None, *,
         so = text.split("(")[-1].split(" bang")[0] if "bang EIT" in text else "?"
         return f"{bang} bảng cấu trúc, {so} bảng EIT"
 
+    #: Lan gui gan nhat theo tung khoa — chong doi, xem `model/telegram.nen_gui`.
+    _da_bao: dict[str, float] = {}
+
+    def _bao(loai: str, tieu_de: str, dong: tuple[str, ...] = (),
+             khoa: str | None = None) -> None:
+        """Bắn một thông báo Telegram. **Không bao giờ ném, không bao giờ chờ.**
+
+        Mọi lối vào đều nằm trên đường nóng — lưu cấu hình, nhận file lịch —
+        nên hàm này nuốt hết: cấu hình hỏng, mạng hỏng, Telegram từ chối, tất
+        cả chỉ thành một dòng log. Một cảnh báo hỏng mà làm sập việc sinh bảng
+        thì tệ hơn hẳn là không có cảnh báo.
+        """
+        try:
+            from vtcsi.config import telegram as CTG
+            from vtcsi.model import telegram as TG
+            from vtcsi.notify import telegram as NTG
+
+            c = CTG.load(config_dir)
+            if not TG.bat_loai(c, loai):
+                return
+            k = khoa or loai
+            if not TG.nen_gui(k, time.time(), _da_bao, c.im_lang_phut):
+                return
+            _da_bao[k] = time.time()
+            NTG.gui_nen(c, TG.soan(loai, tieu_de, dong, c.ten_may),
+                        ghi=lambda m: print(m, file=sys.stderr, flush=True))
+        except Exception as exc:  # noqa: BLE001 — XEM docstring
+            print(f"telegram: bo qua ({exc})", file=sys.stderr, flush=True)
+
     def _save(cfg: Config) -> list[str]:
         """Ghi cấu hình **và sinh lại bảng ngay**.
 
@@ -393,13 +423,46 @@ def create_app(config_dir: Path, repo_root: Path | None = None, *,
         nằm trên đĩa, và dải cảnh báo "chưa lên sóng" sẽ hiện ra kèm nút bấm
         lại. Mất bảng mới khó chịu; mất cả thay đổi vừa gõ thì tệ hơn.
         """
+        truoc = git.config_at_head(root)
         cfg, tang = _tu_tang(cfg)
         loader.save(cfg, config_dir)
         try:
             _apply()
         except Exception:  # noqa: BLE001 — dai canh bao se hien ra
             pass
+        _bao_thay_doi(cfg, truoc)
         return tang
+
+    def _bao_thay_doi(cfg: Config, truoc) -> None:
+        """Báo những bảng vừa đổi nội dung so với bản đã commit.
+
+        NIT tách riêng một loại việc, không gộp vào "thay đổi lớn". Nó là bảng
+        mô tả cả mạng — tần số, ký hiệu, danh sách transport stream — nên đổi
+        nó là chuyện khác hẳn về mức độ so với đổi tên một kênh.
+
+        So với **HEAD** chứ không phải lần lưu trước, dùng đúng phép so của
+        ``preflight``. Nhờ vậy sửa rồi sửa lại trong một chu kỳ commit không
+        đẻ ra một tràng tin nhắn nói cùng một chuyện.
+        """
+        if truoc is None:
+            return
+        try:
+            doi = autobump.doi_noi_dung(cfg, truoc)
+        except Exception:  # noqa: BLE001 — bao tin khong duoc lam hong viec luu
+            return
+        if not doi:
+            return
+        if "NIT" in doi:
+            _bao("nit", "Bảng NIT vừa đổi nội dung so với bản đã commit.",
+                 (f"version hiện tại: {cfg.network.version}",
+                  "NIT đánh version bằng tay — kiểm lại trước khi lên sóng."),
+                 khoa="nit")
+        khac = tuple(x for x in doi if x != "NIT")
+        if khac:
+            _bao("thay-doi",
+                 f"{len(khac)} bảng vừa đổi nội dung:",
+                 tuple("  · " + x for x in khac[:20]),
+                 khoa="thay-doi:" + ",".join(khac))
 
     def _tu_tang(cfg: Config) -> tuple[Config, str]:
         """Tăng version SDT và BAT nếu nội dung đã rời khỏi bản đã commit.
@@ -1159,6 +1222,14 @@ def create_app(config_dir: Path, repo_root: Path | None = None, *,
             "tu": min(e.start_utc for e in sched.events).isoformat(),
             "den": max(e.end_utc for e in sched.events).isoformat(),
         }
+        # Khoa chong doi gom ten file: gui lai CUNG mot ngay thi im, con file
+        # cua ngay khac van bao. Bo lich thuong day ve tung mach, va mach nao
+        # cung dang biet.
+        _bao("epg", f"Đã nhận {dat}",
+             (f"{tom['so_dich_vu']} dịch vụ · {tom['so_su_kien']} sự kiện",
+              f"từ {tom['tu'][:16].replace('T', ' ')} "
+              f"đến {tom['den'][:16].replace('T', ' ')}"),
+             khoa="epg:" + dat)
         return True, "", tom
 
     @app.post("/api/epg")
@@ -1378,6 +1449,95 @@ def create_app(config_dir: Path, repo_root: Path | None = None, *,
                     note=f"đã đặt lại {len(lech)} mục về bộ khuyến nghị — "
                          f"CHƯA có tác dụng cho tới khi chạy "
                          f"`docker compose restart si` trên máy phát")
+
+    # ---------------------------------------------------------- telegram
+
+    VIEC_TELEGRAM = (
+        ("epg", "File lịch EPG mới",
+         "mỗi lần hộp thư nhận một file, kèm số kênh và số sự kiện"),
+        ("nit", "Bảng NIT đổi",
+         "bảng mô tả cả mạng — tần số, ký hiệu, danh sách transport stream"),
+        ("thay_doi", "Thay đổi lớn khác",
+         "SDT hoặc BAT đổi nội dung so với bản đã commit"),
+        ("song", "Dịch vụ phát chạy / dừng",
+         "kể cả chết lặp — cái đó chỉ báo một lần, không báo mỗi vòng"),
+    )
+
+    @app.get("/telegram", response_class=HTMLResponse)
+    def trang_telegram(request: Request, note: str = "", err: str = ""):
+        from vtcsi.config import telegram as CTG
+        from vtcsi.model import telegram as TG
+        try:
+            c = CTG.load(config_dir)
+        except TG.TelegramError as exc:
+            return page(request, "loi.html", loi=str(exc))
+        f = CTG.path_for(config_dir)
+        return page(request, "telegram.html", c=c, viec=VIEC_TELEGRAM,
+                    bat_viec={k: getattr(c, "bao_" + k) for k, _, _ in VIEC_TELEGRAM},
+                    che_token=TG.che(c.token), file=f, co_file=f.exists(),
+                    note=note, err=err)
+
+    @app.post("/telegram/luu")
+    async def luu_telegram(request: Request):
+        """Lưu cấu hình thông báo.
+
+        Token đi qua biểu mẫu dạng ``password``; ô để trống nghĩa là **giữ
+        token cũ**, không phải xoá. Người trực mở trang để tích một ô rồi bấm
+        Lưu không được vì thế mà mất kết nối — mà token thì không gõ lại từ
+        trí nhớ được.
+        """
+        from vtcsi.config import telegram as CTG
+        from vtcsi.model import telegram as TG
+
+        raw = await request.form()
+        try:
+            cu = CTG.load(config_dir)
+        except TG.TelegramError:
+            cu = TG.Cai()
+
+        token = str(raw.get("token", "")).strip() or cu.token
+        im = str(raw.get("im_lang_phut", "")).strip()
+        if im and not im.isdigit():
+            return back("/telegram", err="chống dội phải là số phút")
+        moi = TG.Cai(
+            token=token,
+            chat_id=str(raw.get("chat_id", "")).strip(),
+            bat=raw.get("bat") is not None,
+            ten_may=str(raw.get("ten_may", "")).strip()[:40],
+            im_lang_phut=int(im) if im else cu.im_lang_phut,
+            **{f"bao_{k}": raw.get(f"bao_{k}") is not None
+               for k, _, _ in VIEC_TELEGRAM},
+        )
+        try:
+            CTG.save(moi, config_dir)
+        except TG.TelegramError as exc:
+            return back("/telegram", err=str(exc))
+        return back("/telegram", note="đã lưu cấu hình thông báo")
+
+    @app.post("/telegram/thu")
+    def thu_telegram():
+        """Gửi một tin thử, và **chờ kết quả** — khác mọi lối gửi khác.
+
+        Chỗ này người trực đang đứng nhìn và cần biết đúng/sai ngay, nên chờ
+        là đúng. Mọi lối gửi khác nằm trên đường nóng nên phải chạy nền.
+        """
+        from vtcsi.config import telegram as CTG
+        from vtcsi.model import telegram as TG
+        from vtcsi.notify import telegram as NTG
+
+        try:
+            c = CTG.load(config_dir)
+        except TG.TelegramError as exc:
+            return back("/telegram", err=str(exc))
+        if not c.san_sang:
+            return back("/telegram",
+                        err="chưa bật công tắc tổng hoặc thiếu token/chat id")
+        xong, vi_sao = NTG.gui(c, TG.soan(
+            "song", "Tin thử từ VTC-SI.",
+            ("Nếu bạn đọc được tin này thì kết nối đã thông.",), c.ten_may))
+        if xong:
+            return back("/telegram", note="đã gửi — kiểm lại nhóm chat")
+        return back("/telegram", err=f"không gửi được: {vi_sao}")
 
     @app.get("/dau-ra", response_class=HTMLResponse)
     def trang_dau_ra(request: Request, note: str = "", err: str = ""):

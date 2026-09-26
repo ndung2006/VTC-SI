@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+{% block title %}Thông báo Telegram — VTC-SI{% endblock %}
+{% block body %}
+
+<h1>Thông báo Telegram</h1>
+<p class="sub">Bắn tin vào một nhóm chat khi có việc đáng biết. Chỉ gửi ra,
+không nhận lệnh vào — bot không điều khiển được gì trong hệ này.</p>
+
+{% if not c.token %}
+<div class="msg warn">
+  <b>Chưa cấu hình.</b> Cần hai thứ, lấy trong Telegram:
+  <ol style="margin:6px 0 0;padding-left:20px">
+    <li>Nhắn <span class="m">@BotFather</span>, gõ <span class="m">/newbot</span>,
+      đặt tên. Nó trả về <b>token</b> dạng <span class="m">123456789:AAH…</span></li>
+    <li>Thêm bot vào nhóm chat vận hành, gửi một tin bất kỳ, rồi mở
+      <span class="m">https://api.telegram.org/bot&lt;TOKEN&gt;/getUpdates</span>
+      và lấy <b>chat id</b> — nhóm thì số âm, ví dụ
+      <span class="m">-1001234567890</span></li>
+  </ol>
+</div>
+{% endif %}
+
+<form method="post" action="/telegram/luu">
+
+<h2>Kết nối</h2>
+<div class="card">
+  <div class="grid two">
+    <div>
+      <label for="token">Token bot</label>
+      <div class="row" style="gap:6px">
+        <input type="password" name="token" id="token" autocomplete="off"
+               value="{{ c.token }}" style="flex:1"
+               placeholder="123456789:AAH...">
+        <button type="button" id="hien-token">Hiện</button>
+      </div>
+      <span class="dim" style="font-size:12.5px">
+        {% if c.token %}Đang lưu: <span class="m">{{ che_token }}</span>. {% endif %}
+        Đây là <b>bí mật</b> — ai có nó thì gửi được tin vào nhóm của bạn.
+        File <span class="m">telegram.yaml</span> nằm ngoài git vì lý do đó.
+      </span>
+    </div>
+    <div>
+      <label for="chat_id">Chat id</label>
+      <input type="text" name="chat_id" id="chat_id" value="{{ c.chat_id }}"
+             placeholder="-1001234567890">
+      <span class="dim" style="font-size:12.5px">Nhóm thì số âm, người thì số
+        dương. Bot phải đã được thêm vào nhóm.</span>
+    </div>
+  </div>
+  <div class="grid two" style="margin-top:12px">
+    <div>
+      <label for="ten_may">Tên máy</label>
+      <input type="text" name="ten_may" id="ten_may" value="{{ c.ten_may }}"
+             maxlength="40" placeholder="máy A">
+      <span class="dim" style="font-size:12.5px">Ghép vào đầu mỗi tin. Hai máy
+        dự phòng cùng bắn vào một nhóm mà không có tên thì <b>không biết tin
+        nào của máy nào</b>.</span>
+    </div>
+    <div>
+      <label for="im_lang_phut">Chống dội</label>
+      <input type="number" name="im_lang_phut" id="im_lang_phut"
+             value="{{ c.im_lang_phut }}" min="0" max="1440">
+      <span class="dim" style="font-size:12.5px">Phút. Cùng một việc thì im
+        trong khoảng này. Đặt <span class="m">0</span> là tắt hẳn — chỉ dùng
+        khi gỡ rối.</span>
+    </div>
+  </div>
+</div>
+
+<h2>Báo những việc gì</h2>
+<div class="card">
+  <div class="check">
+    <label class="cong-tac">
+      <input type="checkbox" name="bat" value="true" {{ 'checked' if c.bat }}>
+      <span class="nut" aria-hidden="true"></span>
+      <span class="chu">{{ 'Bật' if c.bat else 'Tắt' }}</span>
+    </label>
+    <label style="margin-left:8px">Công tắc tổng</label>
+  </div>
+  <span class="dim" style="font-size:12.5px">Tắt thì không việc gì được báo,
+    bất kể các ô dưới. Mặc định <b>tắt</b>: một hệ vừa cài không được tự bắn
+    tin ra ngoài khi chưa ai bảo nó làm vậy.</span>
+
+  <div style="margin-top:14px">
+  {% for khoa, ten, giai in viec %}
+    <div class="check">
+      <input type="checkbox" name="bao_{{ khoa }}" id="bao_{{ khoa }}"
+             value="true" {{ 'checked' if bat_viec[khoa] }}>
+      <label for="bao_{{ khoa }}">{{ ten }} —
+        <span class="dim">{{ giai }}</span></label>
+    </div>
+  {% endfor %}
+  </div>
+</div>
+
+<div class="row" style="margin-top:14px">
+  <button type="submit">Lưu</button>
+</div>
+</form>
+
+<h2>Gửi thử</h2>
+<div class="card">
+<p style="margin-top:0">Bắn một tin ngay bây giờ để xác nhận token và chat id
+đúng. Lưu trước đã — nút này dùng bộ đang lưu, không dùng chữ đang gõ.</p>
+<form method="post" action="/telegram/thu" style="margin:0">
+  <button type="submit" {{ 'disabled' if not c.san_sang }}>Gửi tin thử</button>
+  {% if not c.san_sang %}
+  <span class="dim" style="margin-left:8px">Cần bật công tắc tổng và điền đủ
+    token với chat id.</span>
+  {% endif %}
+</form>
+</div>
+
+<p class="sub" style="margin-top:14px">Ghi vào
+  <span class="m">{{ file }}</span>{% if not co_file %} — <b>chưa có file</b>
+  {% endif %}. File này <b>không vào git</b>, nên mỗi máy phải cấu hình riêng.</p>
+
+<script>
+(function () {
+  var h = document.getElementById("hien-token");
+  var o = document.getElementById("token");
+  if (!h || !o) { return; }
+  h.addEventListener("click", function () {
+    var an = o.type === "password";
+    o.type = an ? "text" : "password";
+    h.textContent = an ? "Ẩn" : "Hiện";
+    h.setAttribute("aria-pressed", an ? "true" : "false");
+  });
+}());
+</script>
+
+{% endblock %}

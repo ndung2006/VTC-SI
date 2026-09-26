@@ -23,5 +23,10 @@ Bang mau/*.ts
 # hinh bao hieu vao git vi giong nhau la muc dich; dia chi dau ra thi nguoc lai.
 config/dau-ra.yaml
 
+# Token bot Telegram. Kho nay CONG KHAI tren GitHub — mot token lot len
+# do thi ai cung ban tin duoc vao nhom chat van hanh, va xoa commit
+# khong cuu duoc gi: phai thu hoi roi cap lai.
+config/telegram.yaml
+
 # Cong web va duong dan kho — moi may mot khac, giong config/dau-ra.yaml.
 .env

@@ -225,6 +225,14 @@ class Supervisor:
     """
 
     plan: Plan
+    bao: Callable[[str, str, tuple[str, ...]], None] | None = None
+    """Báo tin ra ngoài: ``(loại, tiêu đề, các dòng)``. ``None`` là không báo.
+
+    Tiêm vào chứ không gọi thẳng Telegram, đúng như ``spawn``/``now``/``sleep``
+    ở trên: bộ kiểm phải chạy được mà không cần mạng. Một bộ kiểm cần Internet
+    là một bộ kiểm sẽ đỏ vào đúng hôm mạng cơ quan trục trặc, và rồi không ai
+    tin nó nữa.
+    """
     refresh: tuple[str, ...] = ()
     """Lệnh sinh lại bảng và EIT. Rỗng nghĩa là không tự sinh lại."""
 
@@ -295,7 +303,23 @@ class Supervisor:
         log(f"dung tsp · {self.plan.output.destination}")
         log(f"  {shell(cmd)}")
         self.child = Child(self.spawn(cmd), cmd, self.now())
+        self._bao("song", "Dịch vụ phát ĐÃ CHẠY.",
+                  (f"đầu ra: {self.plan.output.destination}",))
         return True
+
+    def _bao(self, loai: str, tieu_de: str, dong: tuple[str, ...] = ()) -> None:
+        """Gọi chỗ báo tin, nuốt mọi lỗi.
+
+        Bộ trông chừng là thứ cuối cùng được phép chết. Nếu nó ngã vì Telegram
+        thì không còn gì dựng lại ``tsp``, và ta mất sóng vì một cảnh báo —
+        đúng chiều ngược lại với lý do cảnh báo tồn tại.
+        """
+        if self.bao is None:
+            return
+        try:
+            self.bao(loai, tieu_de, dong)
+        except Exception as exc:  # noqa: BLE001 — XEM docstring
+            log(f"bao tin that bai, bo qua: {exc}")
 
     def reap(self) -> Attempt | None:
         """Con đã chết chưa. Không chặn."""
@@ -309,6 +333,10 @@ class Supervisor:
         self.child = None
         log(f"tsp ket thuc · ma {code} · {attempt.outcome.value} · "
             f"song {attempt.lifetime:.0f}s")
+        if attempt.outcome is not Outcome.STOPPED_BY_US:
+            self._bao("song", "Dịch vụ phát ĐÃ DỪNG — sẽ tự dựng lại.",
+                      (f"mã thoát {code} · {attempt.outcome.value}",
+                       f"sống được {attempt.lifetime:.0f} giây"))
         return attempt
 
     def stop(self) -> None:
@@ -445,6 +473,12 @@ class Supervisor:
             if failures == CRASH_LOOP_AFTER:
                 log(f"CHET LAP: {failures} lan chet khi khoi dong lien tiep. "
                     f"Van se thu tiep mai, nhung hay xem lai cau hinh.")
+                # Bao MOT lan o dung nguong, khong bao moi vong: chet lap ma
+                # moi lan mot tin nhan thi nua dem se co hang tram tin, va
+                # nguoi truc se tat thong bao — mat sach tac dung.
+                self._bao("song", "CHẾT LẶP — cần người xem ngay.",
+                          (f"{failures} lần chết khi khởi động liên tiếp",
+                           "Hệ vẫn thử lại mãi, nhưng nhiều khả năng sai cấu hình."))
             delay = backoff(failures)
             if delay:
                 log(f"thu lai sau {delay:.0f}s (lan hong lien tiep thu {failures})")

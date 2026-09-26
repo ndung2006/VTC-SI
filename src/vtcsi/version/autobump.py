@@ -59,6 +59,28 @@ def plan(now: Config, committed: Config) -> dict[str, int]:
     return ra
 
 
+def doi_noi_dung(now: Config, committed: Config) -> tuple[str, ...]:
+    """Tên những bảng có **nội dung** khác bản đã commit, bỏ qua ``version``.
+
+    Khác ``plan`` ở hai chỗ, và cả hai đều cần thiết cho việc báo tin:
+
+    * ``plan`` bỏ qua NIT vì NIT đánh version bằng tay (FR-92). Hàm này
+      **không** bỏ, vì "NIT vừa đổi" đúng là thứ người trực muốn được báo.
+    * ``plan`` im lặng khi version đã rời khỏi HEAD từ trước. Hàm này chỉ hỏi
+      nội dung có khác không, nên nó vẫn trả lời đúng ở lần lưu thứ hai trong
+      cùng một chu kỳ commit.
+    """
+    nay, truoc = _tables(now), _tables(committed)
+    ra = []
+    for ten in sorted(set(nay) | set(truoc)):
+        if ten not in nay or ten not in truoc:
+            ra.append(ten)
+            continue
+        if T.canon(_strip_version(nay[ten])) != T.canon(_strip_version(truoc[ten])):
+            ra.append(ten)
+    return tuple(ra)
+
+
 def apply(cfg: Config, ke_hoach: dict[str, int]) -> Config:
     """Trả về cấu hình mới mang version đã tăng. Không sửa cái đưa vào."""
     if not ke_hoach:
