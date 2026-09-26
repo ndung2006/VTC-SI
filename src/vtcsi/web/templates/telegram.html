@@ -1,10 +1,16 @@
 {% extends "base.html" %}
-{% block title %}Thông báo Telegram — VTC-SI{% endblock %}
+{% block title %}Thông báo — VTC-SI{% endblock %}
 {% block body %}
 
-<h1>Thông báo Telegram</h1>
-<p class="sub">Bắn tin vào một nhóm chat khi có việc đáng biết. Chỉ gửi ra,
-không nhận lệnh vào — bot không điều khiển được gì trong hệ này.</p>
+<h1>Quản lý PSI/SI</h1>
+<p class="sub">Hai đầu của hệ thống: lịch phát sóng dạng XML đi <b>vào</b>,
+luồng truyền tải báo hiệu đi <b>ra</b>.</p>
+
+{% set trang_con = 'telegram' %}{% include "_tabs-psisi.html" %}
+
+<p class="sub">Bắn tin vào một nhóm chat Telegram khi có việc đáng biết. Chỉ
+<b>gửi ra</b>, không nhận lệnh vào — bot không điều khiển được gì trong hệ này,
+nên token lọt ra ngoài thì mất nhóm chat chứ không mất quyền điều khiển.</p>
 
 {% if not c.token %}
 <div class="msg warn">

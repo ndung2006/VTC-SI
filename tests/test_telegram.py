@@ -314,6 +314,19 @@ class TestTrangWeb(unittest.TestCase):
     def test_the_admin_page_links_to_it(self) -> None:
         self.assertIn("/telegram", self.c.get("/quan-tri").text)
 
+    def test_it_is_a_tab_on_every_psisi_page(self) -> None:
+        """Người dùng đi tìm nó ở hàng tab này chứ không phải trong Quản trị."""
+        for url in ("/epg", "/dau-ra", "/toc-do"):
+            with self.subTest(url=url):
+                self.assertIn('href="/telegram"', self.c.get(url).text)
+
+    def test_the_tab_row_is_on_the_telegram_page_too(self) -> None:
+        """Vào rồi phải quay ra được — không có tab là cụt đường."""
+        html = self.c.get("/telegram").text
+        for url in ("/epg", "/dau-ra", "/toc-do"):
+            with self.subTest(url=url):
+                self.assertIn(f'href="{url}"', html)
+
 
 if __name__ == "__main__":
     unittest.main()
